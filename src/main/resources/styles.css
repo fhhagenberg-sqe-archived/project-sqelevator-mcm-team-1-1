@@ -1,0 +1,8 @@
+.statusBarBorder {
+	-fx-border-style: solid none none none
+}
+
+.title {
+	-fx-font-size: 12pt;
+	-fx-font-weight: bold;
+}
