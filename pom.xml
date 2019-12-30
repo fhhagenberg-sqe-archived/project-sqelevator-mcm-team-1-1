@@ -33,8 +33,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.3</version>
                 <configuration>
-                    <launcher>launcher</launcher>
-                    <mainClass>at.fhhagenberg.sqelevator.gui.ElevatorControlCenter</mainClass>
+                    <mainClass>at.fhhagenberg.sqelevator.gui.ApplicationMain</mainClass>
                 </configuration>
             </plugin>
             <plugin>
