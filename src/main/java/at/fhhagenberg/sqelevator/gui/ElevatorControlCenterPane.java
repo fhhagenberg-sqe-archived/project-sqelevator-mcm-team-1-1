@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.util.ResourceBundle;
 
@@ -34,13 +35,13 @@ public class ElevatorControlCenterPane extends BorderPane {
     }
 
     private Node getElevatorPanel() {
-        HBox hBox = new HBox();
-        hBox.setPadding(PADDING_LARGE);
-        hBox.getChildren().add(new Label("(Elevator Panel)"));
+        VBox vBox = new VBox();
+        vBox.setPadding(PADDING_LARGE);
+        vBox.getChildren().add(new Label("(Elevator Panel)"));
 
-        // TODO elevator
+        vBox.getChildren().add(new ElevatorPanel());
 
-        return hBox;
+        return vBox;
     }
 
     private Node getAlarmList() {
