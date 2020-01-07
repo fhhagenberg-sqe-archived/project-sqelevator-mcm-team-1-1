@@ -6,3 +6,7 @@
 	-fx-font-size: 12pt;
 	-fx-font-weight: bold;
 }
+
+#alarms-table .table-column {
+	-fx-alignment: CENTER-LEFT;
+}
