@@ -2,7 +2,9 @@ package at.fhhagenberg.sqelevator.gui;
 
 import at.fhhagenberg.sqelevator.model.Alarm;
 import at.fhhagenberg.sqelevator.utils.StringAdapter;
+import at.fhhagenberg.sqelevator.viewmodel.AlarmViewModel;
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -69,25 +71,25 @@ public class ElevatorControlCenterPane extends BorderPane {
         hBox.getChildren().add(title);
         vBox.getChildren().add(hBox);       
         
-        // TODO dynamic alarm list
-        ObservableList<Alarm> data = FXCollections.observableArrayList(
-                		new Alarm("This is an alarm", false), //
-                		new Alarm("This is an error", true), //
-                		new Alarm("A second alarm!", false) //
-        );
-        
-        TableView<Alarm> tableView = new TableView<Alarm>();
+        TableView<AlarmViewModel> tableView = new TableView<>();
         tableView.setId("alarms-table");
         
-        TableColumn<Alarm, ImageView> typeCol = new TableColumn<Alarm, ImageView>("Type");
+        var typeCol = new TableColumn<AlarmViewModel, ImageView>("Type");
         typeCol.setMinWidth(20);
-        typeCol.setCellValueFactory(new PropertyValueFactory<>("image"));
+        typeCol.setCellValueFactory(cellData -> {
+            var imageView = new ImageView();
+            imageView.imageProperty().bindBidirectional(cellData.getValue().imageProperty());
+            imageView.setFitWidth(25);
+            imageView.setFitHeight(25);
+
+            return new SimpleObjectProperty<>(imageView);
+        });
  
-        TableColumn<Alarm, String> messageCol = new TableColumn<Alarm, String>("Message");
+        var messageCol = new TableColumn<AlarmViewModel, String>("Message");
         messageCol.setMinWidth(200);
-        messageCol.setCellValueFactory(new PropertyValueFactory<>("message"));
+        messageCol.setCellValueFactory(cellData -> cellData.getValue().alarmMessageProperty());
  
-        tableView.setItems(data);
+        tableView.itemsProperty().bindBidirectional(buildingViewModel.alarmsProperty());
         tableView.getColumns().addAll(typeCol, messageCol);        
         
         vBox.getChildren().add(tableView);

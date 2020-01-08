@@ -31,10 +31,25 @@ public class ApplicationMain extends Application {
 
         timer.scheduleAtFixedRate(updateTask, 0, 1000);
 
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                dataProvider.addAlert("test");
+            }
+        }, 1000);
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                dataProvider.addAlert("2. test", false);
+            }
+        }, 2000);
+
         var buildingViewModel = new BuildingViewModel(dataProvider);
 
         dataProvider.addElevatorChangeObserver(buildingViewModel);
         dataProvider.addFloorChangeObserver(buildingViewModel);
+        dataProvider.addAlarmsChangeObserver(buildingViewModel);
 
         var eccPane = new ElevatorControlCenterPane(buildingViewModel);
 

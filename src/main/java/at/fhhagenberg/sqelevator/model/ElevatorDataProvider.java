@@ -1,6 +1,7 @@
 package at.fhhagenberg.sqelevator.model;
 
 import at.fhhagenberg.sqelevator.IElevator;
+import at.fhhagenberg.sqelevator.model.observers.IAlarmsChangeObserver;
 import at.fhhagenberg.sqelevator.model.observers.IBuildingChangeObserver;
 import at.fhhagenberg.sqelevator.model.observers.IElevatorChangeObserver;
 import at.fhhagenberg.sqelevator.model.observers.IFloorChangeObserver;
@@ -20,13 +21,17 @@ public class ElevatorDataProvider implements IElevatorController{
     private List<IElevatorChangeObserver> elevatorChangeObservers;
     private List<IFloorChangeObserver> floorChangeObservers;
     private List<IBuildingChangeObserver> buildingChangeObservers;
+    private List<IAlarmsChangeObserver> alarmsChangeObservers;
 
     public ElevatorDataProvider(IElevator elevatorService) {
         this.elevatorService = elevatorService;
 
+        alarms = new ArrayList<>();
+
         elevatorChangeObservers = new ArrayList<>();
         floorChangeObservers = new ArrayList<>();
         buildingChangeObservers = new ArrayList<>();
+        alarmsChangeObservers = new ArrayList<>();
 
         initialize();
     }
@@ -47,6 +52,10 @@ public class ElevatorDataProvider implements IElevatorController{
 
     public void addFloorChangeObserver(IFloorChangeObserver floorChangeObserver) {
         floorChangeObservers.add(floorChangeObserver);
+    }
+
+    public void addAlarmsChangeObserver(IAlarmsChangeObserver alarmsChangeObserver) {
+        alarmsChangeObservers.add(alarmsChangeObserver);
     }
 
     @Override
@@ -112,8 +121,13 @@ public class ElevatorDataProvider implements IElevatorController{
         }
     }
 
-    private void addAlert(String message) {
-        alarms.add(new Alarm(message, true));
+    public void addAlert(String message) {
+        addAlert(message, true);
+    }
+    public void addAlert(String message, boolean isError) {
+        alarms.add(new Alarm(message, isError));
+
+        notifyAlarmsChanged(new Alarm(message, isError));
     }
 
     private void notifyElevatorChanged(Elevator elevator) {
@@ -134,4 +148,9 @@ public class ElevatorDataProvider implements IElevatorController{
         }
     }
 
+    private void notifyAlarmsChanged(Alarm alarm) {
+        for (IAlarmsChangeObserver observer : alarmsChangeObservers) {
+            observer.newAlarm(alarm);
+        }
+    }
 }

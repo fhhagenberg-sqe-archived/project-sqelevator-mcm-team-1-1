@@ -1,19 +1,23 @@
 package at.fhhagenberg.sqelevator.viewmodel;
 
-import at.fhhagenberg.sqelevator.model.Building;
-import at.fhhagenberg.sqelevator.model.Elevator;
-import at.fhhagenberg.sqelevator.model.Floor;
-import at.fhhagenberg.sqelevator.model.IElevatorController;
+import at.fhhagenberg.sqelevator.model.*;
+import at.fhhagenberg.sqelevator.model.observers.IAlarmsChangeObserver;
 import at.fhhagenberg.sqelevator.model.observers.IBuildingChangeObserver;
 import at.fhhagenberg.sqelevator.model.observers.IElevatorChangeObserver;
 import at.fhhagenberg.sqelevator.model.observers.IFloorChangeObserver;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleMapProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
-public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeObserver, IElevatorChangeObserver {
+public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeObserver, IElevatorChangeObserver, IAlarmsChangeObserver {
     private SimpleMapProperty<Integer, ElevatorViewModel> elevators = new SimpleMapProperty<>();
     private SimpleMapProperty<Integer, FloorViewModel> floors = new SimpleMapProperty<>();
+
+    private ObservableList<AlarmViewModel> observableList = FXCollections.observableArrayList();
+    private SimpleListProperty<AlarmViewModel> alarms = new SimpleListProperty<>(observableList);
 
     private SimpleBooleanProperty automaticMode = new SimpleBooleanProperty();
 
@@ -37,6 +41,14 @@ public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeO
 
     public SimpleMapProperty<Integer, FloorViewModel> floorsProperty() {
         return floors;
+    }
+
+    public ObservableList<AlarmViewModel> getAlarms() {
+        return alarms.get();
+    }
+
+    public SimpleListProperty<AlarmViewModel> alarmsProperty() {
+        return alarms;
     }
 
     public boolean isAutomaticMode() {
@@ -95,5 +107,10 @@ public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeO
 
         floors.get(floor.getId()).setDownButtonActive(floor.isDownButtonActive());
         floors.get(floor.getId()).setUpButtonActive(floor.isUpButtonActive());
+    }
+
+    @Override
+    public void newAlarm(Alarm alarm) {
+        alarms.add(new AlarmViewModel(alarm.getMessage(), alarm.isError()));
     }
 }
