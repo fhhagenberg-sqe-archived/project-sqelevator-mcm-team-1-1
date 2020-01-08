@@ -8,6 +8,7 @@ import at.fhhagenberg.sqelevator.model.observers.IFloorChangeObserver;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleMapProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -20,6 +21,7 @@ public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeO
     private SimpleListProperty<AlarmViewModel> alarms = new SimpleListProperty<>(observableList);
 
     private SimpleBooleanProperty automaticMode = new SimpleBooleanProperty();
+    private SimpleStringProperty callInfo = new SimpleStringProperty();
 
     private IElevatorController elevatorController;
 
@@ -67,6 +69,18 @@ public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeO
         automaticMode.set(!automaticMode.get());
     }
 
+	public String getCallInfo() {
+		return callInfo.get();
+	}
+
+	public SimpleStringProperty callInfoProperty() {
+		return callInfo;
+	}
+
+	public void setCallInfo(String callInfo) {
+		this.callInfo.set(callInfo);
+	}
+    
     //to set the target in manual mode
     public void setTarget(int elevatorNumber, int target){
         elevatorController.setTarget(elevatorNumber, target);

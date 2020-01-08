@@ -29,7 +29,6 @@ public class ElevatorControlCenterPane extends BorderPane {
     private BuildingViewModel buildingViewModel;
 
     private Button btnChangeMode;
-    private Label lblMode;
 
     public ElevatorControlCenterPane(BuildingViewModel buildingViewModel) {
         this.buildingViewModel = buildingViewModel;
@@ -48,7 +47,7 @@ public class ElevatorControlCenterPane extends BorderPane {
         title.getStyleClass().add("title");
         vBox.getChildren().add(title);
 
-        vBox.getChildren().add(new ElevatorPanel());
+        vBox.getChildren().add(new ElevatorPanel(buildingViewModel));
 
 
         return vBox;
@@ -106,6 +105,7 @@ public class ElevatorControlCenterPane extends BorderPane {
         btnChangeMode.textProperty().bindBidirectional(buildingViewModel.automaticModeProperty(), new AutomaticModeButtonFormatter());
         btnChangeMode.setOnAction(actionEvent -> {
             buildingViewModel.toggleAutomaticMode();
+            if (buildingViewModel.isAutomaticMode()) buildingViewModel.setCallInfo("");
         });
 
         hBox.getChildren().add(btnChangeMode);
@@ -114,15 +114,21 @@ public class ElevatorControlCenterPane extends BorderPane {
     }
 
     private Node getStatusBar() {
-        HBox hBox = new HBox();
-        hBox.setPadding(PADDING_NARROW);
-        hBox.setSpacing(SPACING);
-        hBox.setAlignment(Pos.CENTER_RIGHT);
-        hBox.getStyleClass().add("statusBarBorder");
-        lblMode = new Label();
-        lblMode.textProperty().bindBidirectional(buildingViewModel.automaticModeProperty(), new AutomaticModeLabelFormatter());
-        hBox.getChildren().add(lblMode);
-        return hBox;
+		HBox hBox = new HBox();
+		hBox.setPadding(PADDING_NARROW);
+		hBox.setSpacing(SPACING);
+		hBox.setAlignment(Pos.CENTER_RIGHT);
+		hBox.getStyleClass().add("statusBarBorder");
+
+		Label lblCallInfo = new Label();
+		lblCallInfo.textProperty().bind(buildingViewModel.callInfoProperty());
+
+		Label lblMode = new Label();
+		lblMode.textProperty().bindBidirectional(buildingViewModel.automaticModeProperty(),
+				new AutomaticModeLabelFormatter());
+
+		hBox.getChildren().addAll(lblCallInfo, lblMode);
+		return hBox;
     }
 
     private class AutomaticModeLabelFormatter extends StringAdapter<Boolean> {
