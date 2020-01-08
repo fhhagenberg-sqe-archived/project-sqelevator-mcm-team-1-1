@@ -53,7 +53,7 @@ public class ApplicationMain extends Application {
 
         var eccPane = new ElevatorControlCenterPane(buildingViewModel);
 
-        var scene = new Scene(eccPane, 1000, 500);
+        var scene = new Scene(eccPane, 1000, 600);
         scene.getStylesheets().add("styles.css");
         stage.setScene(scene);
         stage.setTitle(RESOURCE_BUNDLE.getString("title"));
@@ -62,7 +62,7 @@ public class ApplicationMain extends Application {
         stage.setOnCloseRequest(windowEvent -> {
             timer.cancel();
         });
-
+        stage.setResizable(false);
         stage.show();
     }
 }
