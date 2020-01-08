@@ -1,15 +1,15 @@
 package at.fhhagenberg.sqelevator.model;
 
 import at.fhhagenberg.sqelevator.IElevator;
-import at.fhhagenberg.sqelevator.model.observers.BuildingChangeObserver;
-import at.fhhagenberg.sqelevator.model.observers.ElevatorChangeObserver;
-import at.fhhagenberg.sqelevator.model.observers.FloorChangeObserver;
+import at.fhhagenberg.sqelevator.model.observers.IBuildingChangeObserver;
+import at.fhhagenberg.sqelevator.model.observers.IElevatorChangeObserver;
+import at.fhhagenberg.sqelevator.model.observers.IFloorChangeObserver;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ElevatorDataProvider {
+public class ElevatorDataProvider implements IElevatorController{
     private IElevator elevatorService;
 
     private int numElevators;
@@ -17,9 +17,9 @@ public class ElevatorDataProvider {
 
     private List<Alarm> alarms;
 
-    private List<ElevatorChangeObserver> elevatorChangeObservers;
-    private List<FloorChangeObserver> floorChangeObservers;
-    private List<BuildingChangeObserver> buildingChangeObservers;
+    private List<IElevatorChangeObserver> elevatorChangeObservers;
+    private List<IFloorChangeObserver> floorChangeObservers;
+    private List<IBuildingChangeObserver> buildingChangeObservers;
 
     public ElevatorDataProvider(IElevator elevatorService) {
         this.elevatorService = elevatorService;
@@ -41,12 +41,27 @@ public class ElevatorDataProvider {
         }
     }
 
-    public void addElevatorChangeObserver(ElevatorChangeObserver elevatorChangeObserver) {
+    public void addElevatorChangeObserver(IElevatorChangeObserver elevatorChangeObserver) {
         elevatorChangeObservers.add(elevatorChangeObserver);
     }
 
-    public void addFloorChangeObserver(FloorChangeObserver floorChangeObserver) {
+    public void addFloorChangeObserver(IFloorChangeObserver floorChangeObserver) {
         floorChangeObservers.add(floorChangeObserver);
+    }
+
+    @Override
+    public boolean setCommittedDirection(int elevatorNumber, int direction) {
+        return false;
+    }
+
+    @Override
+    public boolean setServicesFloors(int elevatorNumber, int floor, boolean service) {
+        return false;
+    }
+
+    @Override
+    public boolean setTarget(int elevatorNumber, int target) {
+        return false;
     }
 
     private void initialize() {
@@ -102,20 +117,21 @@ public class ElevatorDataProvider {
     }
 
     private void notifyElevatorChanged(Elevator elevator) {
-        for (ElevatorChangeObserver observer : elevatorChangeObservers) {
+        for (IElevatorChangeObserver observer : elevatorChangeObservers) {
             observer.update(elevator);
         }
     }
 
     private void notifyFloorChanged(Floor floor) {
-        for (FloorChangeObserver observer : floorChangeObservers) {
+        for (IFloorChangeObserver observer : floorChangeObservers) {
             observer.update(floor);
         }
     }
 
     private void notifyBuildingChanged(Building building) {
-        for (BuildingChangeObserver observer : buildingChangeObservers) {
+        for (IBuildingChangeObserver observer : buildingChangeObservers) {
             observer.update(building);
         }
     }
+
 }

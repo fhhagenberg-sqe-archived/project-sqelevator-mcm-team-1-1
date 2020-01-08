@@ -31,7 +31,7 @@ public class ApplicationMain extends Application {
 
         timer.scheduleAtFixedRate(updateTask, 0, 1000);
 
-        var buildingViewModel = new BuildingViewModel();
+        var buildingViewModel = new BuildingViewModel(dataProvider);
 
         dataProvider.addElevatorChangeObserver(buildingViewModel);
         dataProvider.addFloorChangeObserver(buildingViewModel);

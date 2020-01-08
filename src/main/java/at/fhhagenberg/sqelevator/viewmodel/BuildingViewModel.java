@@ -3,18 +3,25 @@ package at.fhhagenberg.sqelevator.viewmodel;
 import at.fhhagenberg.sqelevator.model.Building;
 import at.fhhagenberg.sqelevator.model.Elevator;
 import at.fhhagenberg.sqelevator.model.Floor;
-import at.fhhagenberg.sqelevator.model.observers.BuildingChangeObserver;
-import at.fhhagenberg.sqelevator.model.observers.ElevatorChangeObserver;
-import at.fhhagenberg.sqelevator.model.observers.FloorChangeObserver;
+import at.fhhagenberg.sqelevator.model.IElevatorController;
+import at.fhhagenberg.sqelevator.model.observers.IBuildingChangeObserver;
+import at.fhhagenberg.sqelevator.model.observers.IElevatorChangeObserver;
+import at.fhhagenberg.sqelevator.model.observers.IFloorChangeObserver;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.ObservableMap;
 
-public class BuildingViewModel implements BuildingChangeObserver, FloorChangeObserver, ElevatorChangeObserver {
+public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeObserver, IElevatorChangeObserver {
     private SimpleMapProperty<Integer, ElevatorViewModel> elevators = new SimpleMapProperty<>();
     private SimpleMapProperty<Integer, FloorViewModel> floors = new SimpleMapProperty<>();
 
     private SimpleBooleanProperty automaticMode = new SimpleBooleanProperty();
+
+    private IElevatorController elevatorController;
+
+    public BuildingViewModel(IElevatorController elevatorController) {
+        this.elevatorController = elevatorController;
+    }
 
     public ObservableMap<Integer, ElevatorViewModel> getElevators() {
         return elevators.get();
@@ -47,6 +54,13 @@ public class BuildingViewModel implements BuildingChangeObserver, FloorChangeObs
     public void toggleAutomaticMode() {
         automaticMode.set(!automaticMode.get());
     }
+
+    //to set the target in manual mode
+    public void setTarget(int elevatorNumber, int target){
+        elevatorController.setTarget(elevatorNumber, target);
+    }
+
+    //TODO: add setCommittedDirection and setServicesFloors methods
 
     @Override
     public void update(Building building) {
