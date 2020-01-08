@@ -14,4 +14,4 @@ jobs:
       with:
         java-version: 13
     - name: Run SonarCloud
-      run: mvn sonar:sonar -Dsonar.login=${{ secrets.SONAR_TOKEN }
+      run: mvn sonar:sonar -Dsonar.login=${{ secrets.SONAR_TOKEN }}
