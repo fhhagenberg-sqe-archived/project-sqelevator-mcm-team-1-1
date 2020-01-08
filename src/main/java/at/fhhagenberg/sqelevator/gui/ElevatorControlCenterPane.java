@@ -15,9 +15,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
 import java.util.ResourceBundle;
 
@@ -44,10 +43,12 @@ public class ElevatorControlCenterPane extends BorderPane {
 
     private Node getElevatorPanel() {
         VBox vBox = new VBox();
-        vBox.setPadding(PADDING_LARGE);
+        vBox.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+        //vBox.setPadding(PADDING_LARGE);
         vBox.getChildren().add(new Label("(Elevator Panel)"));
 
         vBox.getChildren().add(new ElevatorPanel());
+
 
         return vBox;
     }

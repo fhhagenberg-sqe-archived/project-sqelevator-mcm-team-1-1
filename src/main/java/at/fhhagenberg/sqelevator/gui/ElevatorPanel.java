@@ -1,22 +1,18 @@
 package at.fhhagenberg.sqelevator.gui;
 
-import at.fhhagenberg.sqelevator.utils.StringAdapter;
-import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
-import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+        import at.fhhagenberg.sqelevator.utils.StringAdapter;
+        import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
+        import javafx.geometry.*;
+        import javafx.scene.Node;
+        import javafx.scene.control.Button;
+        import javafx.scene.control.Label;
+        import javafx.scene.control.Slider;
+        import javafx.scene.control.TextField;
+        import javafx.scene.layout.*;
+        import javafx.scene.paint.Color;
 
-import java.util.List;
-import java.util.ResourceBundle;
+        import java.util.List;
+        import java.util.ResourceBundle;
 
 public class ElevatorPanel extends HBox {
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("elevatorCC");
@@ -32,14 +28,36 @@ public class ElevatorPanel extends HBox {
     public ElevatorPanel() {
 
         GridPane gridPane = new GridPane();
+        gridPane.setHgap(20); //horizontal gap in pixels
+        gridPane.setVgap(10); //vertical gap in pixels
+        gridPane.setPadding(new Insets(10, 10, 10, 10)); //margins around the whole grid
+        gridPane.setBackground(new Background(new BackgroundFill(Color.DARKGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        gridPane.setAlignment(Pos.CENTER);
 
-        this.getChildren().add(gridPane);
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setHalignment(HPos.LEFT);
+        col1.setHgrow(Priority.ALWAYS);
+        gridPane.getColumnConstraints().add(col1);
 
         int floorNum = 7; // TODO get number of floors
         int elevatorNum = 5; // TODO get number of elevators
 
+        for(int i = 0; i < floorNum; i++) {
+            RowConstraints row = new RowConstraints();
+            row.setValignment(VPos.CENTER);
+            row.setVgrow(Priority.ALWAYS);
+            gridPane.getRowConstraints().add(row);
+        }
+
         for(int i = 0; i < elevatorNum; i++) {
-            gridPane.add(new Label((i+1) + ""), i + 1, 0);
+
+            ColumnConstraints sliderCol = new ColumnConstraints();
+            sliderCol.setHalignment(HPos.CENTER);
+            sliderCol.setHgrow(Priority.ALWAYS);
+            gridPane.getColumnConstraints().add(sliderCol);
+
+            Label elevatorNumLabel = new Label((i + 1) + "");
+            gridPane.add(elevatorNumLabel, i + 1, 0);
 
             Slider slider = new Slider(0, floorNum - 1, 0);
             slider.setShowTickMarks(true);
@@ -53,18 +71,53 @@ public class ElevatorPanel extends HBox {
             // liftSliders.add(slider);
             gridPane.add(slider, i+1, 1, 1, floorNum);
 
-            for(int j = 0; j < floorNum; j++) {
-                gridPane.add(new Label("o"), elevatorNum + 2, j + 1);
-                gridPane.add(new Label((floorNum - j) + ""), elevatorNum + 3, j + 1);
-            }
 
-            gridPane.add(new Label("0"), i + 1, floorNum + 1);
-            gridPane.add(new Label("0"), i + 1, floorNum + 2);
-            gridPane.add(new Label("0"), i + 1, floorNum + 3);
+
+            Label payload = new Label("0");
+            gridPane.add(payload, i + 1, floorNum + 1);
+
+
+            Label speed = new Label("0");
+            gridPane.add(speed, i + 1, floorNum + 2);
+
+
+            Label targets = new Label("0");
+            gridPane.add(targets, i + 1, floorNum + 3);
+
         }
 
-        gridPane.add(new Label("Payload"), 0, floorNum + 1);
-        gridPane.add(new Label("Speed"), 0, floorNum + 2);
-        gridPane.add(new Label("Targets"), 0, floorNum + 3);
+        ColumnConstraints lightCol = new ColumnConstraints();
+        lightCol.setHalignment(HPos.LEFT);
+        gridPane.getColumnConstraints().add(lightCol);
+
+        ColumnConstraints floorNumCol = new ColumnConstraints();
+        floorNumCol.setHalignment(HPos.LEFT);
+        gridPane.getColumnConstraints().add(floorNumCol);
+
+        for(int j = 0; j < floorNum; j++) {
+
+            Label elevatorLightLabel = new Label("o");
+            gridPane.add(elevatorLightLabel, elevatorNum + 2, j + 1);
+
+            Label floorNumLabel = new Label((floorNum - j) + "");
+            gridPane.add(floorNumLabel, elevatorNum + 3, j + 1);
+
+        }
+
+        Label payloadLabel = new Label("Payload");
+        gridPane.add(payloadLabel, 0, floorNum + 1);
+
+
+        Label speedLabel = new Label("Speed");
+        gridPane.add(speedLabel, 0, floorNum + 2);
+
+
+        Label targetsLabel = new Label("Targets");
+        gridPane.add(targetsLabel, 0, floorNum + 3);
+
+
+        gridPane.prefWidthProperty().bind(this.widthProperty());
+        gridPane.prefHeightProperty().bind(this.heightProperty());
+        this.getChildren().add(gridPane);
     }
 }
