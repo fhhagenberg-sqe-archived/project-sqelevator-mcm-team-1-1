@@ -17,5 +17,5 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: mvn sonar:sonar -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      run: mvn -B clean compile sonar:sonar -Dsonar.login=${{ secrets.SONAR_TOKEN }}
       
