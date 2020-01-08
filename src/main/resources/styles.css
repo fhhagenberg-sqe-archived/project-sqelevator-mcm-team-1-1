@@ -3,10 +3,30 @@
 }
 
 .title {
-	-fx-font-size: 12pt;
+	-fx-font-size: 14pt;
 	-fx-font-weight: bold;
 }
 
 #alarms-table .table-column {
 	-fx-alignment: CENTER-LEFT;
 }
+
+#elevator-grid {
+	-fx-vgap: 15;
+	-fx-hgap: 20;
+	-fx-padding: 10 10 10 10;
+	-fx-alignment: CENTER;
+	-fx-font-size: 12pt;
+	-fx-vertical-grid-lines-visible: true;
+	-fx-border-color: black;
+	-fx-border-width: 1 1 1 1;
+}
+
+#elevator-grid .slider {
+	-fx-tick-mark-visible: true;
+	-fx-orientation: VERTICAL;
+	-fx-major-tick-unit: 1;
+	-fx-minor-tick-count: 0;
+	-fx-snap-to-ticks: true;
+}
+

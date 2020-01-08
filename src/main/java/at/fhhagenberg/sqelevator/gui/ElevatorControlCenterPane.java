@@ -43,9 +43,11 @@ public class ElevatorControlCenterPane extends BorderPane {
 
     private Node getElevatorPanel() {
         VBox vBox = new VBox();
-        vBox.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
-        //vBox.setPadding(PADDING_LARGE);
-        vBox.getChildren().add(new Label("(Elevator Panel)"));
+        //vBox.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+        vBox.setPadding(PADDING_LARGE);
+        Label title = new Label(RESOURCE_BUNDLE.getString("elevators"));
+        title.getStyleClass().add("title");
+        vBox.getChildren().add(title);
 
         vBox.getChildren().add(new ElevatorPanel());
 

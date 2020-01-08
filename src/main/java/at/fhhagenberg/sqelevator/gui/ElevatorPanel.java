@@ -1,18 +1,17 @@
 package at.fhhagenberg.sqelevator.gui;
 
-        import at.fhhagenberg.sqelevator.utils.StringAdapter;
-        import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
-        import javafx.geometry.*;
-        import javafx.scene.Node;
-        import javafx.scene.control.Button;
-        import javafx.scene.control.Label;
-        import javafx.scene.control.Slider;
-        import javafx.scene.control.TextField;
-        import javafx.scene.layout.*;
-        import javafx.scene.paint.Color;
+import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.geometry.VPos;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
-        import java.util.List;
-        import java.util.ResourceBundle;
+import java.util.List;
+import java.util.ResourceBundle;
 
 public class ElevatorPanel extends HBox {
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("elevatorCC");
@@ -28,11 +27,7 @@ public class ElevatorPanel extends HBox {
     public ElevatorPanel() {
 
         GridPane gridPane = new GridPane();
-        gridPane.setHgap(20); //horizontal gap in pixels
-        gridPane.setVgap(10); //vertical gap in pixels
-        gridPane.setPadding(new Insets(10, 10, 10, 10)); //margins around the whole grid
-        gridPane.setBackground(new Background(new BackgroundFill(Color.DARKGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-        gridPane.setAlignment(Pos.CENTER);
+        gridPane.setId("elevator-grid");
 
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setHalignment(HPos.LEFT);
@@ -61,25 +56,16 @@ public class ElevatorPanel extends HBox {
 
             Slider slider = new Slider(0, floorNum - 1, 0);
             slider.setShowTickMarks(true);
-            slider.setOrientation(Orientation.VERTICAL);
             slider.setMax(floorNum - 1);
             slider.setMin(0);
-            slider.setMajorTickUnit(1);
-            slider.setMinorTickCount(0);
-            slider.setSnapToTicks(true);
 
-            // liftSliders.add(slider);
             gridPane.add(slider, i+1, 1, 1, floorNum);
-
-
 
             Label payload = new Label("0");
             gridPane.add(payload, i + 1, floorNum + 1);
 
-
             Label speed = new Label("0");
             gridPane.add(speed, i + 1, floorNum + 2);
-
 
             Label targets = new Label("0");
             gridPane.add(targets, i + 1, floorNum + 3);
@@ -96,8 +82,10 @@ public class ElevatorPanel extends HBox {
 
         for(int j = 0; j < floorNum; j++) {
 
-            Label elevatorLightLabel = new Label("o");
-            gridPane.add(elevatorLightLabel, elevatorNum + 2, j + 1);
+            Circle elevatorLight = new Circle();
+            elevatorLight.setRadius(6);
+            elevatorLight.setFill(Color.LIGHTBLUE);
+
 
             Label floorNumLabel = new Label((floorNum - j) + "");
             gridPane.add(floorNumLabel, elevatorNum + 3, j + 1);
