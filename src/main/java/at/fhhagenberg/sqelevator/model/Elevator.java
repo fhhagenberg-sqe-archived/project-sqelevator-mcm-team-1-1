@@ -4,9 +4,11 @@ import at.fhhagenberg.sqelevator.IElevator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Elevator {
 
+    private int id = 0;
     private int direction = IElevator.ELEVATOR_DIRECTION_UNCOMMITTED;
     private int acceleration = 0;
     private int doorStatus = IElevator.ELEVATOR_DOORS_CLOSED;
@@ -19,7 +21,9 @@ public class Elevator {
     private List<Boolean> servicedFloors;
     private List<Boolean> floorButtons;
 
-    public Elevator(int numFloors, int capacity) {
+    public Elevator(int id, int numFloors, int capacity) {
+        this.id = id;
+
         servicedFloors = new ArrayList<>(numFloors);
         floorButtons = new ArrayList<>(numFloors);
 
@@ -28,6 +32,10 @@ public class Elevator {
             floorButtons.add(i, false);
         }
         this.capacity = capacity;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public int getTargetFloor() {
@@ -105,5 +113,18 @@ public class Elevator {
 
     public int getCapacity() {
         return capacity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Elevator elevator = (Elevator) o;
+        return id == elevator.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
