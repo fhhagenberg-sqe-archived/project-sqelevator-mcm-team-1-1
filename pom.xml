@@ -13,6 +13,7 @@
         
         <sonar.organization>fhhagenberg-sqe</sonar.organization>
         <sonar.projectKey>project-sqelevator-mcm-team-1-1</sonar.projectKey>
+		<sonar.projectName>ElevatorCC - Team 1</sonar.projectName>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
