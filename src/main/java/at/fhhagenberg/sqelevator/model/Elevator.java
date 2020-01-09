@@ -1,6 +1,6 @@
 package at.fhhagenberg.sqelevator.model;
 
-import at.fhhagenberg.sqelevator.IElevator;
+import sqelevator.IElevator;
 
 import java.util.ArrayList;
 import java.util.List;

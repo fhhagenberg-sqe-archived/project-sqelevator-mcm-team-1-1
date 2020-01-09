@@ -1,5 +1,6 @@
 package at.fhhagenberg.sqelevator.gui;
 
+import at.fhhagenberg.sqelevator.ElevatorExample;
 import at.fhhagenberg.sqelevator.mocks.MockElevator;
 import at.fhhagenberg.sqelevator.model.ElevatorDataProvider;
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
@@ -18,6 +19,9 @@ public class ApplicationMain extends Application {
     Timer timer = new Timer();
     @Override
     public void start(Stage stage) throws Exception {
+        //uncomment to test local RMI connection ...
+        ElevatorExample.run_example();
+
         var elevatorService = new MockElevator(3,4,5,10);
 
         var dataProvider = new ElevatorDataProvider(elevatorService);

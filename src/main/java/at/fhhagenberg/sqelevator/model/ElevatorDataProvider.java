@@ -1,10 +1,10 @@
 package at.fhhagenberg.sqelevator.model;
 
-import at.fhhagenberg.sqelevator.IElevator;
 import at.fhhagenberg.sqelevator.model.observers.IAlarmsChangeObserver;
 import at.fhhagenberg.sqelevator.model.observers.IBuildingChangeObserver;
 import at.fhhagenberg.sqelevator.model.observers.IElevatorChangeObserver;
 import at.fhhagenberg.sqelevator.model.observers.IFloorChangeObserver;
+import sqelevator.IElevator;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;

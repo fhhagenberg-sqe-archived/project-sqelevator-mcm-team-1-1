@@ -1,8 +1,8 @@
 package at.fhhagenberg.sqelevator.mocks;
 
-import at.fhhagenberg.sqelevator.IElevator;
 import at.fhhagenberg.sqelevator.model.Elevator;
 import at.fhhagenberg.sqelevator.model.Floor;
+import sqelevator.IElevator;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
