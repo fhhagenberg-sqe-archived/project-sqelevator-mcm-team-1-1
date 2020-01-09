@@ -58,6 +58,10 @@ public class ElevatorDataProvider implements IElevatorController{
         alarmsChangeObservers.add(alarmsChangeObserver);
     }
 
+    public void addBuildingChangeObserver(IBuildingChangeObserver buildingChangeObserver) {
+        buildingChangeObservers.add(buildingChangeObserver);
+    }
+
     @Override
     public boolean setCommittedDirection(int elevatorNumber, int direction) {
         return false;

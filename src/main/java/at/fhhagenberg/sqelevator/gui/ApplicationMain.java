@@ -63,6 +63,7 @@ public class ApplicationMain extends Application {
         dataProvider.addElevatorChangeObserver(buildingViewModel);
         dataProvider.addFloorChangeObserver(buildingViewModel);
         dataProvider.addAlarmsChangeObserver(buildingViewModel);
+        dataProvider.addBuildingChangeObserver(buildingViewModel);
 
         var eccPane = new ElevatorControlCenterPane(buildingViewModel);
 

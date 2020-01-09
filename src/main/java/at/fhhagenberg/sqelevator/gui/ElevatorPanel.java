@@ -43,8 +43,12 @@ public class ElevatorPanel extends HBox {
         col1.setHgrow(Priority.ALWAYS);
         gridPane.getColumnConstraints().add(col1);
 
-        int floorNum = 7; // TODO get number of floors
-        int elevatorNum = 5; // TODO get number of elevators
+        int floorNum = 5;
+        int elevatorNum = 7;
+
+
+        //floorNum = buildingViewModel.getFloors().size();
+        //elevatorNum = buildingViewModel.getElevators().size();
 
         for(int i = 0; i < floorNum; i++) {
             RowConstraints row = new RowConstraints();
@@ -87,7 +91,6 @@ public class ElevatorPanel extends HBox {
 
                 Circle elevatorLight = new Circle();
                 elevatorLight.setId(i+","+(floorNum-j));
-                System.out.println(elevatorLight.getId());
                 elevatorLight.setRadius(6);
                 elevatorLight.setFill(Color.YELLOW);
                 //gridPane.add(elevatorLight, elevatorNum +2, j+1);
@@ -190,8 +193,6 @@ public class ElevatorPanel extends HBox {
 			    else {
 
                     String text = ((Shape)event.getSource()).getId();
-                    System.out.println(text.substring(0, text.indexOf(',')));
-                    System.out.println(text.substring(text.indexOf(',')+1));
                     int elevator = Integer.parseInt(text.substring(0, text.indexOf(',')));
                     int floor = Integer.parseInt(text.substring(text.indexOf(',')+1));
 
