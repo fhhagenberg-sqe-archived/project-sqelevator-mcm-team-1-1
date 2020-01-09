@@ -1,6 +1,5 @@
 package at.fhhagenberg.sqelevator.gui;
 
-import at.fhhagenberg.sqelevator.ElevatorExample;
 import at.fhhagenberg.sqelevator.mocks.MockElevator;
 import at.fhhagenberg.sqelevator.model.ElevatorDataProvider;
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
@@ -8,7 +7,9 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import sqelevator.IElevator;
 
+import java.rmi.Naming;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,9 +21,17 @@ public class ApplicationMain extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         //uncomment to test local RMI connection ...
-        ElevatorExample.run_example();
+        //at.fhhagenberg.sqelevator.ElevatorExample.run_example();
 
-        var elevatorService = new MockElevator(3,4,5,10);
+        IElevator elevatorService;
+
+        var useMockElevator = true;
+        if(useMockElevator){
+            elevatorService = new MockElevator(3,4,5,10);
+        }
+        else{
+            elevatorService = (IElevator) Naming.lookup("rmi://localhost/ElevatorSim");
+        }
 
         var dataProvider = new ElevatorDataProvider(elevatorService);
 
