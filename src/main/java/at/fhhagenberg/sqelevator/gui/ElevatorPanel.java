@@ -1,6 +1,7 @@
 package at.fhhagenberg.sqelevator.gui;
 
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
@@ -84,6 +85,7 @@ public class ElevatorPanel extends HBox {
             slider.setShowTickMarks(true);
             slider.setMax(floorNum - 1);
             slider.setMin(0);
+            slider.disableProperty().bind(buildingViewModel.getElevators().get(i).automaticModeProperty().not());
             slider.valueProperty().addListener(new ChangeListener<Number>() {
 
                 @Override
@@ -147,7 +149,6 @@ public class ElevatorPanel extends HBox {
         gridPane.getColumnConstraints().add(floorNumCol);
 
         for (int j = 0; j < floorNum; j++) {
-
             VBox buttons = new VBox();
             buttons.setSpacing(5);
 
@@ -156,7 +157,7 @@ public class ElevatorPanel extends HBox {
                     0.0, 0.0,
                     5.0, -9.0,
                     10.0, 0.0});
-            triangleUp.setFill(Color.LIGHTBLUE);
+            triangleUp.fillProperty().bind(Bindings.when(buildingViewModel.getFloors().get(j).upButtonActiveProperty()).then(Color.DODGERBLUE).otherwise(Color.LIGHTBLUE));
             buttons.getChildren().add(triangleUp);
 
             Polygon triangleDown = new Polygon();
@@ -164,9 +165,8 @@ public class ElevatorPanel extends HBox {
                     0.0, 0.0,
                     5.0, 9.0,
                     10.0, 0.0});
-            triangleDown.setFill(Color.LIGHTBLUE);
+            triangleDown.fillProperty().bind(Bindings.when(buildingViewModel.getFloors().get(j).downButtonActiveProperty()).then(Color.DODGERBLUE).otherwise(Color.LIGHTBLUE));
             buttons.getChildren().add(triangleDown);
-
 
             gridPane.add(buttons, elevatorNum + 2, j + 1);
 

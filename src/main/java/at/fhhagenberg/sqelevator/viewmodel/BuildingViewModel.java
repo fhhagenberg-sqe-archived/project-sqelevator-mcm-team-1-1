@@ -81,8 +81,6 @@ public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeO
             elevators.put(i, new ElevatorViewModel());
         }
 
-        System.out.println(building.getNumFloors());
-
         floors.clear();
 
         for(int i=0;i<building.getNumFloors();i++){
