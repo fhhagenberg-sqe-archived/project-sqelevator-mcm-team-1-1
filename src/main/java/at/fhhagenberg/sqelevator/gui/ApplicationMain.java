@@ -27,7 +27,7 @@ public class ApplicationMain extends Application {
 
         var useMockElevator = true;
         if(useMockElevator){
-            elevatorService = new MockElevator(4,7,5,10);
+            elevatorService = new MockElevator(5,7,5,10);
         }
         else{
             elevatorService = (IElevator) Naming.lookup("rmi://localhost/ElevatorSim");

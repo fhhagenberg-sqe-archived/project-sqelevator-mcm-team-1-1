@@ -99,8 +99,10 @@ public class ElevatorPanel extends HBox {
             for (int j = 0; j < floorNum; j++) {
 
                 Circle elevatorLight = new Circle();
+
                 elevatorLight.setId(i + "," + (floorNum - j));
                 System.out.println(elevatorLight.getId());
+
                 elevatorLight.setRadius(6);
                 elevatorLight.setFill(Color.YELLOW);
                 //gridPane.add(elevatorLight, elevatorNum +2, j+1);
@@ -213,6 +215,7 @@ public class ElevatorPanel extends HBox {
                     String text = ((Shape) event.getSource()).getId();
                     System.out.println(text.substring(0, text.indexOf(',')));
                     System.out.println(text.substring(text.indexOf(',') + 1));
+
                     int elevator = Integer.parseInt(text.substring(0, text.indexOf(',')));
                     int floor = Integer.parseInt(text.substring(text.indexOf(',') + 1));
 
