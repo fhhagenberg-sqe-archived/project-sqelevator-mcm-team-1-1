@@ -27,7 +27,7 @@ public class ApplicationMain extends Application {
 
         var useMockElevator = true;
         if(useMockElevator){
-            elevatorService = new MockElevator(3,4,5,10);
+            elevatorService = new MockElevator(5,7,5,10);
         }
         else{
             elevatorService = (IElevator) Naming.lookup("rmi://localhost/ElevatorSim");
@@ -62,8 +62,8 @@ public class ApplicationMain extends Application {
 
         dataProvider.addElevatorChangeObserver(buildingViewModel);
         dataProvider.addFloorChangeObserver(buildingViewModel);
-        dataProvider.addAlarmsChangeObserver(buildingViewModel);
         dataProvider.addBuildingChangeObserver(buildingViewModel);
+        dataProvider.addAlarmsChangeObserver(buildingViewModel);
 
         var eccPane = new ElevatorControlCenterPane(buildingViewModel);
 
@@ -72,6 +72,8 @@ public class ApplicationMain extends Application {
         stage.setScene(scene);
         stage.setTitle(RESOURCE_BUNDLE.getString("title"));
         stage.getIcons().add(new Image("icons/ic_ecc.png"));
+
+        dataProvider.initialize();
 
         stage.setOnCloseRequest(windowEvent -> {
             timer.cancel();

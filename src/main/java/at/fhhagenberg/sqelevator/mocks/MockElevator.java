@@ -44,10 +44,11 @@ public class MockElevator implements IElevator {
             floors.add(new Floor(i));
         }
 
-        setupServicedFloors(numElevators, numFloors);
+        setupServicedFloors();
+        setupFloorButtons();
     }
 
-    private void setupServicedFloors(int numElevators, int numFloors) {
+    private void setupServicedFloors() {
         for (int elevator = 0; elevator < numElevators; elevator++) {
             for (int floor = 0; floor < numFloors; floor++) {
 
@@ -61,6 +62,16 @@ public class MockElevator implements IElevator {
                 }
 
                 elevators.get(elevator).setServicesFloor(floor, service);
+            }
+        }
+    }
+
+    private void setupFloorButtons() {
+        for (int i = 0; i < numFloors; i++) {
+            if (i % 2 == 0) {
+                floors.get(i).setUpButtonActive(true);
+            } else {
+                floors.get(i).setDownButtonActive(true);
             }
         }
     }
