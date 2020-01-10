@@ -102,11 +102,11 @@ public class ElevatorControlCenterPane extends BorderPane {
         btnChangeMode = new Button();
         btnChangeMode.setMaxSize(145, 25);
         btnChangeMode.setMinSize(145, 25);
-        btnChangeMode.textProperty().bindBidirectional(buildingViewModel.automaticModeProperty(), new AutomaticModeButtonFormatter());
-        btnChangeMode.setOnAction(actionEvent -> {
-            buildingViewModel.toggleAutomaticMode();
-            if (buildingViewModel.isAutomaticMode()) buildingViewModel.setCallInfo("");
-        });
+//        btnChangeMode.textProperty().bindBidirectional(buildingViewModel.automaticModeProperty(), new AutomaticModeButtonFormatter());
+//        btnChangeMode.setOnAction(actionEvent -> {
+//            buildingViewModel.toggleAutomaticMode();
+//            if (buildingViewModel.isAutomaticMode()) buildingViewModel.setCallInfo("");
+//        });
 
         hBox.getChildren().add(btnChangeMode);
 
@@ -124,8 +124,8 @@ public class ElevatorControlCenterPane extends BorderPane {
 		lblCallInfo.textProperty().bind(buildingViewModel.callInfoProperty());
 
 		Label lblMode = new Label();
-		lblMode.textProperty().bindBidirectional(buildingViewModel.automaticModeProperty(),
-				new AutomaticModeLabelFormatter());
+//		lblMode.textProperty().bindBidirectional(buildingViewModel.automaticModeProperty(),
+//				new AutomaticModeLabelFormatter());
 
 		hBox.getChildren().addAll(lblCallInfo, lblMode);
 		return hBox;

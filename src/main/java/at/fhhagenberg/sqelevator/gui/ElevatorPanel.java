@@ -1,9 +1,5 @@
 package at.fhhagenberg.sqelevator.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -12,14 +8,18 @@ import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
 
 public class ElevatorPanel extends HBox {
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("elevatorCC");
@@ -30,10 +30,18 @@ public class ElevatorPanel extends HBox {
 
     private BuildingViewModel buildingViewModel;
 
-    private List<Slider> liftSliders;   
+    private List<Slider> liftSliders;
 
     public ElevatorPanel(BuildingViewModel buildingViewModel) {
-    	this.buildingViewModel = buildingViewModel;
+        this.buildingViewModel = buildingViewModel;
+
+        buildingViewModel.elevatorFloorConfigurationProperty().addListener((observableValue, o, t1) -> {
+            buildUI();
+        });
+    }
+
+    private void buildUI() {
+        this.getChildren().clear();
 
         GridPane gridPane = new GridPane();
         gridPane.setId("elevator-grid");
@@ -43,19 +51,24 @@ public class ElevatorPanel extends HBox {
         col1.setHgrow(Priority.ALWAYS);
         gridPane.getColumnConstraints().add(col1);
 
-        int floorNum = 7; // TODO get number of floors
-        int elevatorNum = 5; // TODO get number of elevators
+        int floorNum = buildingViewModel.getFloors().size();
+        int elevatorNum = buildingViewModel.getElevators().size();
 
-        for(int i = 0; i < floorNum; i++) {
+        if(floorNum == 0|| elevatorNum == 0){
+            this.getChildren().add(new Label("no elevators or no floors" + floorNum + "--" + elevatorNum));
+            return;
+        }
+
+        for (int i = 0; i < floorNum; i++) {
             RowConstraints row = new RowConstraints();
             row.setValignment(VPos.CENTER);
             row.setVgrow(Priority.ALWAYS);
             gridPane.getRowConstraints().add(row);
         }
 
-        liftSliders = new ArrayList<Slider>();        
-    
-        for(int i = 0; i < elevatorNum; i++) {
+        liftSliders = new ArrayList<Slider>();
+
+        for (int i = 0; i < elevatorNum; i++) {
 
             ColumnConstraints sliderCol = new ColumnConstraints();
             sliderCol.setHalignment(HPos.CENTER);
@@ -73,20 +86,20 @@ public class ElevatorPanel extends HBox {
             slider.setMin(0);
             slider.valueProperty().addListener(new ChangeListener<Number>() {
 
-				@Override
-				public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-					System.out.println("Elevator reached target floor");
-					//TODO mark that target floor is reached  (if necessary?)
-				}				
-			});
+                @Override
+                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                    System.out.println("Elevator reached target floor");
+                    //TODO mark that target floor is reached  (if necessary?)
+                }
+            });
             liftSliders.add(slider);
 
             GridPane buttons = new GridPane();
 
-            for(int j = 0; j < floorNum; j++) {
+            for (int j = 0; j < floorNum; j++) {
 
                 Circle elevatorLight = new Circle();
-                elevatorLight.setId(i+","+(floorNum-j));
+                elevatorLight.setId(i + "," + (floorNum - j));
                 System.out.println(elevatorLight.getId());
                 elevatorLight.setRadius(6);
                 elevatorLight.setFill(Color.YELLOW);
@@ -106,16 +119,21 @@ public class ElevatorPanel extends HBox {
 
             hBox.getChildren().add(slider);
             hBox.getChildren().add(buttons);
-            gridPane.add(hBox, i+1, 1, 1, floorNum);
+            gridPane.add(hBox, i + 1, 1, 1, floorNum);
+
+            var manualToggle = new ToggleButton("M");
+            manualToggle.selectedProperty().bindBidirectional(buildingViewModel.getElevators().get(i).automaticModeProperty());
+
+            gridPane.add(manualToggle, i + 1, floorNum + 1);
 
             Label payload = new Label("0");
-            gridPane.add(payload, i + 1, floorNum + 1);
+            gridPane.add(payload, i + 1, floorNum + 2);
 
             Label speed = new Label("0");
-            gridPane.add(speed, i + 1, floorNum + 2);
+            gridPane.add(speed, i + 1, floorNum + 3);
 
             Label targets = new Label("0");
-            gridPane.add(targets, i + 1, floorNum + 3);      
+            gridPane.add(targets, i + 1, floorNum + 4);
         }
 
         ColumnConstraints lightCol = new ColumnConstraints();
@@ -126,7 +144,7 @@ public class ElevatorPanel extends HBox {
         floorNumCol.setHalignment(HPos.LEFT);
         gridPane.getColumnConstraints().add(floorNumCol);
 
-        for(int j = 0; j < floorNum; j++) {
+        for (int j = 0; j < floorNum; j++) {
 
             VBox buttons = new VBox();
             buttons.setSpacing(5);
@@ -135,7 +153,7 @@ public class ElevatorPanel extends HBox {
             triangleUp.getPoints().addAll(new Double[]{
                     0.0, 0.0,
                     5.0, -9.0,
-                    10.0, 0.0 });
+                    10.0, 0.0});
             triangleUp.setFill(Color.LIGHTBLUE);
             buttons.getChildren().add(triangleUp);
 
@@ -143,12 +161,12 @@ public class ElevatorPanel extends HBox {
             triangleDown.getPoints().addAll(new Double[]{
                     0.0, 0.0,
                     5.0, 9.0,
-                    10.0, 0.0 });
+                    10.0, 0.0});
             triangleDown.setFill(Color.LIGHTBLUE);
             buttons.getChildren().add(triangleDown);
 
 
-            gridPane.add(buttons, elevatorNum +2, j+1);
+            gridPane.add(buttons, elevatorNum + 2, j + 1);
 
             Label floorNumLabel = new Label((floorNum - j) + "");
             floorNumLabel.setOnMouseReleased(new TargetFloorSelectionEventHandler());
@@ -156,53 +174,56 @@ public class ElevatorPanel extends HBox {
 
         }
 
-        Label payloadLabel = new Label("Payload");        
-        gridPane.add(payloadLabel, 0, floorNum + 1);
+        Label manualModeLabel = new Label("Manual");
+        gridPane.add(manualModeLabel, 0, floorNum + 1);
+
+
+        Label payloadLabel = new Label("Payload");
+        gridPane.add(payloadLabel, 0, floorNum + 2);
 
 
         Label speedLabel = new Label("Speed");
-        gridPane.add(speedLabel, 0, floorNum + 2);
+        gridPane.add(speedLabel, 0, floorNum + 3);
 
 
         Label targetsLabel = new Label("Targets");
-        gridPane.add(targetsLabel, 0, floorNum + 3);
+        gridPane.add(targetsLabel, 0, floorNum + 4);
 
 
         gridPane.prefWidthProperty().bind(this.widthProperty());
         gridPane.prefHeightProperty().bind(this.heightProperty());
         this.getChildren().add(gridPane);
     }
-    
-	private class TargetFloorSelectionEventHandler implements EventHandler<Event> {
 
-		@Override
-		public void handle(Event event) {
-			if (!buildingViewModel.isAutomaticMode()) { // Set the target floor
+    private class TargetFloorSelectionEventHandler implements EventHandler<Event> {
 
-			    if(event.getSource() instanceof Label){
+        @Override
+        public void handle(Event event) {
+            if (true/*!buildingViewModel.isAutomaticMode()*/) { // Set the target floor
+
+                if (event.getSource() instanceof Label) {
                     int floor = Integer.parseInt(((Label) event.getSource()).getText());
                     buildingViewModel.setCallInfo(String.format("Next target floor for elevator <1> is %s", floor));
 
                     // TODO reduce speed for the slider to move slower (as animation for elevator)
                     // TODO handle target floor for specific elevator (currently only for the first one)
                     liftSliders.get(0).setValue(floor - 1);
-                }
-			    else {
+                } else {
 
-                    String text = ((Shape)event.getSource()).getId();
+                    String text = ((Shape) event.getSource()).getId();
                     System.out.println(text.substring(0, text.indexOf(',')));
-                    System.out.println(text.substring(text.indexOf(',')+1));
+                    System.out.println(text.substring(text.indexOf(',') + 1));
                     int elevator = Integer.parseInt(text.substring(0, text.indexOf(',')));
-                    int floor = Integer.parseInt(text.substring(text.indexOf(',')+1));
+                    int floor = Integer.parseInt(text.substring(text.indexOf(',') + 1));
 
-                    buildingViewModel.setCallInfo(String.format("Next target floor for elevator <%s> is %s", elevator+1, floor));
+                    buildingViewModel.setCallInfo(String.format("Next target floor for elevator <%s> is %s", elevator + 1, floor));
 
                     // TODO reduce speed for the slider to move slower (as animation for elevator)
                     // TODO handle target floor for specific elevator (currently only for the first one)
                     liftSliders.get(elevator).setValue(floor - 1);
                 }
 
-			}
-		}
-	}
+            }
+        }
+    }
 }

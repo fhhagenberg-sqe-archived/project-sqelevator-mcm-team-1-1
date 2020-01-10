@@ -9,6 +9,7 @@ import java.util.Objects;
 public class Elevator {
 
     private int id = 0;
+    private ControlMode controlMode = ControlMode.Automatic;
     private int direction = IElevator.ELEVATOR_DIRECTION_UNCOMMITTED;
     private int acceleration = 0;
     private int doorStatus = IElevator.ELEVATOR_DOORS_CLOSED;
@@ -38,6 +39,14 @@ public class Elevator {
         return id;
     }
 
+    public ControlMode getControlMode() {
+        return controlMode;
+    }
+
+    public void setControlMode(ControlMode controlMode) {
+        this.controlMode = controlMode;
+    }
+
     public int getTargetFloor() {
         return targetFloor;
     }
@@ -45,7 +54,6 @@ public class Elevator {
     public void setTargetFloor(int targetFloor) {
         this.targetFloor = targetFloor;
     }
-
 
     public boolean isFloorButtonActive(int floor) {
         return floorButtons.get(floor);

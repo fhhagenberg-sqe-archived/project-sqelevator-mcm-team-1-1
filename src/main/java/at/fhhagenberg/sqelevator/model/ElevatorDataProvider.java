@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ElevatorDataProvider implements IElevatorController{
+public class ElevatorDataProvider implements IElevatorController {
     private IElevator elevatorService;
 
     private int numElevators;
@@ -32,11 +32,9 @@ public class ElevatorDataProvider implements IElevatorController{
         floorChangeObservers = new ArrayList<>();
         buildingChangeObservers = new ArrayList<>();
         alarmsChangeObservers = new ArrayList<>();
-
-        initialize();
     }
 
-    public void update(){
+    public void update() {
         try {
             updateInternal();
         } catch (RemoteException e) {
@@ -52,6 +50,10 @@ public class ElevatorDataProvider implements IElevatorController{
 
     public void addFloorChangeObserver(IFloorChangeObserver floorChangeObserver) {
         floorChangeObservers.add(floorChangeObserver);
+    }
+
+    public void addBuildingChangeObserver(IBuildingChangeObserver buildingChangeObserver) {
+        buildingChangeObservers.add(buildingChangeObserver);
     }
 
     public void addAlarmsChangeObserver(IAlarmsChangeObserver alarmsChangeObserver) {
@@ -73,7 +75,7 @@ public class ElevatorDataProvider implements IElevatorController{
         return false;
     }
 
-    private void initialize() {
+    public void initialize() {
         try {
             numElevators = elevatorService.getElevatorNum();
             numFloors = elevatorService.getFloorNum();
@@ -124,6 +126,7 @@ public class ElevatorDataProvider implements IElevatorController{
     public void addAlert(String message) {
         addAlert(message, true);
     }
+
     public void addAlert(String message, boolean isError) {
         alarms.add(new Alarm(message, isError));
 

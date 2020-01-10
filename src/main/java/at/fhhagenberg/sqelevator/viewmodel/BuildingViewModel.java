@@ -5,22 +5,23 @@ import at.fhhagenberg.sqelevator.model.observers.IAlarmsChangeObserver;
 import at.fhhagenberg.sqelevator.model.observers.IBuildingChangeObserver;
 import at.fhhagenberg.sqelevator.model.observers.IElevatorChangeObserver;
 import at.fhhagenberg.sqelevator.model.observers.IFloorChangeObserver;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleMapProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
+
+import java.util.HashMap;
 
 public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeObserver, IElevatorChangeObserver, IAlarmsChangeObserver {
-    private SimpleMapProperty<Integer, ElevatorViewModel> elevators = new SimpleMapProperty<>();
-    private SimpleMapProperty<Integer, FloorViewModel> floors = new SimpleMapProperty<>();
+    private HashMap<Integer, ElevatorViewModel> elevators = new HashMap<>();
+    private HashMap<Integer, FloorViewModel> floors = new HashMap<>();
+
+    SimpleObjectProperty elevatorFloorConfiguration = new SimpleObjectProperty();
 
     private ObservableList<AlarmViewModel> observableList = FXCollections.observableArrayList();
     private SimpleListProperty<AlarmViewModel> alarms = new SimpleListProperty<>(observableList);
 
-    private SimpleBooleanProperty automaticMode = new SimpleBooleanProperty();
     private SimpleStringProperty callInfo = new SimpleStringProperty();
 
     private IElevatorController elevatorController;
@@ -29,20 +30,20 @@ public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeO
         this.elevatorController = elevatorController;
     }
 
-    public ObservableMap<Integer, ElevatorViewModel> getElevators() {
-        return elevators.get();
-    }
-
-    public SimpleMapProperty<Integer, ElevatorViewModel> elevatorsProperty() {
+    public HashMap<Integer, ElevatorViewModel> getElevators() {
         return elevators;
     }
 
-    public ObservableMap<Integer, FloorViewModel> getFloors() {
-        return floors.get();
+    public HashMap<Integer, FloorViewModel> getFloors() {
+        return floors;
     }
 
-    public SimpleMapProperty<Integer, FloorViewModel> floorsProperty() {
-        return floors;
+    public Object getElevatorFloorConfiguration() {
+        return elevatorFloorConfiguration.get();
+    }
+
+    public SimpleObjectProperty elevatorFloorConfigurationProperty() {
+        return elevatorFloorConfiguration;
     }
 
     public ObservableList<AlarmViewModel> getAlarms() {
@@ -51,22 +52,6 @@ public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeO
 
     public SimpleListProperty<AlarmViewModel> alarmsProperty() {
         return alarms;
-    }
-
-    public boolean isAutomaticMode() {
-        return automaticMode.get();
-    }
-
-    public SimpleBooleanProperty automaticModeProperty() {
-        return automaticMode;
-    }
-
-    public void setAutomaticMode(boolean automaticMode) {
-        this.automaticMode.set(automaticMode);
-    }
-
-    public void toggleAutomaticMode() {
-        automaticMode.set(!automaticMode.get());
     }
 
 	public String getCallInfo() {
@@ -96,17 +81,21 @@ public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeO
             elevators.put(i, new ElevatorViewModel());
         }
 
+        System.out.println(building.getNumFloors());
+
         floors.clear();
 
         for(int i=0;i<building.getNumFloors();i++){
             floors.put(i, new FloorViewModel());
         }
+
+        elevatorFloorConfigurationProperty().set(new Object());
     }
 
     @Override
     public void update(Elevator elevator) {
         if(elevators.size() == 0){
-            return; //building not yet initialized
+            return; //elevatorFloorConfiguration not yet initialized
         }
 
         elevators.get(elevator.getId()).setAcceleration(elevator.getAcceleration());
@@ -116,7 +105,7 @@ public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeO
     @Override
     public void update(Floor floor) {
         if(floors.size() == 0){
-            return; //building not yet initialized
+            return; //elevatorFloorConfiguration not yet initialized
         }
 
         floors.get(floor.getId()).setDownButtonActive(floor.isDownButtonActive());
