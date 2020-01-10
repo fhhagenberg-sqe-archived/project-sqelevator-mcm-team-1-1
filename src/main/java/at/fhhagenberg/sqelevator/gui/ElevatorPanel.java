@@ -214,7 +214,7 @@ public class ElevatorPanel extends HBox {
 
                     buildingViewModel.getElevators().get(elevator).setTarget(floor);
 
-                    buildingViewModel.setCallInfo(String.format("Next target floor for elevator <%s> is %s", elevator + 1, floor));
+                    buildingViewModel.setCallInfo(String.format("Next target floor for elevator <%s> is %s", elevator + 1, floor +1));
 
                     // TODO reduce speed for the slider to move slower (as animation for elevator)
                     // TODO handle target floor for specific elevator (currently only for the first one)
