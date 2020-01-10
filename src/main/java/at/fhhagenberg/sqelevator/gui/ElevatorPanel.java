@@ -86,14 +86,7 @@ public class ElevatorPanel extends HBox {
             slider.setMax(floorNum - 1);
             slider.setMin(0);
             slider.disableProperty().bind(buildingViewModel.getElevators().get(i).automaticModeProperty().not());
-            slider.valueProperty().addListener(new ChangeListener<Number>() {
-
-                @Override
-                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                    System.out.println("Elevator reached target floor");
-                    //TODO mark that target floor is reached  (if necessary?)
-                }
-            });
+            slider.valueProperty().bind(buildingViewModel.getElevators().get(i).currentFloorProperty());
             liftSliders.add(slider);
 
             GridPane buttons = new GridPane();
@@ -102,7 +95,7 @@ public class ElevatorPanel extends HBox {
 
                 Circle elevatorLight = new Circle();
 
-                elevatorLight.setId(i + "," + (floorNum - j));
+                elevatorLight.setId(i + "," + (floorNum - j - 1));
                 System.out.println(elevatorLight.getId());
 
                 elevatorLight.setRadius(6);
@@ -219,11 +212,13 @@ public class ElevatorPanel extends HBox {
                     int elevator = Integer.parseInt(text.substring(0, text.indexOf(',')));
                     int floor = Integer.parseInt(text.substring(text.indexOf(',') + 1));
 
+                    buildingViewModel.getElevators().get(elevator).setTarget(floor);
+
                     buildingViewModel.setCallInfo(String.format("Next target floor for elevator <%s> is %s", elevator + 1, floor));
 
                     // TODO reduce speed for the slider to move slower (as animation for elevator)
                     // TODO handle target floor for specific elevator (currently only for the first one)
-                    liftSliders.get(elevator).setValue(floor - 1);
+                    //liftSliders.get(elevator).setValue(floor - 1); -> now done via viewmodel
                 }
 
             }

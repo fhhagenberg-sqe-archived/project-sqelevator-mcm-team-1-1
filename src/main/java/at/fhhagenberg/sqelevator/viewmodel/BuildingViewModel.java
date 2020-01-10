@@ -78,7 +78,7 @@ public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeO
         elevators.clear();
 
         for(int i=0;i<building.getNumElevators();i++){
-            elevators.put(i, new ElevatorViewModel());
+            elevators.put(i, new ElevatorViewModel(i, elevatorController));
         }
 
         floors.clear();
@@ -97,6 +97,8 @@ public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeO
         }
 
         elevators.get(elevator.getId()).setAcceleration(elevator.getAcceleration());
+        elevators.get(elevator.getId()).setCurrentFloor(elevator.getCurrentFloor());
+
         //TODO: update all properties
     }
 

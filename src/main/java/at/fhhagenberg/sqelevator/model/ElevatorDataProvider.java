@@ -62,17 +62,40 @@ public class ElevatorDataProvider implements IElevatorController {
 
     @Override
     public boolean setCommittedDirection(int elevatorNumber, int direction) {
-        return false;
+        try {
+            elevatorService.setCommittedDirection(elevatorNumber, direction);
+
+            return true;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+
+            return false;
+        }
     }
 
     @Override
     public boolean setServicesFloors(int elevatorNumber, int floor, boolean service) {
-        return false;
+        try {
+            elevatorService.setServicesFloors(elevatorNumber, floor, service);
+
+            return true;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+
+            return false;
+        }
     }
 
     @Override
     public boolean setTarget(int elevatorNumber, int target) {
-        return false;
+        try {
+            elevatorService.setTarget(elevatorNumber, target);
+            return true;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+
+            return false;
+        }
     }
 
     public void initialize() {
