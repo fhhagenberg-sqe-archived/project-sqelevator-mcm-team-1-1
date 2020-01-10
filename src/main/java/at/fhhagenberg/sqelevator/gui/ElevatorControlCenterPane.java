@@ -28,8 +28,6 @@ public class ElevatorControlCenterPane extends BorderPane {
 
     private BuildingViewModel buildingViewModel;
 
-    private Button btnChangeMode;
-
     public ElevatorControlCenterPane(BuildingViewModel buildingViewModel) {
         this.buildingViewModel = buildingViewModel;
 
@@ -94,23 +92,7 @@ public class ElevatorControlCenterPane extends BorderPane {
     }
     
     private Node getControlPanel() {
-        HBox hBox = new HBox();
-        hBox.setPadding(PADDING_LARGE);
-        hBox.setSpacing(SPACING);
-        hBox.setAlignment(Pos.CENTER_RIGHT);
-
-        btnChangeMode = new Button();
-        btnChangeMode.setMaxSize(145, 25);
-        btnChangeMode.setMinSize(145, 25);
-//        btnChangeMode.textProperty().bindBidirectional(buildingViewModel.automaticModeProperty(), new AutomaticModeButtonFormatter());
-//        btnChangeMode.setOnAction(actionEvent -> {
-//            buildingViewModel.toggleAutomaticMode();
-//            if (buildingViewModel.isAutomaticMode()) buildingViewModel.setCallInfo("");
-//        });
-
-        hBox.getChildren().add(btnChangeMode);
-
-        return hBox;
+        return new HBox();
     }
 
     private Node getStatusBar() {
@@ -123,29 +105,7 @@ public class ElevatorControlCenterPane extends BorderPane {
 		Label lblCallInfo = new Label();
 		lblCallInfo.textProperty().bind(buildingViewModel.callInfoProperty());
 
-		Label lblMode = new Label();
-//		lblMode.textProperty().bindBidirectional(buildingViewModel.automaticModeProperty(),
-//				new AutomaticModeLabelFormatter());
-
-		hBox.getChildren().addAll(lblCallInfo, lblMode);
+		hBox.getChildren().addAll(lblCallInfo);
 		return hBox;
-    }
-
-    private class AutomaticModeLabelFormatter extends StringAdapter<Boolean> {
-        @Override
-        public String toString(Boolean aBoolean) {
-            return String.format(RESOURCE_BUNDLE.getString("mode"), getModeText(aBoolean));
-        }
-    }
-
-    private class AutomaticModeButtonFormatter extends StringAdapter<Boolean> {
-        @Override
-        public String toString(Boolean aBoolean) {
-            return String.format(RESOURCE_BUNDLE.getString("enableMode"), getModeText(!aBoolean));
-        }
-    }
-
-    private String getModeText(boolean automaticMode) {
-        return automaticMode ? RESOURCE_BUNDLE.getString("automaticMode") : RESOURCE_BUNDLE.getString("manualMode");
     }
 }
