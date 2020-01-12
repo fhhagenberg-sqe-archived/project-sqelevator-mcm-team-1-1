@@ -1,9 +1,9 @@
 package at.fhhagenberg.sqelevator.viewmodel;
 
 import at.fhhagenberg.sqelevator.model.*;
-import at.fhhagenberg.sqelevator.model.observers.IAlarmsChangeObserver;
 import at.fhhagenberg.sqelevator.model.observers.IBuildingInitializedObserver;
-import at.fhhagenberg.sqelevator.model.observers.IElevatorStateChangedObserver;
+import at.fhhagenberg.sqelevator.model.observers.Observable;
+import at.fhhagenberg.sqelevator.model.observers.Observer;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,14 +12,14 @@ import javafx.collections.ObservableList;
 
 import java.util.HashMap;
 
-public class BuildingViewModel implements IBuildingInitializedObserver, IElevatorStateChangedObserver, IAlarmsChangeObserver {
+public class BuildingViewModel implements IBuildingInitializedObserver, Observer<AlarmsService> {
     private HashMap<Integer, ElevatorViewModel> elevatorViewModels = new HashMap<>();
     private HashMap<Integer, FloorViewModel> floorViewModels = new HashMap<>();
 
     SimpleObjectProperty buildingConfiguration = new SimpleObjectProperty();
 
     private ObservableList<AlarmViewModel> observableList = FXCollections.observableArrayList();
-    private SimpleListProperty<AlarmViewModel> alarms = new SimpleListProperty<>(observableList);
+    private SimpleListProperty<AlarmViewModel> alarmViewModels = new SimpleListProperty<>(observableList);
 
     private SimpleStringProperty callInfo = new SimpleStringProperty();
 
@@ -28,8 +28,9 @@ public class BuildingViewModel implements IBuildingInitializedObserver, IElevato
     public BuildingViewModel(IElevatorController elevatorController) {
         this.elevatorController = elevatorController;
 
-        elevatorController.addBuildingInitializedObserver(this);
-        elevatorController.addElevatorChangeObserver(this);
+        elevatorController.addInitializedObserver(this);
+
+        AlarmsService.getInstance().addObserver(this);
     }
 
     public HashMap<Integer, ElevatorViewModel> getElevatorViewModels() {
@@ -44,12 +45,12 @@ public class BuildingViewModel implements IBuildingInitializedObserver, IElevato
         return buildingConfiguration;
     }
 
-    public ObservableList<AlarmViewModel> getAlarms() {
-        return alarms.get();
+    public ObservableList<AlarmViewModel> getAlarmViewModels() {
+        return alarmViewModels.get();
     }
 
-    public SimpleListProperty<AlarmViewModel> alarmsProperty() {
-        return alarms;
+    public SimpleListProperty<AlarmViewModel> alarmViewModelsProperty() {
+        return alarmViewModels;
     }
 
 	public String getCallInfo() {
@@ -65,8 +66,8 @@ public class BuildingViewModel implements IBuildingInitializedObserver, IElevato
 	}
 //
 //    //to set the target in manual mode
-//    public void setTarget(int elevatorNumber, int target){
-//        elevatorController.setTarget(elevatorNumber, target);
+//    public void gotoTarget(int elevatorNumber, int target){
+//        elevatorController.gotoTarget(elevatorNumber, target);
 //    }
 //
 //    //TODO: add setCommittedDirection and setServicesFloors methods
@@ -79,33 +80,26 @@ public class BuildingViewModel implements IBuildingInitializedObserver, IElevato
 
         for(Elevator elevator : building.getElevators()){
             var eId = elevator.getId();
-            elevatorViewModels.put(eId, new ElevatorViewModel(eId, elevatorController));
+            elevatorViewModels.put(eId, new ElevatorViewModel(elevator));
         }
 
         floorViewModels.clear();
 
         for(Floor floor : building.getFloors()){
-            floorViewModels.put(floor.getId(), new FloorViewModel());
+            floorViewModels.put(floor.getId(), new FloorViewModel(floor));
         }
 
         buildingConfigurationProperty().set(new Object());
     }
 
     @Override
-    public void updateState() {
-        var building = elevatorController.getCurrentState();
+    public void update(Observable<AlarmsService> observable) {
+        var alarmsService = observable.getValue();
 
-        for(Elevator elevator : building.getElevators()){
-            elevatorViewModels.get(elevator.getId()).updateWith(elevator);
+        alarmViewModels.clear();
+
+        for(Alarm alarm : alarmsService.getAlarms()){
+            alarmViewModels.add(new AlarmViewModel(alarm.getMessage(), alarm.isError()));
         }
-
-        for(Floor floor : building.getFloors()){
-            floorViewModels.get(floor.getId()).updateWith(floor);
-        }
-    }
-
-    @Override
-    public void newAlarm(Alarm alarm) {
-        alarms.add(new AlarmViewModel(alarm.getMessage(), alarm.isError()));
     }
 }

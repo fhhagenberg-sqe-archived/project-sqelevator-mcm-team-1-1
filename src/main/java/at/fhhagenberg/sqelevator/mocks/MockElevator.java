@@ -1,7 +1,5 @@
 package at.fhhagenberg.sqelevator.mocks;
 
-import at.fhhagenberg.sqelevator.model.Elevator;
-import at.fhhagenberg.sqelevator.model.Floor;
 import sqelevator.IElevator;
 
 import java.rmi.RemoteException;
@@ -21,8 +19,8 @@ public class MockElevator implements IElevator {
     private int numElevators;
     private int numFloors;
     private int floorHeight;
-    private List<Elevator> elevators;
-    private List<Floor> floors;
+    private List<MockElevatorState> elevators;
+    private List<MockFloorState> floors;
 
     public MockElevator(int numElevators, int numFloors, int floorHeight, int elevatorCapacity) {
         this.numElevators = numElevators;
@@ -33,7 +31,7 @@ public class MockElevator implements IElevator {
         floors = new ArrayList<>(numFloors);
 
         for (int i = 0; i < numElevators; i++) {
-            var elevator = new Elevator(i, numFloors);
+            var elevator = new MockElevatorState(numFloors);
             elevator.setCapacity(elevatorCapacity);
             elevator.setAcceleration(ELEVATOR_ACCELERATION_MOCK_VALUE);
             elevator.setSpeed(ELEVATOR_SPEED_MOCK_VALUE);
@@ -42,7 +40,7 @@ public class MockElevator implements IElevator {
         }
 
         for (int i = 0; i < numFloors; i++) {
-            floors.add(new Floor(i));
+            floors.add(new MockFloorState());
         }
 
         setupServicedFloors();
@@ -62,7 +60,7 @@ public class MockElevator implements IElevator {
                     service = false;
                 }
 
-                elevators.get(elevator).setServicesFloor(floor, service);
+                elevators.get(elevator).setServicesFloors(floor, service);
             }
         }
     }
@@ -77,11 +75,11 @@ public class MockElevator implements IElevator {
         }
     }
 
-    public List<Elevator> getElevators() {
+    public List<MockElevatorState> getElevators() {
         return elevators;   //expose elevators for mocking
     }
 
-    public List<Floor> getFloors() {
+    public List<MockFloorState> getFloors() {
         return floors;   //expose floors for mocking
     }
 
@@ -206,7 +204,7 @@ public class MockElevator implements IElevator {
         checkElevatorNumber(elevatorNumber);
         checkFloorNumber(floor);
 
-        elevators.get(elevatorNumber).setServicesFloor(floor, service);
+        elevators.get(elevatorNumber).setServicesFloors(floor, service);
     }
 
     @Override
@@ -226,13 +224,13 @@ public class MockElevator implements IElevator {
 
     private void checkElevatorNumber(int elevatorNumber) throws MockElevatorException {
         if (elevatorNumber < 0 || elevatorNumber >= numElevators) {
-            throw new MockElevatorException("Elevator number is invalid!");
+            throw new MockElevatorException("MockElevatorState number is invalid!");
         }
     }
 
     private void checkFloorNumber(int floorNumber) throws MockElevatorException {
         if (floorNumber < 0 || floorNumber >= numFloors) {
-            throw new MockElevatorException("Floor number is invalid!");
+            throw new MockElevatorException("MockFloorState number is invalid!");
         }
     }
 
@@ -241,6 +239,131 @@ public class MockElevator implements IElevator {
                 direction != IElevator.ELEVATOR_DIRECTION_UNCOMMITTED &&
                 direction != IElevator.ELEVATOR_DIRECTION_UP) {
             throw new MockElevatorException("Direction number is invalid!");
+        }
+    }
+
+    private class MockElevatorState {
+        private int direction = IElevator.ELEVATOR_DIRECTION_UNCOMMITTED;
+        private int acceleration = 0;
+        private int doorStatus = IElevator.ELEVATOR_DOORS_CLOSED;
+        private int currentFloor = 0;
+        private int targetFloor = 0;
+        private int speed = 0;
+        private int weight = 0;
+        private int capacity;
+
+        private List<Boolean> servicedFloors;
+        private List<Boolean> floorButtons;
+
+        public MockElevatorState(int numFloors) {
+            servicedFloors = new ArrayList<>(numFloors);
+            floorButtons = new ArrayList<>(numFloors);
+
+            for (int i = 0; i < numFloors; i++) {
+                servicedFloors.add(i, true);
+                floorButtons.add(i, false);
+            }
+        }
+
+        public int getTargetFloor() {
+            return targetFloor;
+        }
+
+        public void setTargetFloor(int targetFloor) {
+            this.targetFloor = targetFloor;
+        }
+
+        public boolean isFloorButtonActive(int floor) {
+            return floorButtons.get(floor);
+        }
+
+        public void setFloorButtonActive(int floor, boolean active) {
+            floorButtons.set(floor, active);
+        }
+
+        public boolean getServicesFloors(int floor) {
+            return servicedFloors.get(floor);
+        }
+
+        public void setServicesFloors(int floor, boolean service) {
+            servicedFloors.set(floor, service);
+        }
+
+        public int getDirection() {
+            return direction;
+        }
+
+        public void setDirection(int direction) {
+            this.direction = direction;
+        }
+
+        public int getAcceleration() {
+            return acceleration;
+        }
+
+        public void setAcceleration(int acceleration) {
+            this.acceleration = acceleration;
+        }
+
+        public int getDoorStatus() {
+            return doorStatus;
+        }
+
+        public void setDoorStatus(int doorStatus) {
+            this.doorStatus = doorStatus;
+        }
+
+        public int getCurrentFloor() {
+            return currentFloor;
+        }
+
+        public void setCurrentFloor(int currentFloor) {
+            this.currentFloor = currentFloor;
+        }
+
+        public int getSpeed() {
+            return speed;
+        }
+
+        public void setSpeed(int speed) {
+            this.speed = speed;
+        }
+
+        public int getWeight() {
+            return weight;
+        }
+
+        public void setWeight(int weight) {
+            this.weight = weight;
+        }
+
+        public int getCapacity() {
+            return capacity;
+        }
+
+        public void setCapacity(int capacity) {
+            this.capacity = capacity;
+        }
+    }
+
+    private class MockFloorState {
+        private boolean upButtonActive = false;
+        private boolean downButtonActive = false;
+
+        public boolean isUpButtonActive() {
+            return upButtonActive;
+        }
+
+        public void setUpButtonActive(boolean upButtonActive) {
+            this.upButtonActive = upButtonActive;
+        }
+
+        public boolean isDownButtonActive() {
+            return downButtonActive;
+        }
+
+        public void setDownButtonActive(boolean downButtonActive) {
+            this.downButtonActive = downButtonActive;
         }
     }
 }

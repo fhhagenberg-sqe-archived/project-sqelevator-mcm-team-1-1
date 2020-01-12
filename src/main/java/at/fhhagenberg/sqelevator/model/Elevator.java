@@ -1,14 +1,17 @@
 package at.fhhagenberg.sqelevator.model;
 
+import at.fhhagenberg.sqelevator.model.observers.ObservableAdapter;
 import sqelevator.IElevator;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Elevator {
-
+public class Elevator extends ObservableAdapter<Elevator> {
     private int id = 0;
+    private IElevator elevatorService;
+
     private ControlMode controlMode = ControlMode.Automatic;
     private int direction = IElevator.ELEVATOR_DIRECTION_UNCOMMITTED;
     private int acceleration = 0;
@@ -22,8 +25,9 @@ public class Elevator {
     private List<Boolean> servicedFloors;
     private List<Boolean> floorButtons;
 
-    public Elevator(int id, int numFloors) {
+    public Elevator(int id, int numFloors, IElevator elevatorService) {
         this.id = id;
+        this.elevatorService = elevatorService;
 
         servicedFloors = new ArrayList<>(numFloors);
         floorButtons = new ArrayList<>(numFloors);
@@ -50,80 +54,108 @@ public class Elevator {
         return targetFloor;
     }
 
-    public void setTargetFloor(int targetFloor) {
-        this.targetFloor = targetFloor;
-    }
-
     public boolean isFloorButtonActive(int floor) {
         return floorButtons.get(floor);
-    }
-
-    public void setFloorButtonActive(int floor, boolean active) {
-        floorButtons.set(floor, active);
     }
 
     public boolean getServicesFloors(int floor) {
         return servicedFloors.get(floor);
     }
 
-    public void setServicesFloor(int floor, boolean service) {
-        servicedFloors.set(floor, service);
-    }
-
     public int getDirection() {
         return direction;
-    }
-
-    public void setDirection(int direction) {
-        this.direction = direction;
     }
 
     public int getAcceleration() {
         return acceleration;
     }
 
-    public void setAcceleration(int acceleration) {
-        this.acceleration = acceleration;
-    }
-
     public int getDoorStatus() {
         return doorStatus;
-    }
-
-    public void setDoorStatus(int doorStatus) {
-        this.doorStatus = doorStatus;
     }
 
     public int getCurrentFloor() {
         return currentFloor;
     }
 
-    public void setCurrentFloor(int currentFloor) {
-        this.currentFloor = currentFloor;
-    }
-
     public int getSpeed() {
         return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
     }
 
     public int getWeight() {
         return weight;
     }
 
-    public void setWeight(int weight) {
-        this.weight = weight;
-    }
-
     public int getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
+    public void updateFromService() throws RemoteException {
+        var changed = false;
+
+        var newCapacity = elevatorService.getElevatorCapacity(id);
+        if (newCapacity != capacity) {
+            changed = true;
+            capacity = newCapacity;
+        }
+
+        var newAccelaration = elevatorService.getElevatorAccel(id);
+        if (newAccelaration != acceleration) {
+            changed = true;
+            acceleration = newAccelaration;
+        }
+
+        var newCurrentFloor = elevatorService.getElevatorFloor(id);
+        if (newCurrentFloor != currentFloor) {
+            changed = true;
+            currentFloor = newCurrentFloor;
+        }
+
+        if (changed) {
+            notifyListeners();
+        }
+
+        //TODO:
+        // direction, doorstatus, speed, targetfloor, weight, floorbuttonactive, servicesfloor
+        // (like above)
+    }
+
+    public boolean sendCommittedDirection(int direction) {
+        try {
+            elevatorService.setCommittedDirection(id, direction);
+            return true;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+
+            return false;
+        }
+    }
+
+    public boolean sendServicesFloors(int floor, boolean service) {
+        try {
+            elevatorService.setServicesFloors(id, floor, service);
+            return true;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+
+            return false;
+        }
+    }
+
+    public boolean gotoTarget(int target) {
+        try {
+            elevatorService.setTarget(id, target);
+            return true;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+
+            return false;
+        }
+    }
+
+    @Override
+    public Elevator getValue() {
+        return this;
     }
 
     @Override
