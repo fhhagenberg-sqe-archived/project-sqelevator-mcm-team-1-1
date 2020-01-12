@@ -1,6 +1,8 @@
 package at.fhhagenberg.sqelevator.viewmodel;
 
+import at.fhhagenberg.sqelevator.model.Elevator;
 import at.fhhagenberg.sqelevator.model.IElevatorController;
+import at.fhhagenberg.sqelevator.utils.UpdateIntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
@@ -9,8 +11,8 @@ public class ElevatorViewModel {
 
     private SimpleBooleanProperty automaticMode = new SimpleBooleanProperty(false);
 
-    private SimpleIntegerProperty acceleration = new SimpleIntegerProperty(0);
-    private SimpleIntegerProperty currentFloor = new SimpleIntegerProperty(0);
+    private UpdateIntegerProperty acceleration = new UpdateIntegerProperty(0);
+    private UpdateIntegerProperty currentFloor = new UpdateIntegerProperty(0);
     //TODO: other properties
 
     private IElevatorController elevatorController;
@@ -32,24 +34,8 @@ public class ElevatorViewModel {
         this.automaticMode.set(automaticMode);
     }
 
-    public int getAcceleration() {
-        return acceleration.get();
-    }
-
     public SimpleIntegerProperty accelerationProperty() {
         return acceleration;
-    }
-
-    public void setAcceleration(int acceleration) {
-        this.acceleration.set(acceleration);
-    }
-
-    public int getCurrentFloor() {
-        return currentFloor.get();
-    }
-
-    public void setCurrentFloor(int currentFloor) {
-        this.currentFloor.set(currentFloor);
     }
 
     public SimpleIntegerProperty currentFloorProperty() {
@@ -60,5 +46,9 @@ public class ElevatorViewModel {
         elevatorController.setTarget(id, floor);
     }
 
-
+    public void updateWith(Elevator elevator) {
+        acceleration.update(elevator.getAcceleration());
+        currentFloor.update(elevator.getCurrentFloor());
+        //TODO: update other properties
+    }
 }

@@ -1,6 +1,14 @@
 package at.fhhagenberg.sqelevator.model;
 
+import at.fhhagenberg.sqelevator.model.observers.IBuildingInitializedObserver;
+import at.fhhagenberg.sqelevator.model.observers.IElevatorStateChangedObserver;
+
 public interface IElevatorController {
+    void addElevatorChangeObserver(IElevatorStateChangedObserver elevatorChangeObserver);
+    void addBuildingInitializedObserver(IBuildingInitializedObserver buildingInitializedObserver);
+
+    Building getCurrentState();
+
     /**
      * Sets the committed direction of the specified elevator (up / down / uncommitted).
      * @param elevatorNumber elevator number whose committed direction is being set

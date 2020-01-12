@@ -1,10 +1,12 @@
 package at.fhhagenberg.sqelevator.viewmodel;
 
+import at.fhhagenberg.sqelevator.model.Floor;
+import at.fhhagenberg.sqelevator.utils.UpdateBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 public class FloorViewModel {
-    private SimpleBooleanProperty upButtonActive = new SimpleBooleanProperty(false);
-    private SimpleBooleanProperty downButtonActive = new SimpleBooleanProperty(false);
+    private UpdateBooleanProperty upButtonActive = new UpdateBooleanProperty(false);
+    private UpdateBooleanProperty downButtonActive = new UpdateBooleanProperty(false);
 
     public boolean isUpButtonActive() {
         return upButtonActive.get();
@@ -12,10 +14,6 @@ public class FloorViewModel {
 
     public SimpleBooleanProperty upButtonActiveProperty() {
         return upButtonActive;
-    }
-
-    public void setUpButtonActive(boolean upButtonActive) {
-        this.upButtonActive.set(upButtonActive);
     }
 
     public boolean isDownButtonActive() {
@@ -26,7 +24,8 @@ public class FloorViewModel {
         return downButtonActive;
     }
 
-    public void setDownButtonActive(boolean downButtonActive) {
-        this.downButtonActive.set(downButtonActive);
+    public void updateWith(Floor floor) {
+        upButtonActive.update(floor.isUpButtonActive());
+        downButtonActive.update(floor.isDownButtonActive());
     }
 }

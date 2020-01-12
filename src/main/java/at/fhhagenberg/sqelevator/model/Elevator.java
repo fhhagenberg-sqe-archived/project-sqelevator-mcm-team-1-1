@@ -22,7 +22,7 @@ public class Elevator {
     private List<Boolean> servicedFloors;
     private List<Boolean> floorButtons;
 
-    public Elevator(int id, int numFloors, int capacity) {
+    public Elevator(int id, int numFloors) {
         this.id = id;
 
         servicedFloors = new ArrayList<>(numFloors);
@@ -32,7 +32,6 @@ public class Elevator {
             servicedFloors.add(i, true);
             floorButtons.add(i, false);
         }
-        this.capacity = capacity;
     }
 
     public int getId() {
@@ -121,6 +120,10 @@ public class Elevator {
 
     public int getCapacity() {
         return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 
     @Override

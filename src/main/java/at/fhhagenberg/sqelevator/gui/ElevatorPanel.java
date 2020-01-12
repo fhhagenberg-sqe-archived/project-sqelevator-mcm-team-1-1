@@ -2,8 +2,6 @@ package at.fhhagenberg.sqelevator.gui;
 
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -36,7 +34,7 @@ public class ElevatorPanel extends HBox {
     public ElevatorPanel(BuildingViewModel buildingViewModel) {
         this.buildingViewModel = buildingViewModel;
 
-        buildingViewModel.elevatorFloorConfigurationProperty().addListener((observableValue, o, t1) -> {
+        buildingViewModel.buildingConfigurationProperty().addListener((observableValue, o, t1) -> {
             buildUI();
         });
     }
@@ -52,8 +50,8 @@ public class ElevatorPanel extends HBox {
         col1.setHgrow(Priority.ALWAYS);
         gridPane.getColumnConstraints().add(col1);
 
-        int floorNum = buildingViewModel.getFloors().size();
-        int elevatorNum = buildingViewModel.getElevators().size();
+        int floorNum = buildingViewModel.getFloorViewModels().size();
+        int elevatorNum = buildingViewModel.getElevatorViewModels().size();
 
         if(floorNum == 0|| elevatorNum == 0){
             this.getChildren().add(new Label("no elevators or no floors" + floorNum + "--" + elevatorNum));
@@ -85,8 +83,8 @@ public class ElevatorPanel extends HBox {
             slider.setShowTickMarks(true);
             slider.setMax(floorNum - 1);
             slider.setMin(0);
-            slider.disableProperty().bind(buildingViewModel.getElevators().get(i).automaticModeProperty().not());
-            slider.valueProperty().bind(buildingViewModel.getElevators().get(i).currentFloorProperty());
+            slider.setDisable(true);    //slider only use for visualisation, not for controlling the elevator
+            slider.valueProperty().bind(buildingViewModel.getElevatorViewModels().get(i).currentFloorProperty());
             liftSliders.add(slider);
 
             GridPane buttons = new GridPane();
@@ -119,7 +117,7 @@ public class ElevatorPanel extends HBox {
             gridPane.add(hBox, i + 1, 1, 1, floorNum);
 
             var manualToggle = new ToggleButton("M");
-            manualToggle.selectedProperty().bindBidirectional(buildingViewModel.getElevators().get(i).automaticModeProperty());
+            manualToggle.selectedProperty().bindBidirectional(buildingViewModel.getElevatorViewModels().get(i).automaticModeProperty());
 
             gridPane.add(manualToggle, i + 1, floorNum + 1);
 
@@ -150,7 +148,7 @@ public class ElevatorPanel extends HBox {
                     0.0, 0.0,
                     5.0, -9.0,
                     10.0, 0.0});
-            triangleUp.fillProperty().bind(Bindings.when(buildingViewModel.getFloors().get(j).upButtonActiveProperty()).then(Color.DODGERBLUE).otherwise(Color.LIGHTBLUE));
+            triangleUp.fillProperty().bind(Bindings.when(buildingViewModel.getFloorViewModels().get(j).upButtonActiveProperty()).then(Color.DODGERBLUE).otherwise(Color.LIGHTBLUE));
             buttons.getChildren().add(triangleUp);
 
             Polygon triangleDown = new Polygon();
@@ -158,7 +156,7 @@ public class ElevatorPanel extends HBox {
                     0.0, 0.0,
                     5.0, 9.0,
                     10.0, 0.0});
-            triangleDown.fillProperty().bind(Bindings.when(buildingViewModel.getFloors().get(j).downButtonActiveProperty()).then(Color.DODGERBLUE).otherwise(Color.LIGHTBLUE));
+            triangleDown.fillProperty().bind(Bindings.when(buildingViewModel.getFloorViewModels().get(j).downButtonActiveProperty()).then(Color.DODGERBLUE).otherwise(Color.LIGHTBLUE));
             buttons.getChildren().add(triangleDown);
 
             gridPane.add(buttons, elevatorNum + 2, j + 1);
@@ -212,7 +210,7 @@ public class ElevatorPanel extends HBox {
                     int elevator = Integer.parseInt(text.substring(0, text.indexOf(',')));
                     int floor = Integer.parseInt(text.substring(text.indexOf(',') + 1));
 
-                    buildingViewModel.getElevators().get(elevator).setTarget(floor);
+                    buildingViewModel.getElevatorViewModels().get(elevator).setTarget(floor);
 
                     buildingViewModel.setCallInfo(String.format("Next target floor for elevator <%s> is %s", elevator + 1, floor +1));
 

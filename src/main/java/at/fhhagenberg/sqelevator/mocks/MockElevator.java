@@ -33,7 +33,8 @@ public class MockElevator implements IElevator {
         floors = new ArrayList<>(numFloors);
 
         for (int i = 0; i < numElevators; i++) {
-            var elevator = new Elevator(i, numFloors, elevatorCapacity);
+            var elevator = new Elevator(i, numFloors);
+            elevator.setCapacity(elevatorCapacity);
             elevator.setAcceleration(ELEVATOR_ACCELERATION_MOCK_VALUE);
             elevator.setSpeed(ELEVATOR_SPEED_MOCK_VALUE);
             elevator.setWeight(ELEVATOR_WEIGHT_MOCK_VALUE);

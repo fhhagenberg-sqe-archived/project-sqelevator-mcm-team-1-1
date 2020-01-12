@@ -2,9 +2,8 @@ package at.fhhagenberg.sqelevator.viewmodel;
 
 import at.fhhagenberg.sqelevator.model.*;
 import at.fhhagenberg.sqelevator.model.observers.IAlarmsChangeObserver;
-import at.fhhagenberg.sqelevator.model.observers.IBuildingChangeObserver;
-import at.fhhagenberg.sqelevator.model.observers.IElevatorChangeObserver;
-import at.fhhagenberg.sqelevator.model.observers.IFloorChangeObserver;
+import at.fhhagenberg.sqelevator.model.observers.IBuildingInitializedObserver;
+import at.fhhagenberg.sqelevator.model.observers.IElevatorStateChangedObserver;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -13,11 +12,11 @@ import javafx.collections.ObservableList;
 
 import java.util.HashMap;
 
-public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeObserver, IElevatorChangeObserver, IAlarmsChangeObserver {
-    private HashMap<Integer, ElevatorViewModel> elevators = new HashMap<>();
-    private HashMap<Integer, FloorViewModel> floors = new HashMap<>();
+public class BuildingViewModel implements IBuildingInitializedObserver, IElevatorStateChangedObserver, IAlarmsChangeObserver {
+    private HashMap<Integer, ElevatorViewModel> elevatorViewModels = new HashMap<>();
+    private HashMap<Integer, FloorViewModel> floorViewModels = new HashMap<>();
 
-    SimpleObjectProperty elevatorFloorConfiguration = new SimpleObjectProperty();
+    SimpleObjectProperty buildingConfiguration = new SimpleObjectProperty();
 
     private ObservableList<AlarmViewModel> observableList = FXCollections.observableArrayList();
     private SimpleListProperty<AlarmViewModel> alarms = new SimpleListProperty<>(observableList);
@@ -28,22 +27,21 @@ public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeO
 
     public BuildingViewModel(IElevatorController elevatorController) {
         this.elevatorController = elevatorController;
+
+        elevatorController.addBuildingInitializedObserver(this);
+        elevatorController.addElevatorChangeObserver(this);
     }
 
-    public HashMap<Integer, ElevatorViewModel> getElevators() {
-        return elevators;
+    public HashMap<Integer, ElevatorViewModel> getElevatorViewModels() {
+        return elevatorViewModels;
     }
 
-    public HashMap<Integer, FloorViewModel> getFloors() {
-        return floors;
+    public HashMap<Integer, FloorViewModel> getFloorViewModels() {
+        return floorViewModels;
     }
 
-    public Object getElevatorFloorConfiguration() {
-        return elevatorFloorConfiguration.get();
-    }
-
-    public SimpleObjectProperty elevatorFloorConfigurationProperty() {
-        return elevatorFloorConfiguration;
+    public SimpleObjectProperty buildingConfigurationProperty() {
+        return buildingConfiguration;
     }
 
     public ObservableList<AlarmViewModel> getAlarms() {
@@ -65,51 +63,45 @@ public class BuildingViewModel implements IBuildingChangeObserver, IFloorChangeO
 	public void setCallInfo(String callInfo) {
 		this.callInfo.set(callInfo);
 	}
-    
-    //to set the target in manual mode
-    public void setTarget(int elevatorNumber, int target){
-        elevatorController.setTarget(elevatorNumber, target);
-    }
-
-    //TODO: add setCommittedDirection and setServicesFloors methods
-
-    @Override
-    public void update(Building building) {
-        elevators.clear();
-
-        for(int i=0;i<building.getNumElevators();i++){
-            elevators.put(i, new ElevatorViewModel(i, elevatorController));
-        }
-
-        floors.clear();
-
-        for(int i=0;i<building.getNumFloors();i++){
-            floors.put(i, new FloorViewModel());
-        }
-
-        elevatorFloorConfigurationProperty().set(new Object());
-    }
+//
+//    //to set the target in manual mode
+//    public void setTarget(int elevatorNumber, int target){
+//        elevatorController.setTarget(elevatorNumber, target);
+//    }
+//
+//    //TODO: add setCommittedDirection and setServicesFloors methods
 
     @Override
-    public void update(Elevator elevator) {
-        if(elevators.size() == 0){
-            return; //elevatorFloorConfiguration not yet initialized
+    public void initializationDone() {
+        var building = elevatorController.getCurrentState();
+
+        elevatorViewModels.clear();
+
+        for(Elevator elevator : building.getElevators()){
+            var eId = elevator.getId();
+            elevatorViewModels.put(eId, new ElevatorViewModel(eId, elevatorController));
         }
 
-        elevators.get(elevator.getId()).setAcceleration(elevator.getAcceleration());
-        elevators.get(elevator.getId()).setCurrentFloor(elevator.getCurrentFloor());
+        floorViewModels.clear();
 
-        //TODO: update all properties
+        for(Floor floor : building.getFloors()){
+            floorViewModels.put(floor.getId(), new FloorViewModel());
+        }
+
+        buildingConfigurationProperty().set(new Object());
     }
 
     @Override
-    public void update(Floor floor) {
-        if(floors.size() == 0){
-            return; //elevatorFloorConfiguration not yet initialized
+    public void updateState() {
+        var building = elevatorController.getCurrentState();
+
+        for(Elevator elevator : building.getElevators()){
+            elevatorViewModels.get(elevator.getId()).updateWith(elevator);
         }
 
-        floors.get(floor.getId()).setDownButtonActive(floor.isDownButtonActive());
-        floors.get(floor.getId()).setUpButtonActive(floor.isUpButtonActive());
+        for(Floor floor : building.getFloors()){
+            floorViewModels.get(floor.getId()).updateWith(floor);
+        }
     }
 
     @Override
