@@ -2,16 +2,13 @@ package at.fhhagenberg.sqelevator.gui;
 
 import java.util.ResourceBundle;
 
-import at.fhhagenberg.sqelevator.utils.StringAdapter;
 import at.fhhagenberg.sqelevator.viewmodel.AlarmViewModel;
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
@@ -83,7 +80,7 @@ public class ElevatorControlCenterPane extends BorderPane {
 		var messageCol = new TableColumn<AlarmViewModel, String>("Message");
 		messageCol.setCellValueFactory(cellData -> cellData.getValue().alarmMessageProperty());
 
-		tableView.itemsProperty().bindBidirectional(buildingViewModel.alarmsProperty());
+		tableView.itemsProperty().bindBidirectional(buildingViewModel.alarmViewModelsProperty());
 		tableView.getColumns().addAll(typeCol, messageCol);
         
         vBox.getChildren().add(tableView);

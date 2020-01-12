@@ -1,7 +1,9 @@
 package at.fhhagenberg.sqelevator.gui;
 
 import at.fhhagenberg.sqelevator.mocks.MockElevator;
-import at.fhhagenberg.sqelevator.model.ElevatorDataProvider;
+import at.fhhagenberg.sqelevator.model.AlarmsService;
+import at.fhhagenberg.sqelevator.model.ElevatorController;
+import at.fhhagenberg.sqelevator.model.autocontroller.SimpleControlAlgorithm;
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -33,37 +35,28 @@ public class ApplicationMain extends Application {
             elevatorService = (IElevator) Naming.lookup("rmi://localhost/ElevatorSim");
         }
 
-        var dataProvider = new ElevatorDataProvider(elevatorService);
-
-        var updateTask = new TimerTask(){
-            @Override
-            public void run() {
-                dataProvider.update();
-            }
-        };
-
-        timer.scheduleAtFixedRate(updateTask, 0, 1000);
+        var elevatorController = new ElevatorController(elevatorService);
 
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                dataProvider.addAlert("test");
+                AlarmsService.getInstance().addAlert("test");
             }
         }, 1000);
 
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                dataProvider.addAlert("2. test", false);
+                AlarmsService.getInstance().addAlert("2. test", false);
             }
         }, 2000);
 
-        var buildingViewModel = new BuildingViewModel(dataProvider);
+        var buildingViewModel = new BuildingViewModel(elevatorController);
 
-        dataProvider.addElevatorChangeObserver(buildingViewModel);
-        dataProvider.addFloorChangeObserver(buildingViewModel);
-        dataProvider.addBuildingChangeObserver(buildingViewModel);
-        dataProvider.addAlarmsChangeObserver(buildingViewModel);
+        //TODO: implement control algorithm
+        var controlAlgorithm = new SimpleControlAlgorithm();
+        controlAlgorithm.setElevatorController(elevatorController);
+        controlAlgorithm.start();
 
         var eccPane = new ElevatorControlCenterPane(buildingViewModel);
 
@@ -73,7 +66,16 @@ public class ApplicationMain extends Application {
         stage.setTitle(RESOURCE_BUNDLE.getString("title"));
         stage.getIcons().add(new Image("icons/ic_ecc.png"));
 
-        dataProvider.initialize();
+        elevatorController.initialize();
+
+        var updateTask = new TimerTask(){
+            @Override
+            public void run() {
+                elevatorController.update();
+            }
+        };
+
+        timer.scheduleAtFixedRate(updateTask, 0, 1000);
 
         stage.setOnCloseRequest(windowEvent -> {
             timer.cancel();

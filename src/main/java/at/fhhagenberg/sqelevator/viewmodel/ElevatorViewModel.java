@@ -1,23 +1,35 @@
 package at.fhhagenberg.sqelevator.viewmodel;
 
-import at.fhhagenberg.sqelevator.model.IElevatorController;
+import at.fhhagenberg.sqelevator.model.ControlMode;
+import at.fhhagenberg.sqelevator.model.Elevator;
+import at.fhhagenberg.sqelevator.model.observers.Observable;
+import at.fhhagenberg.sqelevator.model.observers.Observer;
+import at.fhhagenberg.sqelevator.utils.UpdateIntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
-public class ElevatorViewModel {
-    private int id;
-
+public class ElevatorViewModel implements Observer<Elevator> {
     private SimpleBooleanProperty automaticMode = new SimpleBooleanProperty(false);
 
-    private SimpleIntegerProperty acceleration = new SimpleIntegerProperty(0);
-    private SimpleIntegerProperty currentFloor = new SimpleIntegerProperty(0);
+    private UpdateIntegerProperty acceleration = new UpdateIntegerProperty(0);
+    private UpdateIntegerProperty currentFloor = new UpdateIntegerProperty(0);
     //TODO: other properties
 
-    private IElevatorController elevatorController;
+    private Elevator elevatorModel;
 
-    public ElevatorViewModel(int id, IElevatorController elevatorController) {
-        this.id = id;
-        this.elevatorController = elevatorController;
+    public ElevatorViewModel(Elevator elevatorModel) {
+        this.elevatorModel = elevatorModel;
+
+        this.elevatorModel.addObserver(this);
+
+        automaticModeProperty().addListener((observableValue, oldValue, newValue) -> {
+            if(newValue){
+                elevatorModel.setControlMode(ControlMode.Automatic);
+            }
+            else {
+                elevatorModel.setControlMode(ControlMode.Manual);
+            }
+        });
     }
 
     public boolean isAutomaticMode() {
@@ -32,24 +44,8 @@ public class ElevatorViewModel {
         this.automaticMode.set(automaticMode);
     }
 
-    public int getAcceleration() {
-        return acceleration.get();
-    }
-
     public SimpleIntegerProperty accelerationProperty() {
         return acceleration;
-    }
-
-    public void setAcceleration(int acceleration) {
-        this.acceleration.set(acceleration);
-    }
-
-    public int getCurrentFloor() {
-        return currentFloor.get();
-    }
-
-    public void setCurrentFloor(int currentFloor) {
-        this.currentFloor.set(currentFloor);
     }
 
     public SimpleIntegerProperty currentFloorProperty() {
@@ -57,8 +53,17 @@ public class ElevatorViewModel {
     }
 
     public void setTarget(int floor) {
-        elevatorController.setTarget(id, floor);
+        if(!elevatorModel.gotoTarget(floor)){
+            //add alarm
+        }
     }
 
+    @Override
+    public void update(Observable<Elevator> observable) {
+        var elevator = observable.getValue();
 
+        acceleration.update(elevator.getAcceleration());
+        currentFloor.update(elevator.getCurrentFloor());
+        //TODO: update other properties
+    }
 }

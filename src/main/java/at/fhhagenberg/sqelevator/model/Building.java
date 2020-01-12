@@ -1,19 +1,50 @@
 package at.fhhagenberg.sqelevator.model;
 
-public class Building {
-    private int numElevators;
-    private int numFloors;
+import sqelevator.IElevator;
 
-    public Building(int numElevators, int numFloors) {
-        this.numElevators = numElevators;
-        this.numFloors = numFloors;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Building {
+    private List<Elevator> elevators;
+    private List<Floor> floors;
+
+    public Building(int numElevators, int numFloors, IElevator elevatorService) {
+        elevators = new ArrayList<>(numElevators);
+        floors = new ArrayList<>(numFloors);
+
+        for (int i = 0; i < numElevators; i++) {
+            var elevator = new Elevator(i, numFloors, elevatorService);
+            elevators.add(elevator);
+        }
+
+        for (int i = 0; i < numFloors; i++) {
+            var floor = new Floor(i, elevatorService);
+            floors.add(floor);
+        }
     }
 
     public int getNumElevators() {
-        return numElevators;
+        return elevators.size();
     }
 
     public int getNumFloors() {
-        return numFloors;
+        return floors.size();
+    }
+
+    public List<Elevator> getElevators() {
+        return elevators;
+    }
+
+    public List<Floor> getFloors() {
+        return floors;
+    }
+
+    public Elevator getElevator(int id){
+        return elevators.get(id);
+    }
+
+    public Floor getFloor(int id){
+        return floors.get(id);
     }
 }
