@@ -117,13 +117,47 @@ public class Elevator extends ObservableAdapter<Elevator> {
             direction = newDirection;
         }
 
-        if (changed) {
-            notifyListeners();
+        var newDoorStatus = elevatorService.getElevatorDoorStatus(id);
+        if(newDoorStatus != doorStatus){
+            changed = true;
+            doorStatus = newDoorStatus;
+        }
+
+        var newSpeed = elevatorService.getElevatorSpeed(id);
+        if(newSpeed != speed){
+            changed = true;
+            speed = newSpeed;
+        }
+
+        var newTargetFloor = elevatorService.getTarget(id);
+        if(newTargetFloor != targetFloor){
+            changed = true;
+            targetFloor = newTargetFloor;
+        }
+
+        var newWeight = elevatorService.getElevatorWeight(id);
+        if(newWeight != weight){
+            changed = true;
+            weight = newWeight;
         }
 
         //TODO:
-        // direction, doorstatus, speed, targetfloor, weight, floorbuttonactive, servicesfloor
-        // (like above)
+//        var newFloorButtons = elevatorService.getElevatorButton();
+//        if(newFloorButtons != floorButtons){
+//            changed = true;
+//            floorButtons = newFloorButtons;
+//        }
+
+        //TODO:
+//        var newServicesFloors = elevatorService.getServicesFloors(id, floor);
+//        if(newServicesFloors != servicedFloors){
+//            changed = true;
+//            servicedFloors = newServicesFloors;
+//        }
+
+        if (changed) {
+            notifyListeners();
+        }
     }
 
     public boolean sendCommittedDirection(int direction) {

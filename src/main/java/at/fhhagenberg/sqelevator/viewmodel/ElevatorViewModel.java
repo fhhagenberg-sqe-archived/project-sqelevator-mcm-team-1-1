@@ -14,12 +14,21 @@ public class ElevatorViewModel implements Observer<Elevator> {
     public final static int ELEVATOR_DIRECTION_DOWN = 1;
     public final static int ELEVATOR_DIRECTION_UNCOMMITTED = 2;
 
+    public final static int ELEVATOR_DOORS_OPEN = 1;
+    public final static int ELEVATOR_DOORS_CLOSED = 2;
+    public final static int ELEVATOR_DOORS_OPENING = 3;
+    public final static int ELEVATOR_DOORS_CLOSING = 4;
+
     private SimpleBooleanProperty automaticMode = new SimpleBooleanProperty(false);
 
     private UpdateIntegerProperty acceleration = new UpdateIntegerProperty(0);
     private UpdateIntegerProperty currentFloor = new UpdateIntegerProperty(0);
     private UpdateIntegerProperty currentDirection = new UpdateIntegerProperty(ELEVATOR_DIRECTION_UNCOMMITTED);
-    //TODO: other properties
+    private UpdateIntegerProperty doorStatus = new UpdateIntegerProperty(ELEVATOR_DOORS_CLOSED);
+    private UpdateIntegerProperty speed = new UpdateIntegerProperty(0);
+    private UpdateIntegerProperty targetFloor = new UpdateIntegerProperty(0);
+    private UpdateIntegerProperty weight = new UpdateIntegerProperty(0);
+    //TODO: other properties (floorbuttonactive, servicesfloor)
 
     private Elevator elevatorModel;
 
@@ -66,6 +75,38 @@ public class ElevatorViewModel implements Observer<Elevator> {
         return currentDirection;
     }
 
+    public int getDoorStatus() {
+        return doorStatus.get();
+    }
+
+    public UpdateIntegerProperty doorStatusProperty() {
+        return doorStatus;
+    }
+
+    public int getSpeed() {
+        return speed.get();
+    }
+
+    public UpdateIntegerProperty speedProperty() {
+        return speed;
+    }
+
+    public int getTargetFloor() {
+        return targetFloor.get();
+    }
+
+    public UpdateIntegerProperty targetFloorProperty() {
+        return targetFloor;
+    }
+
+    public int getWeight() {
+        return weight.get();
+    }
+
+    public UpdateIntegerProperty weightProperty() {
+        return weight;
+    }
+
     public void setTarget(int floor) {
         if(!elevatorModel.gotoTarget(floor)){
             //add alarm
@@ -85,6 +126,11 @@ public class ElevatorViewModel implements Observer<Elevator> {
         acceleration.update(elevator.getAcceleration());
         currentFloor.update(elevator.getCurrentFloor());
         currentDirection.update(elevator.getDirection());
-        //TODO: update other properties
+        doorStatus.update(elevator.getDoorStatus());
+        speed.update(elevator.getSpeed());
+        targetFloor.update(elevator.getTargetFloor());
+        weight.update(elevator.getWeight());
+
+        //TODO: floorbuttonactive, servicesfloor
     }
 }
