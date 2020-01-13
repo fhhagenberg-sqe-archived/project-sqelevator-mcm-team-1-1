@@ -111,6 +111,12 @@ public class Elevator extends ObservableAdapter<Elevator> {
             currentFloor = newCurrentFloor;
         }
 
+        var newDirection = elevatorService.getCommittedDirection(id);
+        if(newDirection != direction){
+            changed = true;
+            direction = newDirection;
+        }
+
         if (changed) {
             notifyListeners();
         }

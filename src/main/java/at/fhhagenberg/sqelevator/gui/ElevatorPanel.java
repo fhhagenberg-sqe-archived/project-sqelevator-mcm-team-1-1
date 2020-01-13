@@ -1,6 +1,7 @@
 package at.fhhagenberg.sqelevator.gui;
 
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
+import at.fhhagenberg.sqelevator.viewmodel.ElevatorViewModel;
 import javafx.beans.binding.Bindings;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -69,17 +70,34 @@ public class ElevatorPanel extends HBox {
 
         for (int i = 0; i < elevatorNum; i++) {
 
-            ColumnConstraints sliderCol = new ColumnConstraints();
+            var sliderCol = new ColumnConstraints();
             sliderCol.setHalignment(HPos.CENTER);
             sliderCol.setHgrow(Priority.ALWAYS);
             gridPane.getColumnConstraints().add(sliderCol);
 
-            Label elevatorNumLabel = new Label((i + 1) + "");
-            gridPane.add(elevatorNumLabel, i + 1, 0);
+            var directionIndicators = new VBox();
+            directionIndicators.setSpacing(5);
 
-            HBox hBox = new HBox();
+            var directionProperty = buildingViewModel.getElevatorViewModels().get(i).currentDirectionProperty();
+            var directionTriangleUp = newUpTriangle();
+            directionTriangleUp.fillProperty().bind(Bindings.when(directionProperty.isEqualTo(ElevatorViewModel.ELEVATOR_DIRECTION_UP)).then(Color.GREEN).otherwise(Color.LIGHTGRAY));
+            directionIndicators.getChildren().add(directionTriangleUp);
 
-            Slider slider = new Slider(0, floorNum - 1, 0);
+            var directionTriangleDown = newDownTriangle();
+            directionTriangleDown.fillProperty().bind(Bindings.when(directionProperty.isEqualTo(ElevatorViewModel.ELEVATOR_DIRECTION_DOWN)).then(Color.GREEN).otherwise(Color.LIGHTGRAY));
+            directionIndicators.getChildren().add(directionTriangleDown);
+
+            var nameAndDirectionIndicator = new HBox();
+            nameAndDirectionIndicator.setSpacing(15);
+
+            var elevatorNumLabel = new Label((i + 1) + "");
+            nameAndDirectionIndicator.getChildren().add(elevatorNumLabel);
+            nameAndDirectionIndicator.getChildren().add(directionIndicators);
+            gridPane.add(nameAndDirectionIndicator, i + 1, 0);
+
+            var hBox = new HBox();
+
+            var slider = new Slider(0, floorNum - 1, 0);
             slider.setShowTickMarks(true);
             slider.setMax(floorNum - 1);
             slider.setMin(0);
@@ -143,19 +161,11 @@ public class ElevatorPanel extends HBox {
             VBox buttons = new VBox();
             buttons.setSpacing(5);
 
-            Polygon triangleUp = new Polygon();
-            triangleUp.getPoints().addAll(new Double[]{
-                    0.0, 0.0,
-                    5.0, -9.0,
-                    10.0, 0.0});
+            Polygon triangleUp = newUpTriangle();
             triangleUp.fillProperty().bind(Bindings.when(buildingViewModel.getFloorViewModels().get(j).upButtonActiveProperty()).then(Color.DODGERBLUE).otherwise(Color.LIGHTBLUE));
             buttons.getChildren().add(triangleUp);
 
-            Polygon triangleDown = new Polygon();
-            triangleDown.getPoints().addAll(new Double[]{
-                    0.0, 0.0,
-                    5.0, 9.0,
-                    10.0, 0.0});
+            Polygon triangleDown = newDownTriangle();
             triangleDown.fillProperty().bind(Bindings.when(buildingViewModel.getFloorViewModels().get(j).downButtonActiveProperty()).then(Color.DODGERBLUE).otherwise(Color.LIGHTBLUE));
             buttons.getChildren().add(triangleDown);
 
@@ -188,6 +198,10 @@ public class ElevatorPanel extends HBox {
         this.getChildren().add(gridPane);
     }
 
+    private Color intToColor(int i) {
+        return null;
+    }
+
     private class TargetFloorSelectionEventHandler implements EventHandler<Event> {
 
         @Override
@@ -211,6 +225,8 @@ public class ElevatorPanel extends HBox {
                     int floor = Integer.parseInt(text.substring(text.indexOf(',') + 1));
 
                     buildingViewModel.getElevatorViewModels().get(elevator).setTarget(floor);
+                    //TODO: set correct direction
+                    buildingViewModel.getElevatorViewModels().get(elevator).setDirection(ElevatorViewModel.ELEVATOR_DIRECTION_DOWN);
 
                     buildingViewModel.setCallInfo(String.format("Next target floor for elevator <%s> is %s", elevator + 1, floor +1));
 
@@ -221,5 +237,25 @@ public class ElevatorPanel extends HBox {
 
             }
         }
+    }
+
+    private Polygon newUpTriangle(){
+        Polygon triangleUp = new Polygon();
+        triangleUp.getPoints().addAll(new Double[]{
+                0.0, 0.0,
+                5.0, -9.0,
+                10.0, 0.0});
+
+        return triangleUp;
+    }
+
+    private Polygon newDownTriangle(){
+        Polygon triangleDown = new Polygon();
+        triangleDown.getPoints().addAll(new Double[]{
+                0.0, 0.0,
+                5.0, 9.0,
+                10.0, 0.0});
+
+        return triangleDown;
     }
 }
