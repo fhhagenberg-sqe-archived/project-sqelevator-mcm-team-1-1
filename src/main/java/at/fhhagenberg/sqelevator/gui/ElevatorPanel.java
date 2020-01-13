@@ -8,6 +8,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
+import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
@@ -87,12 +88,12 @@ public class ElevatorPanel extends HBox {
             directionTriangleDown.fillProperty().bind(Bindings.when(directionProperty.isEqualTo(ElevatorViewModel.ELEVATOR_DIRECTION_DOWN)).then(Color.GREEN).otherwise(Color.LIGHTGRAY));
             directionIndicators.getChildren().add(directionTriangleDown);
 
+            var elevatorNumLabel = new Label((i + 1) + "");
+
             var nameAndDirectionIndicator = new HBox();
             nameAndDirectionIndicator.setSpacing(15);
+            nameAndDirectionIndicator.getChildren().addAll(elevatorNumLabel, directionIndicators);
 
-            var elevatorNumLabel = new Label((i + 1) + "");
-            nameAndDirectionIndicator.getChildren().add(elevatorNumLabel);
-            nameAndDirectionIndicator.getChildren().add(directionIndicators);
             gridPane.add(nameAndDirectionIndicator, i + 1, 0);
 
             var hBox = new HBox();
@@ -109,16 +110,21 @@ public class ElevatorPanel extends HBox {
 
             for (int j = 0; j < floorNum; j++) {
 
-                Circle elevatorLight = new Circle();
-
+                var elevatorLight = new Group();
                 elevatorLight.setId(i + "," + (floorNum - j - 1));
-                System.out.println(elevatorLight.getId());
 
-                elevatorLight.setRadius(6);
-                elevatorLight.setFill(Color.YELLOW);
-                //gridPane.add(elevatorLight, elevatorNum +2, j+1);
-                buttons.add(elevatorLight, 0, j);
+                var innerCircle = new Circle();
+                innerCircle.setRadius(6);
+                innerCircle.setFill(Color.YELLOW);
+                var outerCircle = new Circle();
+                outerCircle.setRadius(8);
+                outerCircle.fillProperty().bind(Bindings.when(buildingViewModel.getElevatorViewModels().get(i).automaticModeProperty()).then(Color.ORANGE).otherwise(Color.LIGHTGRAY));
+                elevatorLight.getChildren().addAll(outerCircle, innerCircle);
+
+                elevatorLight.disableProperty().bind(buildingViewModel.getElevatorViewModels().get(i).automaticModeProperty().not());
                 elevatorLight.setOnMouseReleased(new TargetFloorSelectionEventHandler());
+
+                buttons.add(elevatorLight, 0, j);
 
                 RowConstraints buttonrow = new RowConstraints();
                 buttonrow.setValignment(VPos.CENTER);
@@ -217,7 +223,7 @@ public class ElevatorPanel extends HBox {
                     liftSliders.get(0).setValue(floor - 1);
                 } else {
 
-                    String text = ((Shape) event.getSource()).getId();
+                    String text = ((Group) event.getSource()).getId();
                     System.out.println(text.substring(0, text.indexOf(',')));
                     System.out.println(text.substring(text.indexOf(',') + 1));
 
