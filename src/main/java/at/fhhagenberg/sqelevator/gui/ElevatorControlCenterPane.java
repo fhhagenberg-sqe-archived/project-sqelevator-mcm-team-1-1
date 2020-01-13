@@ -101,6 +101,7 @@ public class ElevatorControlCenterPane extends BorderPane {
 
 		Label lblCallInfo = new Label();
 		lblCallInfo.textProperty().bind(buildingViewModel.callInfoProperty());
+		lblCallInfo.setId("statusbar");
 
 		hBox.getChildren().addAll(lblCallInfo);
 		return hBox;

@@ -123,7 +123,7 @@ public class ElevatorPanel extends HBox {
 
                 elevatorLight.disableProperty().bind(buildingViewModel.getElevatorViewModels().get(i).automaticModeProperty().not());
                 elevatorLight.setOnMouseReleased(new TargetFloorSelectionEventHandler());
-
+               
                 buttons.add(elevatorLight, 0, j);
 
                 RowConstraints buttonrow = new RowConstraints();
@@ -141,6 +141,7 @@ public class ElevatorPanel extends HBox {
             gridPane.add(hBox, i + 1, 1, 1, floorNum);
 
             var manualToggle = new ToggleButton("M");
+            manualToggle.setId("M" + Integer.toString(i));
             manualToggle.selectedProperty().bindBidirectional(buildingViewModel.getElevatorViewModels().get(i).automaticModeProperty());
 
             gridPane.add(manualToggle, i + 1, floorNum + 1);
