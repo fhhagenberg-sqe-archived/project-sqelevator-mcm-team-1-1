@@ -1,13 +1,11 @@
 package at.fhhagenberg.sqelevator.gui;
 
-import at.fhhagenberg.sqelevator.viewmodel.AlarmViewModel;
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
 import at.fhhagenberg.sqelevator.viewmodel.ElevatorViewModel;
 import javafx.beans.binding.Bindings;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
@@ -17,19 +15,11 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Shape;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public class ElevatorPanel extends HBox {
-    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("elevatorCC");
-
-    private static final int SPACING = 10;
-    private static final Insets PADDING_NARROW = new Insets(5, 5, 5, 5);
-    private static final Insets PADDING_LARGE = new Insets(10, 10, 10, 10);
-
     private BuildingViewModel buildingViewModel;
 
     private List<Slider> liftSliders;
@@ -37,9 +27,9 @@ public class ElevatorPanel extends HBox {
     public ElevatorPanel(BuildingViewModel buildingViewModel) {
         this.buildingViewModel = buildingViewModel;
 
-        buildingViewModel.buildingConfigurationProperty().addListener((observableValue, o, t1) -> {
-            buildUI();
-        });
+        buildingViewModel.buildingConfigurationProperty().addListener((observableValue, o, t1) ->
+                buildUI()
+        );
     }
 
     private void buildUI() {
@@ -56,7 +46,7 @@ public class ElevatorPanel extends HBox {
         int floorNum = buildingViewModel.getFloorViewModels().size();
         int elevatorNum = buildingViewModel.getElevatorViewModels().size();
 
-        if(floorNum == 0|| elevatorNum == 0){
+        if (floorNum == 0 || elevatorNum == 0) {
             this.getChildren().add(new Label("no elevators or no floors" + floorNum + "--" + elevatorNum));
             return;
         }
@@ -68,7 +58,7 @@ public class ElevatorPanel extends HBox {
             gridPane.getRowConstraints().add(row);
         }
 
-        liftSliders = new ArrayList<Slider>();
+        liftSliders = new ArrayList<>();
 
         for (int i = 0; i < elevatorNum; i++) {
 
@@ -124,17 +114,13 @@ public class ElevatorPanel extends HBox {
 
                 elevatorLight.disableProperty().bind(buildingViewModel.getElevatorViewModels().get(i).automaticModeProperty().not());
                 elevatorLight.setOnMouseReleased(new TargetFloorSelectionEventHandler());
-               
+
                 buttons.add(elevatorLight, 0, j);
 
                 RowConstraints buttonrow = new RowConstraints();
                 buttonrow.setValignment(VPos.CENTER);
                 buttonrow.setVgrow(Priority.ALWAYS);
                 buttons.getRowConstraints().add(buttonrow);
-
-                //vBox.prefHeightProperty().bind(hBox.heightProperty());
-                //vBox.setVgrow(elevatorLight, Priority.ALWAYS);
-                //buttons.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
             }
 
             hBox.getChildren().add(slider);
@@ -209,10 +195,6 @@ public class ElevatorPanel extends HBox {
         this.getChildren().add(gridPane);
     }
 
-    private Color intToColor(int i) {
-        return null;
-    }
-
     private class TargetFloorSelectionEventHandler implements EventHandler<Event> {
 
         @Override
@@ -226,27 +208,25 @@ public class ElevatorPanel extends HBox {
                     // TODO reduce speed for the slider to move slower (as animation for elevator)
                     // TODO handle target floor for specific elevator (currently only for the first one)
                     liftSliders.get(0).setValue(floor - 1);
-                  
+
                     // elevator reached floor, remove target 
                     //Label targets = (Label) getScene().lookup("#t" + elevator);
                     //targets.setText("-");  
                 } else {
 
                     String text = ((Group) event.getSource()).getId();
-                    System.out.println(text.substring(0, text.indexOf(',')));
-                    System.out.println(text.substring(text.indexOf(',') + 1));
 
                     int elevator = Integer.parseInt(text.substring(0, text.indexOf(',')));
                     int floor = Integer.parseInt(text.substring(text.indexOf(',') + 1));
 
                     buildingViewModel.getElevatorViewModels().get(elevator).setTarget(floor);
                     buildingViewModel.getElevatorViewModels().get(elevator).setDirection(ElevatorViewModel.ELEVATOR_DIRECTION_DOWN);
-                    buildingViewModel.setCallInfo(String.format("Next target floor for elevator <%s> is %s", elevator + 1, floor +1));
+                    buildingViewModel.setCallInfo(String.format("Next target floor for elevator <%s> is %s", elevator + 1, floor + 1));
 
                     //set target floor text
-					Label targets = (Label) getScene().lookup("#t" + elevator);
-					targets.setText(Integer.toString(floor + 1));
-                    
+                    Label targets = (Label) getScene().lookup("#t" + elevator);
+                    targets.setText(Integer.toString(floor + 1));
+
                     // TODO reduce speed for the slider to move slower (as animation for elevator)
                     // TODO handle target floor for specific elevator (currently only for the first one)
                     //liftSliders.get(elevator).setValue(floor - 1); -> now done via viewmodel
@@ -256,22 +236,20 @@ public class ElevatorPanel extends HBox {
         }
     }
 
-    private Polygon newUpTriangle(){
+    private Polygon newUpTriangle() {
         Polygon triangleUp = new Polygon();
-        triangleUp.getPoints().addAll(new Double[]{
-                0.0, 0.0,
+        triangleUp.getPoints().addAll(0.0, 0.0,
                 5.0, -9.0,
-                10.0, 0.0});
+                10.0, 0.0);
 
         return triangleUp;
     }
 
-    private Polygon newDownTriangle(){
+    private Polygon newDownTriangle() {
         Polygon triangleDown = new Polygon();
-        triangleDown.getPoints().addAll(new Double[]{
-                0.0, 0.0,
+        triangleDown.getPoints().addAll(0.0, 0.0,
                 5.0, 9.0,
-                10.0, 0.0});
+                10.0, 0.0);
 
         return triangleDown;
     }

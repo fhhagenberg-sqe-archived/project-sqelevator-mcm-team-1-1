@@ -16,9 +16,6 @@ public class ElevatorController implements IElevatorController {
 
     private Building building;
 
-    private int numElevators;
-    private int numFloors;
-
     private long updateInterval = 1000;
 
     private List<IBuildingInitializedObserver> buildingInitializedObservers;
@@ -84,15 +81,12 @@ public class ElevatorController implements IElevatorController {
 
     public void initialize() {
         try {
-            numElevators = elevatorService.getElevatorNum();
-            numFloors = elevatorService.getFloorNum();
+            var numElevators = elevatorService.getElevatorNum();
+            var numFloors = elevatorService.getFloorNum();
 
             building = new Building(numElevators, numFloors, elevatorService);
         } catch (RemoteException e) {
             e.printStackTrace();
-
-            numElevators = 0;
-            numFloors = 0;
 
             AlarmsService.getInstance().addAlert(e.getMessage());
         }

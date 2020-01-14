@@ -5,20 +5,19 @@ import at.fhhagenberg.sqelevator.model.ControlMode;
 import at.fhhagenberg.sqelevator.model.Elevator;
 import at.fhhagenberg.sqelevator.model.observers.Observable;
 import at.fhhagenberg.sqelevator.model.observers.Observer;
-import at.fhhagenberg.sqelevator.utils.UpdateBooleanProperty;
 import at.fhhagenberg.sqelevator.utils.UpdateIntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 public class ElevatorViewModel implements Observer<Elevator> {
-    public final static int ELEVATOR_DIRECTION_UP = 0;
-    public final static int ELEVATOR_DIRECTION_DOWN = 1;
-    public final static int ELEVATOR_DIRECTION_UNCOMMITTED = 2;
+    public static final int ELEVATOR_DIRECTION_UP = 0;
+    public static final int ELEVATOR_DIRECTION_DOWN = 1;
+    public static final int ELEVATOR_DIRECTION_UNCOMMITTED = 2;
 
-    public final static int ELEVATOR_DOORS_OPEN = 1;
-    public final static int ELEVATOR_DOORS_CLOSED = 2;
-    public final static int ELEVATOR_DOORS_OPENING = 3;
-    public final static int ELEVATOR_DOORS_CLOSING = 4;
+    public static final int ELEVATOR_DOORS_OPEN = 1;
+    public static final int ELEVATOR_DOORS_CLOSED = 2;
+    public static final int ELEVATOR_DOORS_OPENING = 3;
+    public static final int ELEVATOR_DOORS_CLOSING = 4;
 
     private SimpleBooleanProperty automaticMode = new SimpleBooleanProperty(false);
 
@@ -39,11 +38,10 @@ public class ElevatorViewModel implements Observer<Elevator> {
         this.elevatorModel.addObserver(this);
 
         automaticModeProperty().addListener((observableValue, oldValue, newValue) -> {
-            if(newValue){
-                elevatorModel.setControlMode(ControlMode.Automatic);
-            }
-            else {
-                elevatorModel.setControlMode(ControlMode.Manual);
+            if (Boolean.TRUE.equals(newValue)) {
+                elevatorModel.setControlMode(ControlMode.AUTOMATIC);
+            } else {
+                elevatorModel.setControlMode(ControlMode.MANUAL);
             }
         });
     }
@@ -109,22 +107,20 @@ public class ElevatorViewModel implements Observer<Elevator> {
     }
 
     public void setTarget(int floor) {
-        if(!elevatorModel.gotoTarget(floor)){
-        	AlarmsService.getInstance().addAlert("Failed to go to target", true);	
+        if (!elevatorModel.gotoTarget(floor)) {
+            AlarmsService.getInstance().addAlert("Failed to go to target", true);
         }
     }
 
     public void setDirection(int elevatorDirectionDown) {
-        if(!elevatorModel.sendCommittedDirection(elevatorDirectionDown)){
-        	AlarmsService.getInstance().addAlert("Failed to set committed direction", true);	
+        if (!elevatorModel.sendCommittedDirection(elevatorDirectionDown)) {
+            AlarmsService.getInstance().addAlert("Failed to set committed direction", true);
         }
     }
 
     @Override
     public void update(Observable<Elevator> observable) {
-    	
         var elevator = observable.getValue();
-        System.out.println("update " + elevator.getTargetFloor());
 
         acceleration.update(elevator.getAcceleration());
         currentFloor.update(elevator.getCurrentFloor());
@@ -133,8 +129,6 @@ public class ElevatorViewModel implements Observer<Elevator> {
         speed.update(elevator.getSpeed());
         targetFloor.update(elevator.getTargetFloor());
         weight.update(elevator.getWeight());
-       
-
         //TODO: floorbuttonactive, servicesfloor
     }
 }

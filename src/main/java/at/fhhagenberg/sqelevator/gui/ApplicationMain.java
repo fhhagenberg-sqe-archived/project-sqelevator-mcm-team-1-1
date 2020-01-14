@@ -30,7 +30,7 @@ public class ApplicationMain extends Application {
         }
 
         var elevatorController = new ElevatorController(elevatorService);
-        
+
         var buildingViewModel = new BuildingViewModel(elevatorController);
 
         var eccPane = new ElevatorControlCenterPane(buildingViewModel);
@@ -41,9 +41,7 @@ public class ApplicationMain extends Application {
         stage.setResizable(false);
         stage.setTitle(RESOURCE_BUNDLE.getString("title"));
         stage.getIcons().add(new Image("icons/ic_ecc.png"));
-        stage.setOnCloseRequest(windowEvent -> {
-            elevatorController.stopUpdates();
-        });
+        stage.setOnCloseRequest(windowEvent -> elevatorController.stopUpdates());
 
         //TODO: implement control algorithm
         var controlAlgorithm = new SimpleControlAlgorithm();

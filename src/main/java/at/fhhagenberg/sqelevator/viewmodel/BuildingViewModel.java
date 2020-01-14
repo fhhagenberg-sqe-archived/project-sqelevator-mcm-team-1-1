@@ -11,10 +11,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class BuildingViewModel implements IBuildingInitializedObserver, Observer<AlarmsService> {
-    private HashMap<Integer, ElevatorViewModel> elevatorViewModels = new HashMap<>();
-    private HashMap<Integer, FloorViewModel> floorViewModels = new HashMap<>();
+    private Map<Integer, ElevatorViewModel> elevatorViewModels = new HashMap<>();
+    private Map<Integer, FloorViewModel> floorViewModels = new HashMap<>();
 
     SimpleObjectProperty buildingConfiguration = new SimpleObjectProperty();
 
@@ -33,11 +34,11 @@ public class BuildingViewModel implements IBuildingInitializedObserver, Observer
         AlarmsService.getInstance().addObserver(this);
     }
 
-    public HashMap<Integer, ElevatorViewModel> getElevatorViewModels() {
+    public Map<Integer, ElevatorViewModel> getElevatorViewModels() {
         return elevatorViewModels;
     }
 
-    public HashMap<Integer, FloorViewModel> getFloorViewModels() {
+    public Map<Integer, FloorViewModel> getFloorViewModels() {
         return floorViewModels;
     }
 
@@ -64,13 +65,6 @@ public class BuildingViewModel implements IBuildingInitializedObserver, Observer
 	public void setCallInfo(String callInfo) {
 		this.callInfo.set(callInfo);
 	}
-//
-//    //to set the target in manual mode
-//    public void gotoTarget(int elevatorNumber, int target){
-//        elevatorController.gotoTarget(elevatorNumber, target);
-//    }
-//
-//    //TODO: add setCommittedDirection and setServicesFloors methods
 
     @Override
     public void initializationDone() {
