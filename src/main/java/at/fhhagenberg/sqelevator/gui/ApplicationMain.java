@@ -37,7 +37,7 @@ public class ApplicationMain extends Application {
 
         var elevatorController = new ElevatorController(elevatorService);
 
-        timer.schedule(new TimerTask() {
+        /*timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 AlarmsService.getInstance().addAlert("test");
@@ -49,7 +49,7 @@ public class ApplicationMain extends Application {
             public void run() {
                 AlarmsService.getInstance().addAlert("2. test", false);
             }
-        }, 2000);
+        }, 2000);*/
 
         var buildingViewModel = new BuildingViewModel(elevatorController);
 
