@@ -100,10 +100,10 @@ public class Elevator extends ObservableAdapter<Elevator> {
             capacity = newCapacity;
         }
 
-        var newAccelaration = elevatorService.getElevatorAccel(id);
-        if (newAccelaration != acceleration) {
+        var newAcceleration = elevatorService.getElevatorAccel(id);
+        if (newAcceleration != acceleration) {
             changed = true;
-            acceleration = newAccelaration;
+            acceleration = newAcceleration;
         }
 
         var newCurrentFloor = elevatorService.getElevatorFloor(id);

@@ -45,7 +45,6 @@ public class ElevatorController implements IElevatorController {
         };
 
         timer.scheduleAtFixedRate(updateTask, 0, updateInterval);
-        updateTask.run();   //run update task once right now
     }
 
     public void stopUpdates() {
