@@ -1,5 +1,6 @@
 package at.fhhagenberg.sqelevator.viewmodel;
 
+import at.fhhagenberg.sqelevator.model.AlarmsService;
 import at.fhhagenberg.sqelevator.model.ControlMode;
 import at.fhhagenberg.sqelevator.model.Elevator;
 import at.fhhagenberg.sqelevator.model.observers.Observable;
@@ -109,19 +110,21 @@ public class ElevatorViewModel implements Observer<Elevator> {
 
     public void setTarget(int floor) {
         if(!elevatorModel.gotoTarget(floor)){
-            //add alarm
+        	AlarmsService.getInstance().addAlert("Failed to go to target", true);	
         }
     }
 
     public void setDirection(int elevatorDirectionDown) {
         if(!elevatorModel.sendCommittedDirection(elevatorDirectionDown)){
-            //add alarm
+        	AlarmsService.getInstance().addAlert("Failed to set committed direction", true);	
         }
     }
 
     @Override
     public void update(Observable<Elevator> observable) {
+    	
         var elevator = observable.getValue();
+        System.out.println("update " + elevator.getTargetFloor());
 
         acceleration.update(elevator.getAcceleration());
         currentFloor.update(elevator.getCurrentFloor());
@@ -130,6 +133,7 @@ public class ElevatorViewModel implements Observer<Elevator> {
         speed.update(elevator.getSpeed());
         targetFloor.update(elevator.getTargetFloor());
         weight.update(elevator.getWeight());
+       
 
         //TODO: floorbuttonactive, servicesfloor
     }

@@ -1,5 +1,6 @@
 package at.fhhagenberg.sqelevator.gui;
 
+import at.fhhagenberg.sqelevator.viewmodel.AlarmViewModel;
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
 import at.fhhagenberg.sqelevator.viewmodel.ElevatorViewModel;
 import javafx.beans.binding.Bindings;
@@ -146,13 +147,16 @@ public class ElevatorPanel extends HBox {
 
             gridPane.add(manualToggle, i + 1, floorNum + 1);
 
-            Label payload = new Label("0");
+            Label payload = new Label("-");
+            payload.setId("p" + Integer.toString(i));
             gridPane.add(payload, i + 1, floorNum + 2);
 
-            Label speed = new Label("0");
+            Label speed = new Label("-");
+            speed.setId("s" + Integer.toString(i));
             gridPane.add(speed, i + 1, floorNum + 3);
 
-            Label targets = new Label("0");
+            Label targets = new Label("-");
+            targets.setId("t" + Integer.toString(i));
             gridPane.add(targets, i + 1, floorNum + 4);
         }
 
@@ -222,6 +226,10 @@ public class ElevatorPanel extends HBox {
                     // TODO reduce speed for the slider to move slower (as animation for elevator)
                     // TODO handle target floor for specific elevator (currently only for the first one)
                     liftSliders.get(0).setValue(floor - 1);
+                  
+                    // elevator reached floor, remove target 
+                    //Label targets = (Label) getScene().lookup("#t" + elevator);
+                    //targets.setText("-");  
                 } else {
 
                     String text = ((Group) event.getSource()).getId();
@@ -232,11 +240,13 @@ public class ElevatorPanel extends HBox {
                     int floor = Integer.parseInt(text.substring(text.indexOf(',') + 1));
 
                     buildingViewModel.getElevatorViewModels().get(elevator).setTarget(floor);
-                    //TODO: set correct direction
                     buildingViewModel.getElevatorViewModels().get(elevator).setDirection(ElevatorViewModel.ELEVATOR_DIRECTION_DOWN);
-
                     buildingViewModel.setCallInfo(String.format("Next target floor for elevator <%s> is %s", elevator + 1, floor +1));
 
+                    //set target floor text
+					Label targets = (Label) getScene().lookup("#t" + elevator);
+					targets.setText(Integer.toString(floor + 1));
+                    
                     // TODO reduce speed for the slider to move slower (as animation for elevator)
                     // TODO handle target floor for specific elevator (currently only for the first one)
                     //liftSliders.get(elevator).setValue(floor - 1); -> now done via viewmodel
