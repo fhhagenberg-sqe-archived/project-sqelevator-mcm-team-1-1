@@ -30,7 +30,7 @@ public class AlarmsService extends ObservableAdapter<AlarmsService> {
     }
 
     public void addAlert(String message) {
-        addAlert(message, true);
+        addAlert(message, false);
     }
 
     public void addAlert(String message, boolean isError) {
@@ -50,5 +50,10 @@ public class AlarmsService extends ObservableAdapter<AlarmsService> {
 
     public List<Alarm> getAlarms() {
         return alarms;
+    }
+    
+    public void clear() {
+    	alarms.clear();
+    	notifyListeners();
     }
 }

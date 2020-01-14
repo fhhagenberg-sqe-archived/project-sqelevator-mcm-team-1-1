@@ -30,7 +30,7 @@ public class ApplicationMain extends Application {
         }
 
         var elevatorController = new ElevatorController(elevatorService);
-
+        
         var buildingViewModel = new BuildingViewModel(elevatorController);
 
         var eccPane = new ElevatorControlCenterPane(buildingViewModel);
