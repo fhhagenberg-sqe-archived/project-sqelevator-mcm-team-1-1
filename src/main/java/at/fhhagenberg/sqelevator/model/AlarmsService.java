@@ -1,6 +1,7 @@
 package at.fhhagenberg.sqelevator.model;
 
 import at.fhhagenberg.sqelevator.model.observers.ObservableAdapter;
+import at.fhhagenberg.sqelevator.model.observers.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,13 @@ public class AlarmsService extends ObservableAdapter<AlarmsService> {
             instance = new AlarmsService();
 
         return instance;
+    }
+
+    @Override
+    public void addObserver(Observer<AlarmsService> observer) {
+        super.addObserver(observer);
+
+        observer.update(this);  //send all existing alarms as update to new observers
     }
 
     public void addAlert(String message) {

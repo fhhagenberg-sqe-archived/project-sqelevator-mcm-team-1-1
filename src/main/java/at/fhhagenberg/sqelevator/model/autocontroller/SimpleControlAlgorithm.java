@@ -22,7 +22,11 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
 
     @Override
     public void stop() {
-        //TODO
+        var building = elevatorController.getCurrentState();
+
+        for(Floor floor : building.getFloors()){
+            floor.removeObserver(this);
+        }
     }
 
 
