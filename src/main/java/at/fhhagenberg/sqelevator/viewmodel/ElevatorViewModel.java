@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.util.converter.NumberStringConverter;
 
 public class ElevatorViewModel implements Observer<Elevator> {
     public static final int ELEVATOR_DIRECTION_UP = 0;
@@ -22,16 +23,17 @@ public class ElevatorViewModel implements Observer<Elevator> {
 
     private SimpleBooleanProperty automaticMode = new SimpleBooleanProperty(false);
 
-    private SimpleIntegerProperty acceleration = new SimpleIntegerProperty(0);
-    private SimpleIntegerProperty currentFloor = new SimpleIntegerProperty(0);
-    private SimpleIntegerProperty currentDirection = new SimpleIntegerProperty(ELEVATOR_DIRECTION_UNCOMMITTED);
-    private SimpleIntegerProperty doorStatus = new SimpleIntegerProperty(0);
-    private SimpleIntegerProperty speed = new SimpleIntegerProperty(0);
-    private SimpleIntegerProperty targetFloor = new SimpleIntegerProperty(0);
-    private SimpleIntegerProperty weight = new SimpleIntegerProperty(0);
+    private SimpleIntegerProperty acceleration = new SimpleIntegerProperty(Integer.MIN_VALUE);
+    private SimpleIntegerProperty currentFloor = new SimpleIntegerProperty(Integer.MIN_VALUE);
+    private SimpleIntegerProperty currentDirection = new SimpleIntegerProperty(Integer.MIN_VALUE);
+    private SimpleIntegerProperty doorStatus = new SimpleIntegerProperty(Integer.MIN_VALUE);
+    private SimpleIntegerProperty speed = new SimpleIntegerProperty(Integer.MIN_VALUE);
+    private SimpleIntegerProperty targetFloor = new SimpleIntegerProperty(Integer.MIN_VALUE);
+    private SimpleIntegerProperty weight = new SimpleIntegerProperty(Integer.MIN_VALUE);
     //TODO: other properties (floorbuttonactive, servicesfloor)
 
     private SimpleStringProperty doorStatusText = new SimpleStringProperty("-");
+    private SimpleStringProperty targetFloorText = new SimpleStringProperty("-");
 
     private Elevator elevatorModel;
 
@@ -65,6 +67,11 @@ public class ElevatorViewModel implements Observer<Elevator> {
                 default:
                     doorStatusText.set("Error");
             }
+        });
+
+        targetFloorProperty().addListener((observableValue, s, newValue) -> {
+            var nsc = new NumberStringConverter();
+            targetFloorText.set(nsc.toString(convertFloorNumberForUi(newValue.intValue())));
         });
     }
 
@@ -136,6 +143,14 @@ public class ElevatorViewModel implements Observer<Elevator> {
         return doorStatusText;
     }
 
+    public String getTargetFloorText() {
+        return targetFloorText.get();
+    }
+
+    public SimpleStringProperty targetFloorTextProperty() {
+        return targetFloorText;
+    }
+
     public void setTargetAndDirection(int floor) {
         if (elevatorModel.gotoTarget(floor)) {
             if (floor < currentFloor.get()) {
@@ -169,5 +184,9 @@ public class ElevatorViewModel implements Observer<Elevator> {
             weight.set(elevator.getWeight());
             //TODO: floorbuttonactive, servicesfloor
         });
+    }
+
+    private int convertFloorNumberForUi(int floor){
+        return floor + 1;
     }
 }

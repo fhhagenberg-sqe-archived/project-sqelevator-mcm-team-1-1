@@ -46,7 +46,7 @@ public class ApplicationMain extends Application {
         //TODO: implement control algorithm
         var controlAlgorithm = new SimpleControlAlgorithm();
         controlAlgorithm.setElevatorController(elevatorController);
-        controlAlgorithm.start();
+        //controlAlgorithm.start();
 
         elevatorController.initialize();
         elevatorController.setUpdateInterval(250);

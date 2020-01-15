@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.control.LabeledMatchers.hasText;
 
+import javafx.util.converter.NumberStringConverter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
@@ -21,6 +22,8 @@ import javafx.stage.Stage;
 @ExtendWith(ApplicationExtension.class)
 public class GUIElevatorTests {
 
+	private NumberStringConverter nsc = new NumberStringConverter();
+
 	@Start
 	public void start(Stage stage) throws Exception {
 		new ApplicationMain().start(stage);
@@ -36,19 +39,19 @@ public class GUIElevatorTests {
 	@Test
 	public void testInitialStatePayload (FxRobot robot) {
 		Label payload = robot.lookup("#p0").query();
-		assertEquals("-", payload.getText());
+		assertEquals(nsc.toString(MockElevator.ELEVATOR_WEIGHT_MOCK_VALUE), payload.getText());
 	}
 
 	@Test
 	public void testInitialStateSpeed (FxRobot robot) {
 		Label speed = robot.lookup("#s0").query();
-		assertEquals("-", speed.getText());
+		assertEquals(nsc.toString(MockElevator.ELEVATOR_SPEED_MOCK_VALUE), speed.getText());
 	}
 
 	@Test
 	public void testInitialStateTargets(FxRobot robot) {
 		Label targets = robot.lookup("#t0").query();
-		assertEquals("-", targets.getText());
+		assertEquals("1", targets.getText());
 	}
 
 	@Test
@@ -89,9 +92,11 @@ public class GUIElevatorTests {
 	public void testTargetFloor(FxRobot robot) {
 		robot.clickOn("#M0");
 		robot.clickOn("#0,3");
+		robot.sleep(250);	//need to wait for model to run update()
 		verifyThat("#t0", hasText("4"));
 
 		robot.clickOn("#0,1");
+		robot.sleep(250);	//need to wait for model to run update()
 		verifyThat("#t0", hasText("2"));
 	}
 

@@ -147,7 +147,7 @@ public class ElevatorPanel extends HBox {
             gridPane.add(speed, i + 1, floorNum + 3);
 
             Label targets = new Label("-");
-            targets.textProperty().bindBidirectional(elevatorI.targetFloorProperty(), new NumberStringConverter());
+            targets.textProperty().bindBidirectional(elevatorI.targetFloorTextProperty());
             targets.setId("t" + Integer.toString(i));
             gridPane.add(targets, i + 1, floorNum + 4);
 
