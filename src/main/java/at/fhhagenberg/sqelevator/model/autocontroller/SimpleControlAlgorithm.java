@@ -22,7 +22,11 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
 
     @Override
     public void stop() {
-        //TODO
+        var building = elevatorController.getCurrentState();
+
+        for (Floor floor : building.getFloors()) {
+            floor.removeObserver(this);
+        }
     }
 
 
@@ -30,7 +34,7 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
     public void initializationDone() {
         var building = elevatorController.getCurrentState();
 
-        for(Floor floor : building.getFloors()){
+        for (Floor floor : building.getFloors()) {
             floor.addObserver(this);
         }
     }
@@ -40,12 +44,10 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
         var building = elevatorController.getCurrentState();
         var floor = observable.getValue();
 
-        if(floor.isDownButtonActive()){
-            if(building.getElevator(1).getControlMode() == ControlMode.Automatic){
-                building.getElevator(1).gotoTarget(floor.getId());
+        if (floor.isDownButtonActive() && building.getElevator(1).getControlMode() == ControlMode.AUTOMATIC) {
+            building.getElevator(1).gotoTarget(floor.getId());
 
-                System.out.println("Sending elevator to floor " + floor.getId());
-            }
+            System.out.println("Sending elevator to floor " + floor.getId());
         }
     }
 }

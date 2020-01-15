@@ -12,7 +12,7 @@ public class Elevator extends ObservableAdapter<Elevator> {
     private int id = 0;
     private IElevator elevatorService;
 
-    private ControlMode controlMode = ControlMode.Automatic;
+    private ControlMode controlMode = ControlMode.AUTOMATIC;
     private int direction = IElevator.ELEVATOR_DIRECTION_UNCOMMITTED;
     private int acceleration = 0;
     private int doorStatus = IElevator.ELEVATOR_DOORS_CLOSED;
@@ -48,6 +48,7 @@ public class Elevator extends ObservableAdapter<Elevator> {
 
     public void setControlMode(ControlMode controlMode) {
         this.controlMode = controlMode;
+        notifyListeners();
     }
 
     public int getTargetFloor() {
@@ -99,10 +100,10 @@ public class Elevator extends ObservableAdapter<Elevator> {
             capacity = newCapacity;
         }
 
-        var newAccelaration = elevatorService.getElevatorAccel(id);
-        if (newAccelaration != acceleration) {
+        var newAcceleration = elevatorService.getElevatorAccel(id);
+        if (newAcceleration != acceleration) {
             changed = true;
-            acceleration = newAccelaration;
+            acceleration = newAcceleration;
         }
 
         var newCurrentFloor = elevatorService.getElevatorFloor(id);
@@ -156,6 +157,11 @@ public class Elevator extends ObservableAdapter<Elevator> {
 //        }
 
         if (changed) {
+            if(currentFloor == targetFloor){
+                //special case to reset direction status
+                sendCommittedDirection(IElevator.ELEVATOR_DIRECTION_UNCOMMITTED);
+            }
+
             notifyListeners();
         }
     }

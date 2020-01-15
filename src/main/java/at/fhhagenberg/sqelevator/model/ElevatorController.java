@@ -6,14 +6,17 @@ import sqelevator.IElevator;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ElevatorController implements IElevatorController {
+    private Timer timer;
+
     private IElevator elevatorService;
 
     private Building building;
 
-    private int numElevators;
-    private int numFloors;
+    private long updateInterval = 1000;
 
     private List<IBuildingInitializedObserver> buildingInitializedObservers;
 
@@ -23,17 +26,45 @@ public class ElevatorController implements IElevatorController {
         buildingInitializedObservers = new ArrayList<>();
     }
 
-    public boolean isInitialized(){
+    public boolean isInitialized() {
         return building != null;
     }
 
-    public void update() {
+    public void startPeriodicUpdates() {
+        if (timer != null) {
+            return;
+        }
+
+        timer = new Timer();
+
+        var updateTask = new TimerTask() {
+            @Override
+            public void run() {
+                update();
+            }
+        };
+
+        timer.scheduleAtFixedRate(updateTask, 0, updateInterval);
+    }
+
+    public void stopUpdates() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+    }
+
+    private void update() {
+        if(!isInitialized()){
+            return;
+        }
+
         try {
             updateInternal();
         } catch (RemoteException e) {
             e.printStackTrace();
 
-            AlarmsService.getInstance().addAlert(e.getMessage());
+            AlarmsService.getInstance().addWarning(e.getMessage());
         }
     }
 
@@ -47,37 +78,43 @@ public class ElevatorController implements IElevatorController {
         return building;
     }
 
+    public void setUpdateInterval(long updateInterval) {
+        this.updateInterval = updateInterval;
+    }
 
     public void initialize() {
+        if(elevatorService == null){
+            AlarmsService.getInstance().addError("Elevator Service not initialized");
+
+            return;
+        }
+
         try {
-            numElevators = elevatorService.getElevatorNum();
-            numFloors = elevatorService.getFloorNum();
+            var numElevators = elevatorService.getElevatorNum();
+            var numFloors = elevatorService.getFloorNum();
 
             building = new Building(numElevators, numFloors, elevatorService);
         } catch (RemoteException e) {
             e.printStackTrace();
 
-            numElevators = 0;
-            numFloors = 0;
-
-            AlarmsService.getInstance().addAlert(e.getMessage());
+            AlarmsService.getInstance().addError(e.getMessage());
         }
 
         notifyBuildingInitialized();
     }
 
     private void updateInternal() throws RemoteException {
-        for(Elevator elevator : building.getElevators()){
+        for (Elevator elevator : building.getElevators()) {
             elevator.updateFromService();
         }
 
-        for(Floor floor : building.getFloors()){
+        for (Floor floor : building.getFloors()) {
             floor.updateFromService();
         }
     }
 
-    private void notifyBuildingInitialized(){
-        for(IBuildingInitializedObserver observer : buildingInitializedObservers){
+    private void notifyBuildingInitialized() {
+        for (IBuildingInitializedObserver observer : buildingInitializedObservers) {
             observer.initializationDone();
         }
     }
