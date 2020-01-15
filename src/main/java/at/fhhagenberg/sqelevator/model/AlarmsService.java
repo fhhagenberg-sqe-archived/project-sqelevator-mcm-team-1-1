@@ -29,7 +29,11 @@ public class AlarmsService extends ObservableAdapter<AlarmsService> {
         observer.update(this);  //send all existing alarms as update to new observers
     }
 
-    public void addAlert(String message) {
+    public void addError(String message) {
+        addAlert(message, true);
+    }
+
+    public void addWarning(String message) {
         addAlert(message, false);
     }
 

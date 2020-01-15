@@ -100,7 +100,7 @@ public class GUIElevatorTests {
 		String message = "Test alarm";
 
 		AlarmsService.getInstance().clear();
-		AlarmsService.getInstance().addAlert(message);
+		AlarmsService.getInstance().addWarning(message);
 
 		TableView<AlarmViewModel> tableView = robot.lookup("#alarms-table").query();
 		AlarmViewModel item = tableView.getItems().get(0);
@@ -115,9 +115,9 @@ public class GUIElevatorTests {
 		String message3 = "Test alarm 3";
 
 		AlarmsService.getInstance().clear();
-		AlarmsService.getInstance().addAlert(message1);
-		AlarmsService.getInstance().addAlert(message2);
-		AlarmsService.getInstance().addAlert(message3);
+		AlarmsService.getInstance().addWarning(message1);
+		AlarmsService.getInstance().addWarning(message2);
+		AlarmsService.getInstance().addWarning(message3);
 
 		TableView<AlarmViewModel> tableView = robot.lookup("#alarms-table").query();
 

@@ -26,7 +26,7 @@ public class ApplicationMain extends Application {
         } catch (Exception e) {
             e.printStackTrace();
 
-            AlarmsService.getInstance().addAlert(e.getMessage());
+            AlarmsService.getInstance().addWarning(e.getMessage());
         }
 
         var elevatorController = new ElevatorController(elevatorService);
@@ -35,7 +35,7 @@ public class ApplicationMain extends Application {
 
         var eccPane = new ElevatorControlCenterPane(buildingViewModel);
 
-        var scene = new Scene(eccPane, 1000, 600);
+        var scene = new Scene(eccPane, 1000, 650);
         scene.getStylesheets().add("styles.css");
         stage.setScene(scene);
         stage.setResizable(false);

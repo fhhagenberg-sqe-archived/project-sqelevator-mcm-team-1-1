@@ -5,9 +5,10 @@ import at.fhhagenberg.sqelevator.model.ControlMode;
 import at.fhhagenberg.sqelevator.model.Elevator;
 import at.fhhagenberg.sqelevator.model.observers.Observable;
 import at.fhhagenberg.sqelevator.model.observers.Observer;
-import at.fhhagenberg.sqelevator.utils.UpdateIntegerProperty;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 public class ElevatorViewModel implements Observer<Elevator> {
     public static final int ELEVATOR_DIRECTION_UP = 0;
@@ -21,14 +22,16 @@ public class ElevatorViewModel implements Observer<Elevator> {
 
     private SimpleBooleanProperty automaticMode = new SimpleBooleanProperty(false);
 
-    private UpdateIntegerProperty acceleration = new UpdateIntegerProperty(0);
-    private UpdateIntegerProperty currentFloor = new UpdateIntegerProperty(0);
-    private UpdateIntegerProperty currentDirection = new UpdateIntegerProperty(ELEVATOR_DIRECTION_UNCOMMITTED);
-    private UpdateIntegerProperty doorStatus = new UpdateIntegerProperty(ELEVATOR_DOORS_CLOSED);
-    private UpdateIntegerProperty speed = new UpdateIntegerProperty(0);
-    private UpdateIntegerProperty targetFloor = new UpdateIntegerProperty(0);
-    private UpdateIntegerProperty weight = new UpdateIntegerProperty(0);
+    private SimpleIntegerProperty acceleration = new SimpleIntegerProperty(0);
+    private SimpleIntegerProperty currentFloor = new SimpleIntegerProperty(0);
+    private SimpleIntegerProperty currentDirection = new SimpleIntegerProperty(ELEVATOR_DIRECTION_UNCOMMITTED);
+    private SimpleIntegerProperty doorStatus = new SimpleIntegerProperty(0);
+    private SimpleIntegerProperty speed = new SimpleIntegerProperty(0);
+    private SimpleIntegerProperty targetFloor = new SimpleIntegerProperty(0);
+    private SimpleIntegerProperty weight = new SimpleIntegerProperty(0);
     //TODO: other properties (floorbuttonactive, servicesfloor)
+
+    private SimpleStringProperty doorStatusText = new SimpleStringProperty("-");
 
     private Elevator elevatorModel;
 
@@ -42,6 +45,25 @@ public class ElevatorViewModel implements Observer<Elevator> {
                 elevatorModel.setControlMode(ControlMode.AUTOMATIC);
             } else {
                 elevatorModel.setControlMode(ControlMode.MANUAL);
+            }
+        });
+
+        doorStatusProperty().addListener((observableValue, number, newStatus) -> {
+            switch (newStatus.intValue()) {
+                case ELEVATOR_DOORS_OPEN:
+                    doorStatusText.set("Open");
+                    break;
+                case ELEVATOR_DOORS_CLOSED:
+                    doorStatusText.set("Closed");
+                    break;
+                case ELEVATOR_DOORS_OPENING:
+                    doorStatusText.set("Opening");
+                    break;
+                case ELEVATOR_DOORS_CLOSING:
+                    doorStatusText.set("Closing");
+                    break;
+                default:
+                    doorStatusText.set("Error");
             }
         });
     }
@@ -70,7 +92,7 @@ public class ElevatorViewModel implements Observer<Elevator> {
         return currentDirection.get();
     }
 
-    public UpdateIntegerProperty currentDirectionProperty() {
+    public SimpleIntegerProperty currentDirectionProperty() {
         return currentDirection;
     }
 
@@ -78,7 +100,7 @@ public class ElevatorViewModel implements Observer<Elevator> {
         return doorStatus.get();
     }
 
-    public UpdateIntegerProperty doorStatusProperty() {
+    public SimpleIntegerProperty doorStatusProperty() {
         return doorStatus;
     }
 
@@ -86,7 +108,7 @@ public class ElevatorViewModel implements Observer<Elevator> {
         return speed.get();
     }
 
-    public UpdateIntegerProperty speedProperty() {
+    public SimpleIntegerProperty speedProperty() {
         return speed;
     }
 
@@ -94,7 +116,7 @@ public class ElevatorViewModel implements Observer<Elevator> {
         return targetFloor.get();
     }
 
-    public UpdateIntegerProperty targetFloorProperty() {
+    public SimpleIntegerProperty targetFloorProperty() {
         return targetFloor;
     }
 
@@ -102,15 +124,30 @@ public class ElevatorViewModel implements Observer<Elevator> {
         return weight.get();
     }
 
-    public UpdateIntegerProperty weightProperty() {
+    public SimpleIntegerProperty weightProperty() {
         return weight;
     }
 
-    public void setTarget(int floor) {
-        if (!elevatorModel.gotoTarget(floor)) {
+    public String getDoorStatusText() {
+        return doorStatusText.get();
+    }
+
+    public SimpleStringProperty doorStatusTextProperty() {
+        return doorStatusText;
+    }
+
+    public void setTargetAndDirection(int floor) {
+        if (elevatorModel.gotoTarget(floor)) {
+            if (floor < currentFloor.get()) {
+                setDirection(ElevatorViewModel.ELEVATOR_DIRECTION_DOWN);
+            } else {
+                setDirection(ElevatorViewModel.ELEVATOR_DIRECTION_UP);
+            }
+        } else {
             AlarmsService.getInstance().addAlert("Failed to go to target", true);
         }
     }
+
 
     public void setDirection(int elevatorDirectionDown) {
         if (!elevatorModel.sendCommittedDirection(elevatorDirectionDown)) {
@@ -122,13 +159,15 @@ public class ElevatorViewModel implements Observer<Elevator> {
     public void update(Observable<Elevator> observable) {
         var elevator = observable.getValue();
 
-        acceleration.update(elevator.getAcceleration());
-        currentFloor.update(elevator.getCurrentFloor());
-        currentDirection.update(elevator.getDirection());
-        doorStatus.update(elevator.getDoorStatus());
-        speed.update(elevator.getSpeed());
-        targetFloor.update(elevator.getTargetFloor());
-        weight.update(elevator.getWeight());
-        //TODO: floorbuttonactive, servicesfloor
+        Platform.runLater(() -> {   //run update in UI thread
+            acceleration.set(elevator.getAcceleration());
+            currentFloor.set(elevator.getCurrentFloor());
+            currentDirection.set(elevator.getDirection());
+            doorStatus.set(elevator.getDoorStatus());
+            speed.set(elevator.getSpeed());
+            targetFloor.set(elevator.getTargetFloor());
+            weight.set(elevator.getWeight());
+            //TODO: floorbuttonactive, servicesfloor
+        });
     }
 }

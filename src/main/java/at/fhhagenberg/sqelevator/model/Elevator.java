@@ -157,6 +157,11 @@ public class Elevator extends ObservableAdapter<Elevator> {
 //        }
 
         if (changed) {
+            if(currentFloor == targetFloor){
+                //special case to reset direction status
+                sendCommittedDirection(IElevator.ELEVATOR_DIRECTION_UNCOMMITTED);
+            }
+
             notifyListeners();
         }
     }

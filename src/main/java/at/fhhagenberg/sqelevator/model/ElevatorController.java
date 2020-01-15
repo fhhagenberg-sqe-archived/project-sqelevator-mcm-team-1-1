@@ -48,19 +48,23 @@ public class ElevatorController implements IElevatorController {
     }
 
     public void stopUpdates() {
-        if(timer != null){
+        if (timer != null) {
             timer.cancel();
             timer = null;
         }
     }
 
     private void update() {
+        if(!isInitialized()){
+            return;
+        }
+
         try {
             updateInternal();
         } catch (RemoteException e) {
             e.printStackTrace();
 
-            AlarmsService.getInstance().addAlert(e.getMessage());
+            AlarmsService.getInstance().addWarning(e.getMessage());
         }
     }
 
@@ -79,6 +83,12 @@ public class ElevatorController implements IElevatorController {
     }
 
     public void initialize() {
+        if(elevatorService == null){
+            AlarmsService.getInstance().addError("Elevator Service not initialized");
+
+            return;
+        }
+
         try {
             var numElevators = elevatorService.getElevatorNum();
             var numFloors = elevatorService.getFloorNum();
@@ -87,7 +97,7 @@ public class ElevatorController implements IElevatorController {
         } catch (RemoteException e) {
             e.printStackTrace();
 
-            AlarmsService.getInstance().addAlert(e.getMessage());
+            AlarmsService.getInstance().addError(e.getMessage());
         }
 
         notifyBuildingInitialized();
