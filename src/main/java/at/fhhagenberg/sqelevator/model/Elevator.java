@@ -142,19 +142,19 @@ public class Elevator extends ObservableAdapter<Elevator> {
             weight = newWeight;
         }
 
-        //TODO:
-//        var newFloorButtons = elevatorService.getElevatorButton();
-//        if(newFloorButtons != floorButtons){
-//            changed = true;
-//            floorButtons = newFloorButtons;
-//        }
-
-        //TODO:
-//        var newServicesFloors = elevatorService.getServicesFloors(id, floor);
-//        if(newServicesFloors != servicedFloors){
-//            changed = true;
-//            servicedFloors = newServicesFloors;
-//        }
+        TODO:
+        for(int i = 0; i < floorButtons.size(); i++) {
+            var newServicedFloor = elevatorService.getServicesFloors(id, i);
+            if(newServicedFloor != servicedFloors.get(i)) {
+                changed = true;
+                servicedFloors.set(i, newServicedFloor);
+            }
+            var newFloorButton = elevatorService.getElevatorButton(id, i);
+            if(newFloorButton != floorButtons.get(i)){
+                changed = true;
+                floorButtons.set(i, newFloorButton);
+            }
+        }
 
         if (changed) {
             if(currentFloor == targetFloor){

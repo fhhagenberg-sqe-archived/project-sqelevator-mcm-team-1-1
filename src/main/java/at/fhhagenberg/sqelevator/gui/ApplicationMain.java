@@ -4,6 +4,7 @@ import at.fhhagenberg.sqelevator.model.AlarmsService;
 import at.fhhagenberg.sqelevator.model.ElevatorController;
 import at.fhhagenberg.sqelevator.model.autocontroller.SimpleControlAlgorithm;
 import at.fhhagenberg.sqelevator.services.MockElevatorServiceFactory;
+import at.fhhagenberg.sqelevator.services.RMIElevatorServiceFactory;
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -18,7 +19,7 @@ public class ApplicationMain extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        var elevatorFactory = new MockElevatorServiceFactory();
+        var elevatorFactory = new RMIElevatorServiceFactory();
         IElevator elevatorService = null;
 
         try {
@@ -46,7 +47,7 @@ public class ApplicationMain extends Application {
         //TODO: implement control algorithm
         var controlAlgorithm = new SimpleControlAlgorithm();
         controlAlgorithm.setElevatorController(elevatorController);
-        //controlAlgorithm.start();
+        controlAlgorithm.start();
 
         elevatorController.initialize();
         elevatorController.setUpdateInterval(250);

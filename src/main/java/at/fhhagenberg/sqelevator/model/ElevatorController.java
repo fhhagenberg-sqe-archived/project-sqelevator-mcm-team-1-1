@@ -106,6 +106,7 @@ public class ElevatorController implements IElevatorController {
     private void updateInternal() throws RemoteException {
         for (Elevator elevator : building.getElevators()) {
             elevator.updateFromService();
+
         }
 
         for (Floor floor : building.getFloors()) {
