@@ -19,7 +19,7 @@ public class ApplicationMain extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        var elevatorFactory = new RMIElevatorServiceFactory();
+        var elevatorFactory = new MockElevatorServiceFactory();
         IElevator elevatorService = null;
 
         try {
