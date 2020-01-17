@@ -114,6 +114,7 @@
                         <version>2.22.2</version>
                         <configuration>
                             <excludes>
+                                <!-- Skip UI Tests: they dont work in GitHub Actions -->
                                 <exclude>**/GUIElevatorTests*.java</exclude>
                             </excludes>
                         </configuration>
