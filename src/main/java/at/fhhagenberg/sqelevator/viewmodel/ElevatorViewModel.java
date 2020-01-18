@@ -6,10 +6,13 @@ import at.fhhagenberg.sqelevator.model.Elevator;
 import at.fhhagenberg.sqelevator.model.observers.Observable;
 import at.fhhagenberg.sqelevator.model.observers.Observer;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.util.converter.NumberStringConverter;
+
+import java.util.ArrayList;
 
 public class ElevatorViewModel implements Observer<Elevator> {
     public static final int ELEVATOR_DIRECTION_UP = 0;
@@ -31,6 +34,8 @@ public class ElevatorViewModel implements Observer<Elevator> {
     private SimpleIntegerProperty targetFloor = new SimpleIntegerProperty(Integer.MIN_VALUE);
     private SimpleIntegerProperty weight = new SimpleIntegerProperty(Integer.MIN_VALUE);
     //TODO: other properties (floorbuttonactive, servicesfloor)
+    private ArrayList<SimpleBooleanProperty> floorbuttonActive = new ArrayList<>();
+    private ArrayList<SimpleBooleanProperty>  servicedfloorActive = new ArrayList<>();
 
     private SimpleStringProperty doorStatusText = new SimpleStringProperty("-");
     private SimpleStringProperty targetFloorText = new SimpleStringProperty("-");
@@ -41,6 +46,12 @@ public class ElevatorViewModel implements Observer<Elevator> {
         this.elevatorModel = elevatorModel;
 
         this.elevatorModel.addObserver(this);
+
+        for(int i = 0; i < elevatorModel.getNumFloors(); i++) {
+            this.floorbuttonActive.add(new SimpleBooleanProperty(false));
+            this.servicedfloorActive.add(new SimpleBooleanProperty(false));
+        }
+
 
         automaticModeProperty().addListener((observableValue, oldValue, newValue) -> {
             if (Boolean.TRUE.equals(newValue)) {
@@ -82,6 +93,10 @@ public class ElevatorViewModel implements Observer<Elevator> {
     public SimpleBooleanProperty automaticModeProperty() {
         return automaticMode;
     }
+
+    public SimpleBooleanProperty floorbuttonActiveProperty(int floor) { return floorbuttonActive.get(floor); }
+
+    public SimpleBooleanProperty servicedfloorActiveProperty(int floor) { return servicedfloorActive.get(floor); }
 
     public void setAutomaticMode(boolean automaticMode) {
         this.automaticMode.set(automaticMode);
@@ -182,6 +197,11 @@ public class ElevatorViewModel implements Observer<Elevator> {
             speed.set(elevator.getSpeed());
             targetFloor.set(elevator.getTargetFloor());
             weight.set(elevator.getWeight());
+
+            for(int i = 0; i < elevatorModel.getNumFloors(); i++) {
+                floorbuttonActive.add(new SimpleBooleanProperty(elevator.isFloorButtonActive(i)));
+                servicedfloorActive.add(new SimpleBooleanProperty(elevator.getServicesFloors(i)));
+            }
             //TODO: floorbuttonactive, servicesfloor
         });
     }

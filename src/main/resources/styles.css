@@ -12,7 +12,7 @@
 }
 
 #elevator-grid {
-	-fx-vgap: 15;
+	-fx-vgap: 5;
 	-fx-hgap: 20;
 	-fx-padding: 10 10 10 10;
 	-fx-alignment: CENTER;

@@ -10,6 +10,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.*;
@@ -36,6 +37,8 @@ public class ElevatorPanel extends HBox {
 
     private void buildUI() {
         this.getChildren().clear();
+
+        ScrollPane scrollPane = new ScrollPane();
 
         GridPane gridPane = new GridPane();
         gridPane.setId("elevator-grid");
@@ -109,7 +112,10 @@ public class ElevatorPanel extends HBox {
 
                 var innerCircle = new Circle();
                 innerCircle.setRadius(6);
+                //
                 innerCircle.setFill(Color.YELLOW);
+                // TODO
+                //innerCircle.fillProperty().bind(Bindings.when(buildingViewModel.getElevatorViewModels().get(j).floorbuttonActiveProperty(j)).then(Color.GREEN).otherwise(Color.YELLOW));
                 var outerCircle = new Circle();
                 outerCircle.setRadius(8);
                 outerCircle.fillProperty().bind(Bindings.when(elevatorI.automaticModeProperty()).then(Color.ORANGE).otherwise(Color.LIGHTGRAY));
@@ -204,10 +210,14 @@ public class ElevatorPanel extends HBox {
         Label doorsLabel = new Label("Doors");
         gridPane.add(doorsLabel, 0, floorNum + 5);
 
-
         gridPane.prefWidthProperty().bind(this.widthProperty());
         gridPane.prefHeightProperty().bind(this.heightProperty());
-        this.getChildren().add(gridPane);
+
+        scrollPane.setContent(gridPane);
+
+        VBox.setVgrow(this, Priority.ALWAYS);
+
+        this.getChildren().add(scrollPane);
     }
 
     private class TargetFloorSelectionEventHandler implements EventHandler<Event> {
