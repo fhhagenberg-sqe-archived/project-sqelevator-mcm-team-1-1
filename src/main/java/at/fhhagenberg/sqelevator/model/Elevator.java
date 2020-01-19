@@ -145,7 +145,6 @@ public class Elevator extends ObservableAdapter<Elevator> {
             weight = newWeight;
         }
 
-        TODO:
         for(int i = 0; i < floorButtons.size(); i++) {
             var newServicedFloor = elevatorService.getServicesFloors(id, i);
             if(newServicedFloor != servicedFloors.get(i)) {

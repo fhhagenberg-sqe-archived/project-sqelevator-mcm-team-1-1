@@ -42,7 +42,9 @@ public class MockElevator implements IElevator {
         for (int i = 0; i < numFloors; i++) {
             floors.add(new MockFloorState());
         }
+    }
 
+    public void setupTestData(){
         setupServicedFloors();
         setupFloorButtons();
     }

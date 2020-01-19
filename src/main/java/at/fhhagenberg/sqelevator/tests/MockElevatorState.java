@@ -5,7 +5,7 @@ import sqelevator.IElevator;
 import java.util.ArrayList;
 import java.util.List;
 
-class MockElevatorState {
+public class MockElevatorState {
     private int direction = IElevator.ELEVATOR_DIRECTION_UNCOMMITTED;
     private int acceleration = 0;
     private int doorStatus = IElevator.ELEVATOR_DOORS_CLOSED;

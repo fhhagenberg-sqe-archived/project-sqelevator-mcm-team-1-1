@@ -1,6 +1,6 @@
 package at.fhhagenberg.sqelevator.tests;
 
-class MockFloorState {
+public class MockFloorState {
     private boolean upButtonActive = false;
     private boolean downButtonActive = false;
 
