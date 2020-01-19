@@ -33,7 +33,7 @@ public class ElevatorViewModel implements Observer<Elevator> {
     private SimpleIntegerProperty speed = new SimpleIntegerProperty(Integer.MIN_VALUE);
     private SimpleIntegerProperty targetFloor = new SimpleIntegerProperty(Integer.MIN_VALUE);
     private SimpleIntegerProperty weight = new SimpleIntegerProperty(Integer.MIN_VALUE);
-    //TODO: other properties (floorbuttonactive, servicesfloor)
+
     private ArrayList<SimpleBooleanProperty> floorbuttonActive = new ArrayList<>();
     private ArrayList<SimpleBooleanProperty>  servicedfloorActive = new ArrayList<>();
 
@@ -48,8 +48,8 @@ public class ElevatorViewModel implements Observer<Elevator> {
         this.elevatorModel.addObserver(this);
 
         for(int i = 0; i < elevatorModel.getNumFloors(); i++) {
-            this.floorbuttonActive.add(new SimpleBooleanProperty(false));
-            this.servicedfloorActive.add(new SimpleBooleanProperty(false));
+            this.floorbuttonActive.add(i, new SimpleBooleanProperty(false));
+            this.servicedfloorActive.add(i, new SimpleBooleanProperty(false));
         }
 
 
@@ -199,10 +199,9 @@ public class ElevatorViewModel implements Observer<Elevator> {
             weight.set(elevator.getWeight());
 
             for(int i = 0; i < elevatorModel.getNumFloors(); i++) {
-                floorbuttonActive.add(new SimpleBooleanProperty(elevator.isFloorButtonActive(i)));
-                servicedfloorActive.add(new SimpleBooleanProperty(elevator.getServicesFloors(i)));
+                floorbuttonActive.get(i).set(elevator.isFloorButtonActive(i));
+                servicedfloorActive.get(i).set(elevator.getServicesFloors(i));
             }
-            //TODO: floorbuttonactive, servicesfloor
         });
     }
 

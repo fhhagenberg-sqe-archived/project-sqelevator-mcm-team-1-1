@@ -106,22 +106,23 @@ public class ElevatorPanel extends HBox {
             GridPane buttons = new GridPane();
 
             for (int j = 0; j < floorNum; j++) {
-
+                var floorIdReverse = (floorNum - j - 1);
                 var elevatorLight = new Group();
-                elevatorLight.setId(i + "," + (floorNum - j - 1));
+                elevatorLight.setId(i + "," + floorIdReverse);
 
                 var innerCircle = new Circle();
                 innerCircle.setRadius(6);
                 //
                 innerCircle.setFill(Color.YELLOW);
                 // TODO
-                //innerCircle.fillProperty().bind(Bindings.when(buildingViewModel.getElevatorViewModels().get(j).floorbuttonActiveProperty(j)).then(Color.GREEN).otherwise(Color.YELLOW));
+                innerCircle.fillProperty().bind(Bindings.when(elevatorI.floorbuttonActiveProperty(floorIdReverse)).then(Color.GREEN).otherwise(Color.YELLOW));
                 var outerCircle = new Circle();
                 outerCircle.setRadius(8);
                 outerCircle.fillProperty().bind(Bindings.when(elevatorI.automaticModeProperty()).then(Color.ORANGE).otherwise(Color.LIGHTGRAY));
                 elevatorLight.getChildren().addAll(outerCircle, innerCircle);
 
                 elevatorLight.disableProperty().bind(elevatorI.automaticModeProperty().not());
+                elevatorLight.visibleProperty().bind(elevatorI.servicedfloorActiveProperty(floorIdReverse)); //hide button if elevator does not service this floor
                 elevatorLight.setOnMouseReleased(new TargetFloorSelectionEventHandler());
 
                 buttons.add(elevatorLight, 0, j);
