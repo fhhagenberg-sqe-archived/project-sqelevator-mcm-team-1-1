@@ -19,7 +19,7 @@ public class ApplicationMain extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        var elevatorFactory = new MockElevatorServiceFactory();
+        var elevatorFactory = new RMIElevatorServiceFactory();
         IElevator elevatorService = null;
 
         try {
@@ -36,10 +36,10 @@ public class ApplicationMain extends Application {
 
         var eccPane = new ElevatorControlCenterPane(buildingViewModel);
 
-        var scene = new Scene(eccPane, 1000, 650);
+        var scene = new Scene(eccPane, 1000, 600);
         scene.getStylesheets().add("styles.css");
         stage.setScene(scene);
-        stage.setResizable(false);
+        stage.setResizable(true);
         stage.setTitle(RESOURCE_BUNDLE.getString("title"));
         stage.getIcons().add(new Image("icons/ic_ecc.png"));
         stage.setOnCloseRequest(windowEvent -> elevatorController.stopUpdates());
