@@ -7,6 +7,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
@@ -139,21 +140,29 @@ public class ElevatorPanel extends HBox {
             Label payload = new Label("-");
             payload.textProperty().bindBidirectional(elevatorI.weightProperty(), new NumberStringConverter());
             payload.setId("p" + Integer.toString(i));
+            payload.setMinWidth(70);
+            payload.setMaxWidth(70);
             gridPane.add(payload, i + 1, floorNum + 2);
 
             Label speed = new Label("-");
             speed.textProperty().bindBidirectional(elevatorI.speedProperty(), new NumberStringConverter());
             speed.setId("s" + Integer.toString(i));
+            speed.setMinWidth(70);
+            speed.setMaxWidth(70);
             gridPane.add(speed, i + 1, floorNum + 3);
 
-            Label targets = new Label("-");
-            targets.textProperty().bindBidirectional(elevatorI.targetFloorTextProperty());
-            targets.setId("t" + Integer.toString(i));
-            gridPane.add(targets, i + 1, floorNum + 4);
+            Label target = new Label("-");
+            target.textProperty().bindBidirectional(elevatorI.targetFloorTextProperty());
+            target.setId("t" + Integer.toString(i));
+            target.setMinWidth(70);
+            target.setMaxWidth(70);
+            gridPane.add(target, i + 1, floorNum + 4);
 
             Label doors = new Label("-");
             doors.textProperty().bindBidirectional(elevatorI.doorStatusTextProperty());
             doors.setId("d" + Integer.toString(i));
+            doors.setMinWidth(70);
+            doors.setMaxWidth(70);
             gridPane.add(doors, i + 1, floorNum + 5);
         }
 
