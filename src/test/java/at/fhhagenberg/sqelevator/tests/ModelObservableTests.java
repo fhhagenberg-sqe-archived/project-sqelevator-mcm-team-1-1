@@ -9,8 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class ModelObservableTests {
@@ -78,6 +77,17 @@ public class ModelObservableTests {
         floor1.updateFromService(); //manual update bc. periodic update not used in tests
 
         assertEquals(true, floor1.isUpButtonActive());
+        verify(observer, times(1)).update(floor1);
+
+        floor0.removeObserver(observer);
+        floor1.removeObserver(observer);
+
+        elevatorService.getFloors().get(FLOOR_0).setDownButtonActive(false);
+        elevatorService.getFloors().get(FLOOR_1).setUpButtonActive(false);
+        floor1.updateFromService(); //manual update bc. periodic update not used in tests
+
+        //number of calls is still 1 -> no more updates
+        verify(observer, times(1)).update(floor0);
         verify(observer, times(1)).update(floor1);
     }
 }

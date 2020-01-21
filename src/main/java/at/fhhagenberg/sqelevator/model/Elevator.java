@@ -6,7 +6,6 @@ import sqelevator.IElevator;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Elevator extends ObservableAdapter<Elevator> {
     private int id = 0;
@@ -204,19 +203,6 @@ public class Elevator extends ObservableAdapter<Elevator> {
     @Override
     public Elevator getValue() {
         return this;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Elevator elevator = (Elevator) o;
-        return id == elevator.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 
     public int getNumFloors() {
