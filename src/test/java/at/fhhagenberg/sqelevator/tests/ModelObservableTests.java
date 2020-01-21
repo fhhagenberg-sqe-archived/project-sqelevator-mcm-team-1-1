@@ -1,5 +1,6 @@
 package at.fhhagenberg.sqelevator.tests;
 
+import at.fhhagenberg.sqelevator.mock.MockElevator;
 import at.fhhagenberg.sqelevator.model.Elevator;
 import at.fhhagenberg.sqelevator.model.ElevatorController;
 import at.fhhagenberg.sqelevator.model.Floor;

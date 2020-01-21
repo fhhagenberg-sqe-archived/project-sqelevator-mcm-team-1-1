@@ -3,7 +3,7 @@ package at.fhhagenberg.sqelevator.gui;
 import at.fhhagenberg.sqelevator.model.AlarmsService;
 import at.fhhagenberg.sqelevator.model.ElevatorController;
 import at.fhhagenberg.sqelevator.model.autocontroller.SimpleControlAlgorithm;
-import at.fhhagenberg.sqelevator.services.MockElevatorServiceFactory;
+import at.fhhagenberg.sqelevator.services.IElevatorServiceFactory;
 import at.fhhagenberg.sqelevator.services.RMIElevatorServiceFactory;
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
 import javafx.application.Application;
@@ -17,13 +17,18 @@ import java.util.ResourceBundle;
 public class ApplicationMain extends Application {
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("elevatorCC");
 
+    private IElevatorServiceFactory elevatorServiceFactory = new RMIElevatorServiceFactory();
+
+    public void setElevatorServiceFactory(IElevatorServiceFactory elevatorServiceFactory) {
+        this.elevatorServiceFactory = elevatorServiceFactory;
+    }
+
     @Override
     public void start(Stage stage) throws Exception {
-        var elevatorFactory = new RMIElevatorServiceFactory();
         IElevator elevatorService = null;
 
         try {
-            elevatorService = elevatorFactory.getElevatorService();
+            elevatorService = elevatorServiceFactory.getElevatorService();
         } catch (Exception e) {
             e.printStackTrace();
 

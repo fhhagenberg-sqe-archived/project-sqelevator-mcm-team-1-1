@@ -1,5 +1,7 @@
 package at.fhhagenberg.sqelevator.tests;
 
+import at.fhhagenberg.sqelevator.mock.MockElevator;
+import at.fhhagenberg.sqelevator.mock.MockElevatorException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sqelevator.IElevator;

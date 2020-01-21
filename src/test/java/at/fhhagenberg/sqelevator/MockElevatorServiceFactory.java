@@ -1,6 +1,7 @@
-package at.fhhagenberg.sqelevator.services;
+package at.fhhagenberg.sqelevator;
 
-import at.fhhagenberg.sqelevator.tests.MockElevator;
+import at.fhhagenberg.sqelevator.mock.MockElevator;
+import at.fhhagenberg.sqelevator.services.IElevatorServiceFactory;
 import sqelevator.IElevator;
 
 public class MockElevatorServiceFactory implements IElevatorServiceFactory {
