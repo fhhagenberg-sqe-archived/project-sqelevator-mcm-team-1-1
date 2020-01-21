@@ -42,37 +42,6 @@ public class MockElevator implements IElevator {
         for (int i = 0; i < numFloors; i++) {
             floors.add(new MockFloorState());
         }
-
-        setupServicedFloors();
-        setupFloorButtons();
-    }
-
-    private void setupServicedFloors() {
-        for (int elevator = 0; elevator < numElevators; elevator++) {
-            for (int floor = 0; floor < numFloors; floor++) {
-
-                boolean service;
-                if (floor == 0) {
-                    service = true; //Elevators always stop in the first floor
-                } else if ((floor + 1) % (elevator + 1) == 0) {
-                    service = true; //Elevators only stop in floors with where the number is a multiple of the elevator number
-                } else {
-                    service = false;
-                }
-
-                elevators.get(elevator).setServicesFloors(floor, service);
-            }
-        }
-    }
-
-    private void setupFloorButtons() {
-        for (int i = 0; i < numFloors; i++) {
-            if (i % 2 == 0) {
-                floors.get(i).setUpButtonActive(true);
-            } else {
-                floors.get(i).setDownButtonActive(true);
-            }
-        }
     }
 
     public List<MockElevatorState> getElevators() {
