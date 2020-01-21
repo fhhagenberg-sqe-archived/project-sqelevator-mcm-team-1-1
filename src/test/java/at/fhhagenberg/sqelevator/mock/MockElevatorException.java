@@ -1,4 +1,4 @@
-package at.fhhagenberg.sqelevator.tests;
+package at.fhhagenberg.sqelevator.mock;
 
 import java.rmi.RemoteException;
 

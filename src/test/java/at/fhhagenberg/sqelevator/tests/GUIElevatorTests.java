@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.control.LabeledMatchers.hasText;
 
+import at.fhhagenberg.sqelevator.mock.MockElevator;
+import at.fhhagenberg.sqelevator.MockElevatorServiceFactory;
 import javafx.util.converter.NumberStringConverter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +28,9 @@ public class GUIElevatorTests {
 
 	@Start
 	public void start(Stage stage) throws Exception {
-		new ApplicationMain().start(stage);
+		var app = new ApplicationMain();
+		app.setElevatorServiceFactory(new MockElevatorServiceFactory());
+		app.start(stage);
 	}
 
 

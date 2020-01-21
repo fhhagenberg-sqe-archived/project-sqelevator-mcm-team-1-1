@@ -17,7 +17,7 @@ public class BuildingViewModel implements IBuildingInitializedObserver, Observer
     private Map<Integer, ElevatorViewModel> elevatorViewModels = new HashMap<>();
     private Map<Integer, FloorViewModel> floorViewModels = new HashMap<>();
 
-    SimpleObjectProperty buildingConfiguration = new SimpleObjectProperty();
+    private SimpleObjectProperty buildingConfiguration = new SimpleObjectProperty();
 
     private ObservableList<AlarmViewModel> observableList = FXCollections.observableArrayList();
     private SimpleListProperty<AlarmViewModel> alarmViewModels = new SimpleListProperty<>(observableList);

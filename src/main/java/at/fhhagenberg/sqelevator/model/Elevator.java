@@ -6,7 +6,6 @@ import sqelevator.IElevator;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Elevator extends ObservableAdapter<Elevator> {
     private int id = 0;
@@ -25,12 +24,15 @@ public class Elevator extends ObservableAdapter<Elevator> {
     private List<Boolean> servicedFloors;
     private List<Boolean> floorButtons;
 
+    private int numFloors = 0;
+
     public Elevator(int id, int numFloors, IElevator elevatorService) {
         this.id = id;
         this.elevatorService = elevatorService;
 
         servicedFloors = new ArrayList<>(numFloors);
         floorButtons = new ArrayList<>(numFloors);
+        this.numFloors = numFloors;
 
         for (int i = 0; i < numFloors; i++) {
             servicedFloors.add(i, true);
@@ -142,7 +144,6 @@ public class Elevator extends ObservableAdapter<Elevator> {
             weight = newWeight;
         }
 
-        TODO:
         for(int i = 0; i < floorButtons.size(); i++) {
             var newServicedFloor = elevatorService.getServicesFloors(id, i);
             if(newServicedFloor != servicedFloors.get(i)) {
@@ -204,16 +205,7 @@ public class Elevator extends ObservableAdapter<Elevator> {
         return this;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Elevator elevator = (Elevator) o;
-        return id == elevator.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public int getNumFloors() {
+        return this.numFloors;
     }
 }
