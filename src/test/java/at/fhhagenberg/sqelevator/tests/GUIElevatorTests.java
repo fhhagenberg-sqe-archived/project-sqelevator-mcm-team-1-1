@@ -69,7 +69,6 @@ public class GUIElevatorTests {
 	public void testEnableMode(FxRobot robot) {
 		robot.clickOn("#M0");
 		robot.clickOn("#0,3");
-		robot.sleep(250);
 		verifyThat("#statusbar", hasText("Next target floor for elevator <1> is 4"));
 	}
 
@@ -77,11 +76,9 @@ public class GUIElevatorTests {
 	public void testEnableAutomaticMode(FxRobot robot) {
 		robot.clickOn("#M0");
 		robot.clickOn("#0,3");
-		robot.sleep(250);
 		verifyThat("#statusbar", hasText("Next target floor for elevator <1> is 4"));
 		robot.clickOn("#M0");
 		robot.clickOn("#0,5");
-		robot.sleep(250);
 		verifyThat("#statusbar", hasText("Next target floor for elevator <1> is 4"));
 	}
 
