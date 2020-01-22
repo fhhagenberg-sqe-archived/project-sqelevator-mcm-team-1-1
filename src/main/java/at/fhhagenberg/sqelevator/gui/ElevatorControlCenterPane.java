@@ -8,9 +8,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -88,7 +86,15 @@ public class ElevatorControlCenterPane extends BorderPane {
     }
     
     private Node getControlPanel() {
-        return new HBox();
+        var hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER_RIGHT);
+
+        var editServicesFloorButton = new ToggleButton("Edit Services Floors");
+        editServicesFloorButton.selectedProperty().bindBidirectional(buildingViewModel.enableEditModeProperty());
+
+        hBox.getChildren().addAll(editServicesFloorButton);
+
+        return hBox;
     }
 
     private Node getStatusBar() {

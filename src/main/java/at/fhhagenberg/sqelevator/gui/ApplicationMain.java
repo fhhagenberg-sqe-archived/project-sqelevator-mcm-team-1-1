@@ -17,7 +17,12 @@ import java.util.ResourceBundle;
 public class ApplicationMain extends Application {
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("elevatorCC");
 
+    private boolean disableAutomaticControl = false;
     private IElevatorServiceFactory elevatorServiceFactory = new RMIElevatorServiceFactory();
+
+    public void setDisableAutomaticControl(boolean disableAutomaticControl) {
+        this.disableAutomaticControl = disableAutomaticControl;
+    }
 
     public void setElevatorServiceFactory(IElevatorServiceFactory elevatorServiceFactory) {
         this.elevatorServiceFactory = elevatorServiceFactory;
@@ -41,7 +46,7 @@ public class ApplicationMain extends Application {
 
         var eccPane = new ElevatorControlCenterPane(buildingViewModel);
 
-        var scene = new Scene(eccPane, 1000, 600);
+        var scene = new Scene(eccPane, 1200, 800);
         scene.getStylesheets().add("styles.css");
         stage.setScene(scene);
         stage.setResizable(true);
@@ -49,10 +54,11 @@ public class ApplicationMain extends Application {
         stage.getIcons().add(new Image("icons/ic_ecc.png"));
         stage.setOnCloseRequest(windowEvent -> elevatorController.stopUpdates());
 
-        //TODO: implement control algorithm
-        var controlAlgorithm = new SimpleControlAlgorithm();
-        controlAlgorithm.setElevatorController(elevatorController);
-        controlAlgorithm.start();
+        if(!disableAutomaticControl){
+            var controlAlgorithm = new SimpleControlAlgorithm();
+            controlAlgorithm.setElevatorController(elevatorController);
+            controlAlgorithm.start();
+        }
 
         elevatorController.initialize();
         elevatorController.setUpdateInterval(250);

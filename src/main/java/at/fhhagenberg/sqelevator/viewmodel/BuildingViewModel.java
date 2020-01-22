@@ -4,6 +4,7 @@ import at.fhhagenberg.sqelevator.model.*;
 import at.fhhagenberg.sqelevator.model.observers.IBuildingInitializedObserver;
 import at.fhhagenberg.sqelevator.model.observers.Observable;
 import at.fhhagenberg.sqelevator.model.observers.Observer;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,6 +19,8 @@ public class BuildingViewModel implements IBuildingInitializedObserver, Observer
     private Map<Integer, FloorViewModel> floorViewModels = new HashMap<>();
 
     private SimpleObjectProperty buildingConfiguration = new SimpleObjectProperty();
+
+    private SimpleBooleanProperty enableEditMode = new SimpleBooleanProperty(false);
 
     private ObservableList<AlarmViewModel> observableList = FXCollections.observableArrayList();
     private SimpleListProperty<AlarmViewModel> alarmViewModels = new SimpleListProperty<>(observableList);
@@ -44,6 +47,18 @@ public class BuildingViewModel implements IBuildingInitializedObserver, Observer
 
     public SimpleObjectProperty buildingConfigurationProperty() {
         return buildingConfiguration;
+    }
+
+    public boolean isEnableEditMode() {
+        return enableEditMode.get();
+    }
+
+    public SimpleBooleanProperty enableEditModeProperty() {
+        return enableEditMode;
+    }
+
+    public void setEnableEditMode(boolean enableEditMode) {
+        this.enableEditMode.set(enableEditMode);
     }
 
     public ObservableList<AlarmViewModel> getAlarmViewModels() {
