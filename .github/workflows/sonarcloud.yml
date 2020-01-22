@@ -17,5 +17,5 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: mvn -B -Psonarcloud clean compile verify sonar:sonar -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+      run: xvfb-run mvn -B clean compile verify sonar:sonar -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
       
