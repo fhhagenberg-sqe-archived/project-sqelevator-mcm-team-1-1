@@ -31,3 +31,10 @@
 	-fx-padding: 8 0;
 }
 
+.check-box > .box {
+    -fx-padding: 4px;
+}
+
+.check-box > .box > .mark {
+    -fx-padding: 4px;
+}

@@ -6,7 +6,6 @@ import at.fhhagenberg.sqelevator.model.Elevator;
 import at.fhhagenberg.sqelevator.model.observers.Observable;
 import at.fhhagenberg.sqelevator.model.observers.Observer;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -50,8 +49,12 @@ public class ElevatorViewModel implements Observer<Elevator> {
         for(int i = 0; i < elevatorModel.getNumFloors(); i++) {
             this.floorbuttonActive.add(i, new SimpleBooleanProperty(false));
             this.servicedfloorActive.add(i, new SimpleBooleanProperty(false));
-        }
 
+            final var floor = i;
+            this.servicedfloorActive.get(i).addListener((observableValue, oldValue, newValue) -> {
+                this.setServicesFloor(floor, newValue);
+            });
+        }
 
         automaticModeProperty().addListener((observableValue, oldValue, newValue) -> {
             if (Boolean.TRUE.equals(newValue)) {
@@ -182,6 +185,12 @@ public class ElevatorViewModel implements Observer<Elevator> {
     public void setDirection(int elevatorDirectionDown) {
         if (!elevatorModel.sendCommittedDirection(elevatorDirectionDown)) {
             AlarmsService.getInstance().addAlert("Failed to set committed direction", true);
+        }
+    }
+
+    public void setServicesFloor(int floor, boolean service){
+        if(!elevatorModel.sendServicesFloors(floor, service)){
+            AlarmsService.getInstance().addAlert("Failed to set services floor", true);
         }
     }
 

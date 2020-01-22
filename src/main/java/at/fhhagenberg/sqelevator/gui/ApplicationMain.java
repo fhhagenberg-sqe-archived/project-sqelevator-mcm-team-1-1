@@ -41,7 +41,7 @@ public class ApplicationMain extends Application {
 
         var eccPane = new ElevatorControlCenterPane(buildingViewModel);
 
-        var scene = new Scene(eccPane, 1000, 600);
+        var scene = new Scene(eccPane, 1200, 800);
         scene.getStylesheets().add("styles.css");
         stage.setScene(scene);
         stage.setResizable(true);
