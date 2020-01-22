@@ -58,9 +58,9 @@ public class ElevatorViewModel implements Observer<Elevator> {
 
         automaticModeProperty().addListener((observableValue, oldValue, newValue) -> {
             if (Boolean.TRUE.equals(newValue)) {
-                elevatorModel.setControlMode(ControlMode.AUTOMATIC);
-            } else {
                 elevatorModel.setControlMode(ControlMode.MANUAL);
+            } else {
+                elevatorModel.setControlMode(ControlMode.AUTOMATIC);
             }
         });
 

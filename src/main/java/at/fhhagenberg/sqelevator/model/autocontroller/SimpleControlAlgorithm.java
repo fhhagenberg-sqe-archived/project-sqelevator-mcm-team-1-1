@@ -93,6 +93,10 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
     }
 
     public void updateElevator(Elevator elevator) {
+        if(elevator.getControlMode() == ControlMode.MANUAL){
+            return; //skip elevators in manual mode
+        }
+
         var building = elevatorController.getCurrentState();
 
         int targetfloor = -1;
@@ -125,6 +129,10 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
 
         // Iterate through all elevators
         for(Elevator e : building.getElevators()) {
+            if(e.getControlMode() == ControlMode.MANUAL){
+                continue;   //skip elevators in manual mode
+            }
+
             System.out.println(e.getServicesFloors(floor.getId()));
 
             // only make use of this elevator when this is a floor that that elevator is servicing and the mode is automatic and no other elevator is sent to this floor
@@ -146,8 +154,10 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
 
         // If still no elevator handles this floor then use first available one
         if(targetElevator == null) {
-
             for(Elevator e : building.getElevators()) {
+                if(e.getControlMode() == ControlMode.MANUAL){
+                    continue;   //skip elevators in manual mode
+                }
 
                 if(e.getServicesFloors(floor.getId()) && e.getControlMode() == ControlMode.AUTOMATIC && targetElevator == null && e.getDoorStatus() == IElevator.ELEVATOR_DOORS_OPEN) {
 
