@@ -29,6 +29,7 @@ public class GUIElevatorTests {
 	@Start
 	public void start(Stage stage) throws Exception {
 		var app = new ApplicationMain();
+		app.setDisableAutomaticControl(true);
 		app.setElevatorServiceFactory(new MockElevatorServiceFactory());
 		app.start(stage);
 	}
