@@ -23,7 +23,7 @@ public class ElevatorViewModel implements Observer<Elevator> {
     public static final int ELEVATOR_DOORS_OPENING = 3;
     public static final int ELEVATOR_DOORS_CLOSING = 4;
 
-    private SimpleBooleanProperty automaticMode = new SimpleBooleanProperty(false);
+    private SimpleBooleanProperty manualMode = new SimpleBooleanProperty(false);
 
     private SimpleIntegerProperty acceleration = new SimpleIntegerProperty(Integer.MIN_VALUE);
     private SimpleIntegerProperty currentFloor = new SimpleIntegerProperty(Integer.MIN_VALUE);
@@ -56,7 +56,7 @@ public class ElevatorViewModel implements Observer<Elevator> {
             });
         }
 
-        automaticModeProperty().addListener((observableValue, oldValue, newValue) -> {
+        manualModeProperty().addListener((observableValue, oldValue, newValue) -> {
             if (Boolean.TRUE.equals(newValue)) {
                 elevatorModel.setControlMode(ControlMode.MANUAL);
             } else {
@@ -89,20 +89,20 @@ public class ElevatorViewModel implements Observer<Elevator> {
         });
     }
 
-    public boolean isAutomaticMode() {
-        return automaticMode.get();
+    public boolean isManualMode() {
+        return manualMode.get();
     }
 
-    public SimpleBooleanProperty automaticModeProperty() {
-        return automaticMode;
+    public SimpleBooleanProperty manualModeProperty() {
+        return manualMode;
     }
 
     public SimpleBooleanProperty floorbuttonActiveProperty(int floor) { return floorbuttonActive.get(floor); }
 
     public SimpleBooleanProperty servicedfloorActiveProperty(int floor) { return servicedfloorActive.get(floor); }
 
-    public void setAutomaticMode(boolean automaticMode) {
-        this.automaticMode.set(automaticMode);
+    public void setManualMode(boolean manualMode) {
+        this.manualMode.set(manualMode);
     }
 
     public SimpleIntegerProperty accelerationProperty() {
@@ -206,6 +206,7 @@ public class ElevatorViewModel implements Observer<Elevator> {
             speed.set(elevator.getSpeed());
             targetFloor.set(elevator.getTargetFloor());
             weight.set(elevator.getWeight());
+            manualMode.set(elevator.getControlMode().equals(ControlMode.MANUAL));
 
             for(int i = 0; i < elevatorModel.getNumFloors(); i++) {
                 floorbuttonActive.get(i).set(elevator.isFloorButtonActive(i));

@@ -6,11 +6,12 @@ import javafx.beans.binding.Bindings;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
-import javafx.scene.control.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -112,10 +113,10 @@ public class ElevatorPanel extends HBox {
                 innerCircle.fillProperty().bind(Bindings.when(elevatorI.floorbuttonActiveProperty(floorIdReverse)).then(Color.GREEN).otherwise(Color.YELLOW));
                 var outerCircle = new Circle();
                 outerCircle.setRadius(8);
-                outerCircle.fillProperty().bind(Bindings.when(elevatorI.automaticModeProperty()).then(Color.ORANGE).otherwise(Color.LIGHTGRAY));
+                outerCircle.fillProperty().bind(Bindings.when(elevatorI.manualModeProperty()).then(Color.ORANGE).otherwise(Color.LIGHTGRAY));
                 elevatorLight.getChildren().addAll(outerCircle, innerCircle);
 
-                elevatorLight.disableProperty().bind(elevatorI.automaticModeProperty().not());
+                elevatorLight.disableProperty().bind(elevatorI.manualModeProperty().not());
                 elevatorLight.visibleProperty().bind(elevatorI.servicedfloorActiveProperty(floorIdReverse).and(buildingViewModel.enableEditModeProperty().not())); //hide button if elevator does not service this floor
                 elevatorLight.managedProperty().bind(elevatorLight.visibleProperty());
                 elevatorLight.setOnMouseReleased(new TargetFloorSelectionEventHandler());
@@ -142,7 +143,7 @@ public class ElevatorPanel extends HBox {
             var manualToggle = new ToggleButton("M");
             manualToggle.setId("M" + Integer.toString(i));
             manualToggle.disableProperty().bindBidirectional(buildingViewModel.enableEditModeProperty());
-            manualToggle.selectedProperty().bindBidirectional(elevatorI.automaticModeProperty());
+            manualToggle.selectedProperty().bindBidirectional(elevatorI.manualModeProperty());
 
             gridPane.add(manualToggle, i + 1, floorNum + 1);
 
@@ -185,7 +186,7 @@ public class ElevatorPanel extends HBox {
 
         var floorsHeading = new Label("Floors");
         gridPane.add(floorsHeading, elevatorNum + 2, 0);
-        gridPane.setColumnSpan(floorsHeading,2);
+        gridPane.setColumnSpan(floorsHeading, 2);
 
         for (int j = 0; j < floorNum; j++) {
             VBox buttons = new VBox();
@@ -234,37 +235,22 @@ public class ElevatorPanel extends HBox {
 
         @Override
         public void handle(Event event) {
-            if (true/*!buildingViewModel.isAutomaticMode()*/) { // Set the target floor
+            String text = ((Group) event.getSource()).getId();
 
-                if (event.getSource() instanceof Label) {
-                    int floor = Integer.parseInt(((Label) event.getSource()).getText());
-                    buildingViewModel.setCallInfo(String.format("Next target floor for elevator <1> is %s", floor));
+            int elevatorId = Integer.parseInt(text.substring(0, text.indexOf(',')));
+            int floorId = Integer.parseInt(text.substring(text.indexOf(',') + 1));
 
-                    // TODO reduce speed for the slider to move slower (as animation for elevator)
-                    // TODO handle target floor for specific elevator (currently only for the first one)
-                    liftSliders.get(0).setValue(floor - 1);
+            var elevator = buildingViewModel.getElevatorViewModels().get(elevatorId);
 
-                    // elevator reached floor, remove target 
-                    //Label targets = (Label) getScene().lookup("#t" + elevator);
-                    //targets.setText("-");  
-                } else {
-
-                    String text = ((Group) event.getSource()).getId();
-
-                    int elevatorId = Integer.parseInt(text.substring(0, text.indexOf(',')));
-                    int floorId = Integer.parseInt(text.substring(text.indexOf(',') + 1));
-
-                    var elevator = buildingViewModel.getElevatorViewModels().get(elevatorId);
-                    elevator.setTargetAndDirection(floorId);
-
-                    buildingViewModel.setCallInfo(String.format("Next target floor for elevator <%s> is %s", elevatorId + 1, floorId + 1));
-
-                    // TODO reduce speed for the slider to move slower (as animation for elevator)
-                    // TODO handle target floor for specific elevator (currently only for the first one)
-                    //liftSliders.get(elevator).setValue(floor - 1); -> now done via viewmodel
-                }
-
+            if (!elevator.isManualMode()) {
+                return;
             }
+
+            elevator.setTargetAndDirection(floorId);
+
+            buildingViewModel.setCallInfo(String.format("Next target floor for elevator <%s> is %s", elevatorId + 1, floorId + 1));
+
+            // TODO reduce speed for the slider to move slower (as animation for elevator)
         }
     }
 
