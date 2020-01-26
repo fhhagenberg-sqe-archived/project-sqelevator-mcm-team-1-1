@@ -6,9 +6,7 @@ import java.rmi.RemoteException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 
 import at.fhhagenberg.sqelevator.mock.MockElevator;
 import at.fhhagenberg.sqelevator.mock.MockElevatorState;
@@ -56,89 +54,67 @@ public class AutocontrollerTest {
 
 	@Test
 	public void testUpdateElevatorAutomatic() throws RemoteException {
-
-		MockElevatorState elevatorState = elevatorService.getElevators().get(ELEVATOR_0);
-		elevatorState.setFloorButtonActive(FLOOR_1, true);
-		elevatorState.setDoorStatus(IElevator.ELEVATOR_DOORS_OPEN);
-
-		Elevator elevator = elevatorController.getCurrentState().getElevator(ELEVATOR_0);
-		elevator.updateFromService();
-
-		assertEquals(FLOOR_1, elevatorState.getCurrentFloor());
-
+		updateElevator(ELEVATOR_0, FLOOR_1, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.AUTOMATIC);
+		assertEquals(FLOOR_1, elevatorService.getElevators().get(ELEVATOR_0).getCurrentFloor());
 	}
 
 	// To cover line 122, but not sure what to assert
 	@Test
 	public void testUpdateElevatorAutomaticDoorStatusClosed() throws RemoteException {
-
-		MockElevatorState elevatorState = elevatorService.getElevators().get(ELEVATOR_0);
-		elevatorState.setFloorButtonActive(FLOOR_1, true);
-		// elevatorState.setDoorStatus(IElevator.ELEVATOR_DOORS_OPEN);
-
-		elevatorService.getFloors().get(FLOOR_1).setUpButtonActive(true);
-
-		Elevator elevator = elevatorController.getCurrentState().getElevator(ELEVATOR_0);
-		elevator.updateFromService();
+		updateElevator(ELEVATOR_0, FLOOR_1, IElevator.ELEVATOR_DOORS_CLOSED, ControlMode.AUTOMATIC);
 		// assert?
 	}
 
 	@Test
 	public void testUpdateElevatorManual() throws RemoteException {
-		MockElevatorState elevatorState = elevatorService.getElevators().get(ELEVATOR_0);
-		elevatorState.setFloorButtonActive(FLOOR_1, true);
-		elevatorState.setDoorStatus(IElevator.ELEVATOR_DOORS_OPEN);
-
-		elevatorService.getFloors().get(FLOOR_1).setUpButtonActive(true);
-
-		Elevator elevator = elevatorController.getCurrentState().getElevator(ELEVATOR_0);
-		elevator.setControlMode(ControlMode.MANUAL);
-		elevator.updateFromService(); // should not update because of manual mode
-
-		assertEquals(FLOOR_0, elevatorState.getCurrentFloor());
+		// should not update because of manual mode
+		updateElevator(ELEVATOR_0, FLOOR_1, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.MANUAL);
+		assertEquals(FLOOR_0, elevatorService.getElevators().get(ELEVATOR_0).getCurrentFloor());
 	}
 
 	@Test
 	public void testUpdateFloorAutomatic() throws RemoteException {
-		MockElevatorState elevatorState = elevatorService.getElevators().get(ELEVATOR_0);
-		elevatorState.setDoorStatus(IElevator.ELEVATOR_DOORS_OPEN);
-
-		// Up
-		elevatorService.getFloors().get(FLOOR_1).setUpButtonActive(true);
-
-		var building = elevatorController.getCurrentState();
-		building.getElevator(ELEVATOR_0).updateFromService();
-
-		var floor1 = building.getFloor(FLOOR_1);
-		floor1.updateFromService();
-
+		updateFloor(ELEVATOR_0, FLOOR_1, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.AUTOMATIC); // up
 		assertEquals(FLOOR_1, elevatorService.getElevators().get(ELEVATOR_0).getCurrentFloor());
 
-		// Down
-		elevatorService.getFloors().get(FLOOR_0).setDownButtonActive(true);
-
-		var floor0 = building.getFloor(FLOOR_0);
-		building.getElevator(ELEVATOR_0).updateFromService();
-		floor0.updateFromService();
-
+		updateFloor(ELEVATOR_0, FLOOR_0, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.AUTOMATIC); // down
 		assertEquals(FLOOR_0, elevatorService.getElevators().get(ELEVATOR_0).getCurrentFloor());
 	}
 
 	@Test
 	public void testUpdateFloorManual() throws RemoteException {
-		MockElevatorState elevatorState = elevatorService.getElevators().get(ELEVATOR_0);
-		elevatorState.setDoorStatus(IElevator.ELEVATOR_DOORS_OPEN);
-
-		elevatorService.getFloors().get(FLOOR_1).setUpButtonActive(true);
-
-		var building = elevatorController.getCurrentState();
-		building.getElevator(ELEVATOR_0).setControlMode(ControlMode.MANUAL);
-		building.getElevator(ELEVATOR_0).updateFromService();
-
-		var floor1 = building.getFloor(FLOOR_1);
-		floor1.updateFromService(); // should not update because of manual mode
-
+		// should not update because of manual mode
+		updateFloor(ELEVATOR_0, FLOOR_0, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.MANUAL);
 		assertEquals(FLOOR_0, elevatorService.getElevators().get(ELEVATOR_0).getCurrentFloor());
 	}
 
+	private void updateElevator(int elevator, int targetFloor, int doorStatus, ControlMode mode)
+			throws RemoteException {
+		MockElevatorState elevatorState = elevatorService.getElevators().get(elevator);
+		elevatorState.setFloorButtonActive(targetFloor, true);
+		elevatorState.setDoorStatus(doorStatus);
+
+		Elevator e = elevatorController.getCurrentState().getElevator(elevator);
+		e.setControlMode(mode);
+		e.updateFromService();
+	}
+
+	private void updateFloor(int elevator, int targetFloor, int doorStatus, ControlMode mode) throws RemoteException {
+		MockElevatorState elevatorState = elevatorService.getElevators().get(elevator);
+		elevatorState.setDoorStatus(doorStatus);
+
+		if (elevatorState.getCurrentFloor() < targetFloor) {
+			elevatorService.getFloors().get(targetFloor).setUpButtonActive(true);
+		} else {
+			elevatorService.getFloors().get(targetFloor).setDownButtonActive(true);
+		}
+
+		var building = elevatorController.getCurrentState();
+		Elevator e = building.getElevator(elevator);
+		e.setControlMode(mode);
+		e.updateFromService();
+
+		var floor = building.getFloor(targetFloor);
+		floor.updateFromService();
+	}
 }
