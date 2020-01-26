@@ -3,10 +3,14 @@ package at.fhhagenberg.sqelevator.tests;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.rmi.RemoteException;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import at.fhhagenberg.sqelevator.mock.MockElevator;
 import at.fhhagenberg.sqelevator.mock.MockElevatorState;
@@ -19,13 +23,11 @@ import sqelevator.IElevator;
 public class AutocontrollerTest {
 
 	private static final Integer ELEVATOR_CAPACITY = 10;
-	private static final Integer NUM_ELEVATORS = 2;
+	private static final Integer NUM_ELEVATORS = 1;
 	private static final Integer NUM_FLOORS = 3;
 	private static final Integer FLOOR_HEIGHT = 5;
 
 	private static final int ELEVATOR_0 = 0;
-	private static final int ELEVATOR_1 = 1;
-
 	public static final int FLOOR_0 = 0;
 	public static final int FLOOR_1 = 1;
 	public static final int FLOOR_2 = 2;
@@ -52,10 +54,17 @@ public class AutocontrollerTest {
 		controlAlgorithm.stop();
 	}
 
-	@Test
-	public void testUpdateElevatorAutomatic() throws RemoteException {
-		updateElevator(ELEVATOR_0, FLOOR_1, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.AUTOMATIC);
-		assertEquals(FLOOR_1, elevatorService.getElevators().get(ELEVATOR_0).getCurrentFloor());
+	/**
+	 * Checks if the algorithm controls the elevator. After setting the target floor, the elevator should reach the destination and change it's current floor. 
+	 * @param elevator
+	 * @param targetFloor
+	 * @throws RemoteException
+	 */
+	@ParameterizedTest
+	@MethodSource("paramsElevatorTests")
+	public void testUpdateElevatorAutomatic(int elevator, int targetFloor) throws RemoteException {
+		updateElevator(elevator, targetFloor, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.AUTOMATIC);
+		assertEquals(targetFloor, elevatorService.getElevators().get(elevator).getCurrentFloor());
 	}
 
 	// To cover line 122, but not sure what to assert
@@ -65,27 +74,54 @@ public class AutocontrollerTest {
 		// assert?
 	}
 
-	@Test
-	public void testUpdateElevatorManual() throws RemoteException {
+	/**
+	 * Checks if the control algorithm handles the manual mode correctly, it should not take over the elevator. 
+	 * @param elevator
+	 * @param targetFloor
+	 * @throws RemoteException
+	 */
+	@ParameterizedTest
+	@MethodSource("paramsElevatorTests")
+	public void testUpdateElevatorManual(int elevator, int targetFloor) throws RemoteException {
 		// should not update because of manual mode
-		updateElevator(ELEVATOR_0, FLOOR_1, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.MANUAL);
-		assertEquals(FLOOR_0, elevatorService.getElevators().get(ELEVATOR_0).getCurrentFloor());
+		updateElevator(elevator, targetFloor, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.MANUAL);
+		assertEquals(FLOOR_0, elevatorService.getElevators().get(elevator).getCurrentFloor());
 	}
 
-	@Test
-	public void testUpdateFloorAutomatic() throws RemoteException {
-		updateFloor(ELEVATOR_0, FLOOR_1, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.AUTOMATIC); // up
-		assertEquals(FLOOR_1, elevatorService.getElevators().get(ELEVATOR_0).getCurrentFloor());
 
-		updateFloor(ELEVATOR_0, FLOOR_0, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.AUTOMATIC); // down
-		assertEquals(FLOOR_0, elevatorService.getElevators().get(ELEVATOR_0).getCurrentFloor());
+	@ParameterizedTest
+	@MethodSource("paramsFloorTests")
+	public void testUpdateFloorAutomatic(int elevator, int targetFloorUp, int targetFloorDown) throws RemoteException {
+		updateFloor(elevator, targetFloorUp, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.AUTOMATIC); // up
+		assertEquals(targetFloorUp, elevatorService.getElevators().get(elevator).getCurrentFloor());
+
+		updateFloor(elevator, targetFloorDown, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.AUTOMATIC); // down
+		assertEquals(targetFloorDown, elevatorService.getElevators().get(elevator).getCurrentFloor());
 	}
 
-	@Test
-	public void testUpdateFloorManual() throws RemoteException {
+	@ParameterizedTest
+	@MethodSource("paramsFloorTests")
+	public void testUpdateFloorManual(int elevator, int targetFloor) throws RemoteException {
 		// should not update because of manual mode
-		updateFloor(ELEVATOR_0, FLOOR_0, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.MANUAL);
-		assertEquals(FLOOR_0, elevatorService.getElevators().get(ELEVATOR_0).getCurrentFloor());
+		updateFloor(elevator, targetFloor, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.MANUAL);
+		assertEquals(FLOOR_0, elevatorService.getElevators().get(elevator).getCurrentFloor());
+	}
+
+	private static Stream<Arguments> paramsElevatorTests() {
+		return Stream.of( //
+				Arguments.of(ELEVATOR_0, FLOOR_0), //
+				Arguments.of(ELEVATOR_0, FLOOR_1), //
+				Arguments.of(ELEVATOR_0, FLOOR_2) //
+		);
+	}
+
+	private static Stream<Arguments> paramsFloorTests() {
+		return Stream.of( //
+				Arguments.of(ELEVATOR_0, FLOOR_0, FLOOR_0), //
+				Arguments.of(ELEVATOR_0, FLOOR_1, FLOOR_0), //
+				Arguments.of(ELEVATOR_0, FLOOR_2, FLOOR_0), //
+				Arguments.of(ELEVATOR_0, FLOOR_2, FLOOR_1), //
+				Arguments.of(ELEVATOR_0, FLOOR_2, FLOOR_2));
 	}
 
 	private void updateElevator(int elevator, int targetFloor, int doorStatus, ControlMode mode)
