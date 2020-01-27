@@ -55,7 +55,10 @@ public class AutocontrollerTest {
 	}
 
 	/**
-	 * Checks if the algorithm controls the elevator. After setting the target floor, the elevator should reach the destination and change it's current floor. 
+	 * Checks if the algorithm controls the elevator. After setting the target
+	 * floor, the elevator should reach the destination and change it's current
+	 * floor.
+	 * 
 	 * @param elevator
 	 * @param targetFloor
 	 * @throws RemoteException
@@ -67,15 +70,10 @@ public class AutocontrollerTest {
 		assertEquals(targetFloor, elevatorService.getElevators().get(elevator).getCurrentFloor());
 	}
 
-	// To cover line 122, but not sure what to assert
-	@Test
-	public void testUpdateElevatorAutomaticDoorStatusClosed() throws RemoteException {
-		updateElevator(ELEVATOR_0, FLOOR_1, IElevator.ELEVATOR_DOORS_CLOSED, ControlMode.AUTOMATIC);
-		// assert?
-	}
-
 	/**
-	 * Checks if the control algorithm handles the manual mode correctly, it should not take over the elevator. 
+	 * Checks if the control algorithm handles the manual mode correctly, it should
+	 * not take over the elevator and update the floor.
+	 * 
 	 * @param elevator
 	 * @param targetFloor
 	 * @throws RemoteException
@@ -83,12 +81,20 @@ public class AutocontrollerTest {
 	@ParameterizedTest
 	@MethodSource("paramsElevatorTests")
 	public void testUpdateElevatorManual(int elevator, int targetFloor) throws RemoteException {
-		// should not update because of manual mode
 		updateElevator(elevator, targetFloor, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.MANUAL);
 		assertEquals(FLOOR_0, elevatorService.getElevators().get(elevator).getCurrentFloor());
 	}
 
-
+	/**
+	 * Checks if the algorithm controls the elevator. After setting the target
+	 * floor, the elevator should reach the destination and change it's current
+	 * floor.
+	 * 
+	 * @param elevator
+	 * @param targetFloorUp
+	 * @param targetFloorDown
+	 * @throws RemoteException
+	 */
 	@ParameterizedTest
 	@MethodSource("paramsFloorTests")
 	public void testUpdateFloorAutomatic(int elevator, int targetFloorUp, int targetFloorDown) throws RemoteException {
@@ -99,6 +105,14 @@ public class AutocontrollerTest {
 		assertEquals(targetFloorDown, elevatorService.getElevators().get(elevator).getCurrentFloor());
 	}
 
+	/**
+	 * Checks if the control algorithm handles the manual mode correctly, it should
+	 * not take over the elevator and update the floor.
+	 * 
+	 * @param elevator
+	 * @param targetFloor
+	 * @throws RemoteException
+	 */
 	@ParameterizedTest
 	@MethodSource("paramsFloorTests")
 	public void testUpdateFloorManual(int elevator, int targetFloor) throws RemoteException {
