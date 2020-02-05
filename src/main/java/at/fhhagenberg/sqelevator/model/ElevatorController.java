@@ -62,7 +62,7 @@ public class ElevatorController implements IElevatorController {
         try {
             updateInternal();
         } catch (RemoteException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
 
             AlarmsService.getInstance().addWarning(e.getMessage());
         }
@@ -95,7 +95,7 @@ public class ElevatorController implements IElevatorController {
 
             building = new Building(numElevators, numFloors, elevatorService);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
 
             AlarmsService.getInstance().addError(e.getMessage());
         }

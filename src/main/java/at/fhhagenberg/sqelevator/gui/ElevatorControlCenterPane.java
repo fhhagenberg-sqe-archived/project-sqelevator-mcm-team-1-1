@@ -90,6 +90,7 @@ public class ElevatorControlCenterPane extends BorderPane {
         hBox.setAlignment(Pos.CENTER_RIGHT);
 
         var editServicesFloorButton = new ToggleButton("Edit Services Floors");
+        editServicesFloorButton.setId("EditServicesFloors");
         editServicesFloorButton.selectedProperty().bindBidirectional(buildingViewModel.enableEditModeProperty());
 
         hBox.getChildren().addAll(editServicesFloorButton);

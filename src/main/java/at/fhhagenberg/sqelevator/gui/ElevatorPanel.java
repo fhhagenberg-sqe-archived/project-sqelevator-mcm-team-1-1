@@ -92,7 +92,7 @@ public class ElevatorPanel extends HBox {
 
             var hBox = new HBox();
 
-            var slider = new Slider(0, floorNum - 1, 0);
+            var slider = new Slider(0.0, floorNum - 1.0, 0.0);
             slider.setShowTickMarks(true);
             slider.setMax(floorNum - 1);
             slider.setMin(0);
@@ -122,6 +122,7 @@ public class ElevatorPanel extends HBox {
                 elevatorLight.setOnMouseReleased(new TargetFloorSelectionEventHandler());
 
                 var servicesFloorCheckbox = new CheckBox();
+                servicesFloorCheckbox.setId("sfc" + i + "," + floorIdReverse);
                 servicesFloorCheckbox.selectedProperty().bindBidirectional(elevatorI.servicedfloorActiveProperty(floorIdReverse));
                 servicesFloorCheckbox.visibleProperty().bind(buildingViewModel.enableEditModeProperty());
                 servicesFloorCheckbox.managedProperty().bind(servicesFloorCheckbox.visibleProperty());

@@ -1,7 +1,6 @@
 package at.fhhagenberg.sqelevator.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.control.LabeledMatchers.hasText;
 
@@ -22,15 +21,17 @@ import at.fhhagenberg.sqelevator.viewmodel.AlarmViewModel;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
+import sqelevator.IElevator;
 
 @ExtendWith(ApplicationExtension.class)
 public class GUIElevatorTests {
 
 	private NumberStringConverter nsc = new NumberStringConverter();
+	private ApplicationMain app;
 
 	@Start
 	public void start(Stage stage) throws Exception {
-		var app = new ApplicationMain();
+		app = new ApplicationMain();
 		app.setDisableAutomaticControl(true);
 		app.setElevatorServiceFactory(new MockElevatorServiceFactory());
 		app.start(stage);
@@ -88,16 +89,22 @@ public class GUIElevatorTests {
 
 	@Test
 	public void testTargetFloor(FxRobot robot) {
+		var elevatorService = (MockElevator) app.getElevatorService();
+		var elevator0 = elevatorService.getElevators().get(0);
+
 		robot.clickOn("#M0");
 		robot.clickOn("#0,3");
-		robot.sleep(250);	//need to wait for model to run update()
-		//test does not work on sonarcloud but works locally
+		waitForUpdate(robot);
+		//verifyThat does not work on sonarcloud but works locally
 		//verifyThat("#t0", hasText("4"));
+		assertEquals(3, elevator0.getTargetFloor());
 
 		robot.clickOn("#0,1");
-		robot.sleep(250);	//need to wait for model to run update()
-		//test does not work on sonarcloud but works locally
+		waitForUpdate(robot);
+		//verifyThat does not work on sonarcloud but works locally
 		//verifyThat("#t0", hasText("2"));
+		assertEquals(1, elevator0.getTargetFloor());
+
 	}
 
 	@Test
@@ -134,7 +141,12 @@ public class GUIElevatorTests {
 
 	@Test
 	public void testCallInfoLight(FxRobot robot) {
-		// TODO
+		var elevatorService = (MockElevator) app.getElevatorService();
+		var floor0 = elevatorService.getFloors().get(0);
+		floor0.setDownButtonActive(true);
+
+		waitForUpdate(robot);
+		//TODO
 	}
 
 	@Test
@@ -142,4 +154,56 @@ public class GUIElevatorTests {
 		// TODO
 	}
 
+	@Test
+	public void testDoorStatus(FxRobot robot) {
+		var elevatorService = (MockElevator) app.getElevatorService();
+		var elevator0 = elevatorService.getElevators().get(0);
+
+		try{
+			elevator0.setDoorStatus(MockElevator.ELEVATOR_DOORS_OPENING);
+			waitForUpdate(robot);
+			verifyThat("#d0", hasText("Opening"));
+
+			elevator0.setDoorStatus(MockElevator.ELEVATOR_DOORS_OPEN);
+			waitForUpdate(robot);
+			verifyThat("#d0", hasText("Open"));
+
+			elevator0.setDoorStatus(MockElevator.ELEVATOR_DOORS_CLOSING);
+			waitForUpdate(robot);
+			verifyThat("#d0", hasText("Closing"));
+
+			elevator0.setDoorStatus(MockElevator.ELEVATOR_DOORS_CLOSED);
+			waitForUpdate(robot);
+			verifyThat("#d0", hasText("Closed"));
+
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			assertTrue(false);
+		}
+	}
+
+	@Test
+	public void testChangeServicesFloors(FxRobot robot){
+		var elevatorService = (MockElevator) app.getElevatorService();
+		var elevator0 = elevatorService.getElevators().get(0);
+
+		try{
+			assertTrue(elevator0.getServicesFloors(0));
+
+			robot.clickOn("#EditServicesFloors");
+			robot.clickOn("#sfc0,0");
+			waitForUpdate(robot);
+
+			assertFalse(elevator0.getServicesFloors(0));
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			assertTrue(false);
+		}
+	}
+
+	private void waitForUpdate(FxRobot robot){
+		robot.sleep(250);	//need to wait for model to run update()
+	}
 }

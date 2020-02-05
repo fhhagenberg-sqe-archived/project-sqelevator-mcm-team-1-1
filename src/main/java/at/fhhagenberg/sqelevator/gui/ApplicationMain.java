@@ -19,7 +19,7 @@ public class ApplicationMain extends Application {
 
     private boolean disableAutomaticControl = false;
     private IElevatorServiceFactory elevatorServiceFactory = new RMIElevatorServiceFactory();
-
+    private IElevator elevatorService = null;
     public void setDisableAutomaticControl(boolean disableAutomaticControl) {
         this.disableAutomaticControl = disableAutomaticControl;
     }
@@ -30,12 +30,11 @@ public class ApplicationMain extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        IElevator elevatorService = null;
 
         try {
             elevatorService = elevatorServiceFactory.getElevatorService();
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
 
             AlarmsService.getInstance().addWarning(e.getMessage());
         }
@@ -65,5 +64,9 @@ public class ApplicationMain extends Application {
         elevatorController.startPeriodicUpdates();
 
         stage.show();
+    }
+
+    public IElevator getElevatorService() {
+        return elevatorService;
     }
 }

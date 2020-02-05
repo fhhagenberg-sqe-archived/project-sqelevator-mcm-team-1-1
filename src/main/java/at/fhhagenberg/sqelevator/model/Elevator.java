@@ -172,7 +172,8 @@ public class Elevator extends ObservableAdapter<Elevator> {
             elevatorService.setCommittedDirection(id, direction);
             return true;
         } catch (RemoteException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            AlarmsService.getInstance().addWarning(e.getMessage());
 
             return false;
         }
@@ -183,7 +184,8 @@ public class Elevator extends ObservableAdapter<Elevator> {
             elevatorService.setServicesFloors(id, floor, service);
             return true;
         } catch (RemoteException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            AlarmsService.getInstance().addWarning(e.getMessage());
 
             return false;
         }
@@ -194,7 +196,8 @@ public class Elevator extends ObservableAdapter<Elevator> {
             elevatorService.setTarget(id, target);
             return true;
         } catch (RemoteException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            AlarmsService.getInstance().addWarning(e.getMessage());
 
             return false;
         }

@@ -101,10 +101,6 @@ public class ElevatorViewModel implements Observer<Elevator> {
 
     public SimpleBooleanProperty servicedfloorActiveProperty(int floor) { return servicedfloorActive.get(floor); }
 
-    public void setManualMode(boolean manualMode) {
-        this.manualMode.set(manualMode);
-    }
-
     public SimpleIntegerProperty accelerationProperty() {
         return acceleration;
     }
@@ -113,56 +109,28 @@ public class ElevatorViewModel implements Observer<Elevator> {
         return currentFloor;
     }
 
-    public int getCurrentDirection() {
-        return currentDirection.get();
-    }
-
     public SimpleIntegerProperty currentDirectionProperty() {
         return currentDirection;
-    }
-
-    public int getDoorStatus() {
-        return doorStatus.get();
     }
 
     public SimpleIntegerProperty doorStatusProperty() {
         return doorStatus;
     }
 
-    public int getSpeed() {
-        return speed.get();
-    }
-
     public SimpleIntegerProperty speedProperty() {
         return speed;
-    }
-
-    public int getTargetFloor() {
-        return targetFloor.get();
     }
 
     public SimpleIntegerProperty targetFloorProperty() {
         return targetFloor;
     }
 
-    public int getWeight() {
-        return weight.get();
-    }
-
     public SimpleIntegerProperty weightProperty() {
         return weight;
     }
 
-    public String getDoorStatusText() {
-        return doorStatusText.get();
-    }
-
     public SimpleStringProperty doorStatusTextProperty() {
         return doorStatusText;
-    }
-
-    public String getTargetFloorText() {
-        return targetFloorText.get();
     }
 
     public SimpleStringProperty targetFloorTextProperty() {

@@ -127,7 +127,7 @@ public class MockElevatorState {
                 doorStatus != IElevator.ELEVATOR_DOORS_CLOSED &&
                 doorStatus != IElevator.ELEVATOR_DOORS_OPENING &&
                 doorStatus != IElevator.ELEVATOR_DOORS_CLOSING) {
-            throw new MockElevatorException("Direction number is invalid!");
+            throw new MockElevatorException("Door status is invalid!");
         }
     }
 }
