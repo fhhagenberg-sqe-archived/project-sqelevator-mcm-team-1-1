@@ -142,7 +142,7 @@ public class ElevatorPanel extends HBox {
             gridPane.add(hBox, i + 1, 1, 1, floorNum);
 
             var manualToggle = new ToggleButton("M");
-            manualToggle.setId("M" + Integer.toString(i));
+            manualToggle.setId("M" + i);
             manualToggle.disableProperty().bindBidirectional(buildingViewModel.enableEditModeProperty());
             manualToggle.selectedProperty().bindBidirectional(elevatorI.manualModeProperty());
 
@@ -150,28 +150,28 @@ public class ElevatorPanel extends HBox {
 
             Label payload = new Label("-");
             payload.textProperty().bindBidirectional(elevatorI.weightProperty(), new NumberStringConverter());
-            payload.setId("p" + Integer.toString(i));
+            payload.setId("p" + i);
             payload.setMinWidth(70);
             payload.setMaxWidth(70);
             gridPane.add(payload, i + 1, floorNum + 2);
 
             Label speed = new Label("-");
             speed.textProperty().bindBidirectional(elevatorI.speedProperty(), new NumberStringConverter());
-            speed.setId("s" + Integer.toString(i));
+            speed.setId("s" + i);
             speed.setMinWidth(70);
             speed.setMaxWidth(70);
             gridPane.add(speed, i + 1, floorNum + 3);
 
             Label target = new Label("-");
             target.textProperty().bindBidirectional(elevatorI.targetFloorTextProperty());
-            target.setId("t" + Integer.toString(i));
+            target.setId("t" + i);
             target.setMinWidth(70);
             target.setMaxWidth(70);
             gridPane.add(target, i + 1, floorNum + 4);
 
             Label doors = new Label("-");
             doors.textProperty().bindBidirectional(elevatorI.doorStatusTextProperty());
-            doors.setId("d" + Integer.toString(i));
+            doors.setId("d" + i);
             doors.setMinWidth(70);
             doors.setMaxWidth(70);
             gridPane.add(doors, i + 1, floorNum + 5);

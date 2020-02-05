@@ -7,6 +7,7 @@ import static org.testfx.matcher.control.LabeledMatchers.hasText;
 import at.fhhagenberg.sqelevator.mock.MockElevator;
 import at.fhhagenberg.sqelevator.MockElevatorServiceFactory;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.util.converter.NumberStringConverter;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,11 @@ import at.fhhagenberg.sqelevator.viewmodel.AlarmViewModel;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
+import org.testfx.util.WaitForAsyncUtils;
 import sqelevator.IElevator;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 @ExtendWith(ApplicationExtension.class)
 public class GUIElevatorTests {
@@ -192,6 +197,7 @@ public class GUIElevatorTests {
 			assertTrue(elevator0.getServicesFloors(0));
 
 			robot.clickOn("#EditServicesFloors");
+			waitForUpdate(robot);
 			robot.clickOn("#sfc0,0");
 			waitForUpdate(robot);
 
