@@ -78,7 +78,6 @@ public class GUIElevatorTests {
 	public void testEnableAutomaticMode(FxRobot robot) {
 		robot.clickOn("#M0");
 		robot.clickOn("#0,3");
-		//test does not work on sonarcloud but works locally
 		verifyThat("#statusbar", hasText("Next target floor for elevator <1> is 4"));
 	}
 
@@ -100,17 +99,13 @@ public class GUIElevatorTests {
 		robot.clickOn("#M0");
 		robot.clickOn("#0,3");
 		waitForUpdate(robot);
-		//verifyThat does not work on sonarcloud but works locally
 		verifyThat("#t0", hasText("4"));
-		//assertEquals does also not work on sonarcloud?!
-		//assertEquals(3, elevator0.getTargetFloor());
+		assertEquals(3, elevator0.getTargetFloor());
 
 		robot.clickOn("#0,1");
 		waitForUpdate(robot);
-		//verifyThat does not work on sonarcloud but works locally
 		verifyThat("#t0", hasText("2"));
-		//assertEquals does also not work on sonarcloud?!
-		//assertEquals(1, elevator0.getTargetFloor());
+		assertEquals(1, elevator0.getTargetFloor());
 
 	}
 
