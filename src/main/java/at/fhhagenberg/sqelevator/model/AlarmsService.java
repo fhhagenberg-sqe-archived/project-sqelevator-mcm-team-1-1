@@ -7,57 +7,53 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AlarmsService extends ObservableAdapter<AlarmsService> {
-    private static AlarmsService instance = null;
+	private static AlarmsService instance = null;
 
-    private List<Alarm> alarms;
+	private List<Alarm> alarms;
 
-    private AlarmsService() {
-        alarms = new ArrayList<>();
-    }
+	private AlarmsService() {
+		alarms = new ArrayList<>();
+	}
 
-    public static AlarmsService getInstance() {
-        if (instance == null)
-            instance = new AlarmsService();
+	public static AlarmsService getInstance() {
+		if (instance == null)
+			instance = new AlarmsService();
 
-        return instance;
-    }
+		return instance;
+	}
 
-    @Override
-    public void addObserver(Observer<AlarmsService> observer) {
-        super.addObserver(observer);
+	@Override
+	public void addObserver(Observer<AlarmsService> observer) {
+		super.addObserver(observer);
 
-        observer.update(this);  //send all existing alarms as update to new observers
-    }
+		observer.update(this); // send all existing alarms as update to new observers
+	}
 
-    public void addError(String message) {
-        addAlert(message, true);
-    }
+	@Override
+	public AlarmsService getValue() {
+		return this;
+	}
 
-    public void addWarning(String message) {
-        addAlert(message, false);
-    }
+	public void addError(String message) {
+		addAlert(message, true);
+	}
 
-    public void addAlert(String message, boolean isError) {
-        alarms.add(new Alarm(message, isError));
+	public void addWarning(String message) {
+		addAlert(message, false);
+	}
 
-        notifyListeners();
-    }
+	public void addAlert(String message, boolean isError) {
+		alarms.add(new Alarm(message, isError));
 
-    public void removeAlert(){
-        //TODO:
-    }
+		notifyListeners();
+	}
 
-    @Override
-    public AlarmsService getValue() {
-        return this;
-    }
+	public List<Alarm> getAlarms() {
+		return alarms;
+	}
 
-    public List<Alarm> getAlarms() {
-        return alarms;
-    }
-    
-    public void clear() {
-    	alarms.clear();
-    	notifyListeners();
-    }
+	public void clear() {
+		alarms.clear();
+		notifyListeners();
+	}
 }

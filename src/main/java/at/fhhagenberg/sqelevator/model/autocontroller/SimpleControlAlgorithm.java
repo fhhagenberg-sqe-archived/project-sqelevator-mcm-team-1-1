@@ -11,172 +11,158 @@ import sqelevator.IElevator;
 
 public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingInitializedObserver {
 
-    private class ElevatorObserver implements Observer<Elevator> {
+	private class ElevatorObserver implements Observer<Elevator> {
 
-        private SimpleControlAlgorithm sca;
+		private SimpleControlAlgorithm sca;
 
-        public ElevatorObserver(SimpleControlAlgorithm sca) {
-            this.sca = sca;
-        }
+		public ElevatorObserver(SimpleControlAlgorithm sca) {
+			this.sca = sca;
+		}
 
-        @Override
-        public void update(Observable<Elevator> observable) {
+		@Override
+		public void update(Observable<Elevator> observable) {
 
-            var elevator = observable.getValue();
+			var elevator = observable.getValue();
 
-            sca.updateElevator(elevator);
-        }
-    }
+			sca.updateElevator(elevator);
+		}
+	}
 
-    private class FloorObserver implements Observer<Floor> {
+	private class FloorObserver implements Observer<Floor> {
 
-        private SimpleControlAlgorithm sca;
+		private SimpleControlAlgorithm sca;
 
-        public FloorObserver(SimpleControlAlgorithm sca) {
-            this.sca = sca;
-        }
+		public FloorObserver(SimpleControlAlgorithm sca) {
+			this.sca = sca;
+		}
 
-        @Override
-        public void update(Observable<Floor> observable) {
+		@Override
+		public void update(Observable<Floor> observable) {
 
-            var floor = observable.getValue();
+			var floor = observable.getValue();
 
-            sca.updateFloor(floor);
+			sca.updateFloor(floor);
+		}
+	}
 
-        }
-    }
+	private ElevatorObserver elevatorObserver;
+	private FloorObserver floorObserver;
 
-    private ElevatorObserver elevatorObserver;
-    private FloorObserver floorObserver;
+	private IElevatorController elevatorController;
 
-    private IElevatorController elevatorController;
+	@Override
+	public void setElevatorController(IElevatorController elevatorController) {
+		this.elevatorController = elevatorController;
+	}
 
-    @Override
-    public void setElevatorController(IElevatorController elevatorController) {
-        this.elevatorController = elevatorController;
-    }
+	@Override
+	public void start() {
+		this.elevatorController.addInitializedObserver(this);
+	}
 
-    @Override
-    public void start() {
-        this.elevatorController.addInitializedObserver(this);
-    }
+	@Override
+	public void stop() {
+		var building = elevatorController.getCurrentState();
 
-    @Override
-    public void stop() {
-        var building = elevatorController.getCurrentState();
+		for (Floor floor : building.getFloors()) {
+			floor.removeObserver(floorObserver);
+		}
+		for (Elevator elevator : building.getElevators()) {
+			elevator.removeObserver(elevatorObserver);
+		}
+	}
 
-        for (Floor floor : building.getFloors()) {
-            floor.removeObserver(floorObserver);
-        }
-        for (Elevator elevator : building.getElevators()) {
-            elevator.removeObserver(elevatorObserver);
-        }
-    }
+	@Override
+	public void initializationDone() {
+		var building = elevatorController.getCurrentState();
 
+		elevatorObserver = new ElevatorObserver(this);
+		floorObserver = new FloorObserver(this);
 
-    @Override
-    public void initializationDone() {
-        var building = elevatorController.getCurrentState();
+		building.getFloors().forEach(floor -> floor.addObserver(floorObserver));
+		building.getElevators().forEach(elevator -> elevator.addObserver(elevatorObserver));
+	}
 
-        elevatorObserver = new ElevatorObserver(this);
-        floorObserver = new FloorObserver(this);
+	public void updateElevator(Elevator elevator) {
+		if (elevator.getControlMode() == ControlMode.MANUAL) {
+			return; // skip elevators in manual mode
+		}
 
-        for (Floor floor : building.getFloors()) {
-            floor.addObserver(floorObserver);
-        }
+		var building = elevatorController.getCurrentState();
+		int targetfloor = -1;
+		boolean isFloorButtonActive = false;
 
-        for (Elevator elevator : building.getElevators()) {
-            elevator.addObserver(elevatorObserver);
-        }
+		if (elevator.getDoorStatus() == IElevator.ELEVATOR_DOORS_OPEN) {
+			for (int i = 0; i < building.getNumFloors(); i++) {
+				if (elevator.isFloorButtonActive(i)) {
+					targetfloor = i;
+					elevator.gotoTarget(targetfloor);
+					isFloorButtonActive = true;
+					break;
+				}
+			}
+		}
 
+		if (targetfloor == -1 && isFloorButtonActive) {
+			updateFloor(building.getFloor(0)); // Time for a floor button
+		}
+	}
 
-    }
+	public void updateFloor(Floor floor) {
+		var building = elevatorController.getCurrentState();
+		Elevator targetElevator = null;
 
-    public void updateElevator(Elevator elevator) {
-        if(elevator.getControlMode() == ControlMode.MANUAL){
-            return; //skip elevators in manual mode
-        }
+		// Iterate through all elevators
+		for (Elevator e : building.getElevators()) {
+			System.out.println(e.getServicesFloors(floor.getId()));
 
-        var building = elevatorController.getCurrentState();
+			// only make use of this elevator when this is a floor that that elevator is
+			// servicing and the mode is automatic and no other elevator is sent to this
+			// floor
+			if (isElevatorAvailable(e, floor)) {
 
-        int targetfloor = -1;
+				// send this elevator when floor downbutton is active and this elevator is above
+				// this floor and going down or the elevator has no direction / not going
+				// anywhere
+				if (floor.isDownButtonActive() && ((e.getCurrentFloor() > floor.getId()
+						&& e.getDirection() == IElevator.ELEVATOR_DIRECTION_DOWN)
+						|| (e.getDirection() == IElevator.ELEVATOR_DIRECTION_UNCOMMITTED))) {
 
-        boolean isFloorButtonActive = false;
-        for(int i = 0; i < building.getNumFloors(); i++) {
-            if(elevator.isFloorButtonActive(i)) {
-                isFloorButtonActive = true;
-            }
-        }
+					targetElevator = e;
+					break;
 
-        if(isFloorButtonActive && (elevator.getDoorStatus() == IElevator.ELEVATOR_DOORS_OPEN) && (elevator.getControlMode() == ControlMode.AUTOMATIC) ) {
-            for(int i = 0; i < building.getNumFloors(); i++) {
-                if(elevator.isFloorButtonActive(i)) {
-                    targetfloor = i;
-                    elevator.gotoTarget(targetfloor);
-                    break;
-                }
-            }
-        }
+					// send this elevator when floor upbutton is active and this elevator is below
+					// this floor and going up or the elevator has no direction / not going anywhere
+				} else if (floor.isUpButtonActive()
+						&& ((e.getCurrentFloor() < floor.getId() && e.getDirection() == IElevator.ELEVATOR_DIRECTION_UP)
+								|| (e.getDirection() == IElevator.ELEVATOR_DIRECTION_UNCOMMITTED))) {
 
-        if(targetfloor == -1 && isFloorButtonActive) {
-            updateFloor(building.getFloor(0)); // Time for a floor button
-        }
-    }
+					targetElevator = e;
+					break;
 
-    public void updateFloor(Floor floor) {
-        var building = elevatorController.getCurrentState();
-        Elevator targetElevator = null;
+				}
+			}
+		}
 
-        // Iterate through all elevators
-        for(Elevator e : building.getElevators()) {
-            if(e.getControlMode() == ControlMode.MANUAL){
-                continue;   //skip elevators in manual mode
-            }
+		// If still no elevator handles this floor then use first available one
+		if (targetElevator == null) {
+			for (Elevator e : building.getElevators()) {
+				if (isElevatorAvailable(e, floor) && (floor.isDownButtonActive() || floor.isUpButtonActive())) {
+					targetElevator = e;
+					break;
+				}
+			}
+		}
 
-            System.out.println(e.getServicesFloors(floor.getId()));
+		if (targetElevator != null) {
+			targetElevator.gotoTarget(floor.getId());
+			System.out.println("Sending elevator " + targetElevator.getId() + " to floor " + floor.getId());
+		}
+		// else floor ignored - is handled by a next elevator event that is free
+	}
 
-            // only make use of this elevator when this is a floor that that elevator is servicing and the mode is automatic and no other elevator is sent to this floor
-            if(e.getServicesFloors(floor.getId()) && e.getControlMode() == ControlMode.AUTOMATIC && targetElevator == null && e.getDoorStatus() == IElevator.ELEVATOR_DOORS_OPEN) {
-
-                // send this elevator when floor downbutton is active and this elevator is above this floor and going down or the elevator has no direction / not going anywhere
-                if (floor.isDownButtonActive() && ((e.getCurrentFloor() > floor.getId() && e.getDirection() == IElevator.ELEVATOR_DIRECTION_DOWN) || (e.getDirection() == IElevator.ELEVATOR_DIRECTION_UNCOMMITTED))) {
-
-                    targetElevator = e;
-
-                    // send this elevator when floor upbutton is active and this elevator is below this floor and going up or the elevator has no direction / not going anywhere
-                } else if (floor.isUpButtonActive() && ((e.getCurrentFloor() < floor.getId() && e.getDirection() == IElevator.ELEVATOR_DIRECTION_UP) || (e.getDirection() == IElevator.ELEVATOR_DIRECTION_UNCOMMITTED))) {
-
-                    targetElevator = e;
-
-                }
-            }
-        }
-
-        // If still no elevator handles this floor then use first available one
-        if(targetElevator == null) {
-            for(Elevator e : building.getElevators()) {
-                if(e.getControlMode() == ControlMode.MANUAL){
-                    continue;   //skip elevators in manual mode
-                }
-
-                if(e.getServicesFloors(floor.getId()) && e.getControlMode() == ControlMode.AUTOMATIC && targetElevator == null && e.getDoorStatus() == IElevator.ELEVATOR_DOORS_OPEN) {
-
-                    if (floor.isDownButtonActive() || floor.isUpButtonActive()) {
-
-                        targetElevator = e;
-
-                    }
-                }
-            }
-
-        }
-
-        if(targetElevator != null) {
-            targetElevator.gotoTarget(floor.getId());
-            System.out.println("Sending elevator " + targetElevator.getId() + " to floor " + floor.getId());
-        }
-        else {
-            // floor ignored - is handled by a next elevator event that is free
-        }
-    }
+	private boolean isElevatorAvailable(Elevator e, Floor floor) {
+		return e.getControlMode() == ControlMode.AUTOMATIC && e.getServicesFloors(floor.getId())
+				&& e.getDoorStatus() == IElevator.ELEVATOR_DOORS_OPEN;
+	}
 }
