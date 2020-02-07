@@ -1,9 +1,12 @@
 package at.fhhagenberg.sqelevator.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
 import at.fhhagenberg.sqelevator.viewmodel.ElevatorViewModel;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.Property;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -13,15 +16,16 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.layout.*;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.util.converter.NumberStringConverter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
 
 public class ElevatorPanel extends HBox {
 
