@@ -17,7 +17,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
-import javafx.util.StringConverter;
 import javafx.util.converter.NumberStringConverter;
 
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ public class ElevatorPanel extends HBox {
 	private BuildingViewModel buildingViewModel;
 	private List<Slider> liftSliders;
 
-	@SuppressWarnings("unchecked")
 	public ElevatorPanel(BuildingViewModel buildingViewModel) {
 		this.buildingViewModel = buildingViewModel;
 

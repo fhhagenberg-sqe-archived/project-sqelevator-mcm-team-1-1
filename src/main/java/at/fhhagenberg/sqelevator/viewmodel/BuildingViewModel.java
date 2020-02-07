@@ -15,59 +15,59 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BuildingViewModel implements IBuildingInitializedObserver, Observer<AlarmsService> {
-    private Map<Integer, ElevatorViewModel> elevatorViewModels = new HashMap<>();
-    private Map<Integer, FloorViewModel> floorViewModels = new HashMap<>();
+	private Map<Integer, ElevatorViewModel> elevatorViewModels = new HashMap<>();
+	private Map<Integer, FloorViewModel> floorViewModels = new HashMap<>();
 
-    private SimpleObjectProperty buildingConfiguration = new SimpleObjectProperty();
+	private SimpleObjectProperty<Object> buildingConfiguration = new SimpleObjectProperty<Object>();
 
-    private SimpleBooleanProperty enableEditMode = new SimpleBooleanProperty(false);
+	private SimpleBooleanProperty enableEditMode = new SimpleBooleanProperty(false);
 
-    private ObservableList<AlarmViewModel> observableList = FXCollections.observableArrayList();
-    private SimpleListProperty<AlarmViewModel> alarmViewModels = new SimpleListProperty<>(observableList);
+	private ObservableList<AlarmViewModel> observableList = FXCollections.observableArrayList();
+	private SimpleListProperty<AlarmViewModel> alarmViewModels = new SimpleListProperty<>(observableList);
 
-    private SimpleStringProperty callInfo = new SimpleStringProperty();
+	private SimpleStringProperty callInfo = new SimpleStringProperty();
 
-    private IElevatorController elevatorController;
+	private IElevatorController elevatorController;
 
-    public BuildingViewModel(IElevatorController elevatorController) {
-        this.elevatorController = elevatorController;
+	public BuildingViewModel(IElevatorController elevatorController) {
+		this.elevatorController = elevatorController;
 
-        elevatorController.addInitializedObserver(this);
+		elevatorController.addInitializedObserver(this);
 
-        AlarmsService.getInstance().addObserver(this);
-    }
+		AlarmsService.getInstance().addObserver(this);
+	}
 
-    public Map<Integer, ElevatorViewModel> getElevatorViewModels() {
-        return elevatorViewModels;
-    }
+	public Map<Integer, ElevatorViewModel> getElevatorViewModels() {
+		return elevatorViewModels;
+	}
 
-    public Map<Integer, FloorViewModel> getFloorViewModels() {
-        return floorViewModels;
-    }
+	public Map<Integer, FloorViewModel> getFloorViewModels() {
+		return floorViewModels;
+	}
 
-    public SimpleObjectProperty buildingConfigurationProperty() {
-        return buildingConfiguration;
-    }
+	public SimpleObjectProperty<Object> buildingConfigurationProperty() {
+		return buildingConfiguration;
+	}
 
-    public boolean isEnableEditMode() {
-        return enableEditMode.get();
-    }
+	public boolean isEnableEditMode() {
+		return enableEditMode.get();
+	}
 
-    public SimpleBooleanProperty enableEditModeProperty() {
-        return enableEditMode;
-    }
+	public SimpleBooleanProperty enableEditModeProperty() {
+		return enableEditMode;
+	}
 
-    public void setEnableEditMode(boolean enableEditMode) {
-        this.enableEditMode.set(enableEditMode);
-    }
+	public void setEnableEditMode(boolean enableEditMode) {
+		this.enableEditMode.set(enableEditMode);
+	}
 
-    public ObservableList<AlarmViewModel> getAlarmViewModels() {
-        return alarmViewModels.get();
-    }
+	public ObservableList<AlarmViewModel> getAlarmViewModels() {
+		return alarmViewModels.get();
+	}
 
-    public SimpleListProperty<AlarmViewModel> alarmViewModelsProperty() {
-        return alarmViewModels;
-    }
+	public SimpleListProperty<AlarmViewModel> alarmViewModelsProperty() {
+		return alarmViewModels;
+	}
 
 	public String getCallInfo() {
 		return callInfo.get();
@@ -81,34 +81,34 @@ public class BuildingViewModel implements IBuildingInitializedObserver, Observer
 		this.callInfo.set(callInfo);
 	}
 
-    @Override
-    public void initializationDone() {
-        var building = elevatorController.getCurrentState();
+	@Override
+	public void initializationDone() {
+		var building = elevatorController.getCurrentState();
 
-        elevatorViewModels.clear();
+		elevatorViewModels.clear();
 
-        for(Elevator elevator : building.getElevators()){
-            var eId = elevator.getId();
-            elevatorViewModels.put(eId, new ElevatorViewModel(elevator));
-        }
+		for (Elevator elevator : building.getElevators()) {
+			var eId = elevator.getId();
+			elevatorViewModels.put(eId, new ElevatorViewModel(elevator));
+		}
 
-        floorViewModels.clear();
+		floorViewModels.clear();
 
-        for(Floor floor : building.getFloors()){
-            floorViewModels.put(floor.getId(), new FloorViewModel(floor));
-        }
+		for (Floor floor : building.getFloors()) {
+			floorViewModels.put(floor.getId(), new FloorViewModel(floor));
+		}
 
-        buildingConfigurationProperty().set(new Object());
-    }
+		buildingConfigurationProperty().set(new Object());
+	}
 
-    @Override
-    public void update(Observable<AlarmsService> observable) {
-        var alarmsService = observable.getValue();
+	@Override
+	public void update(Observable<AlarmsService> observable) {
+		var alarmsService = observable.getValue();
 
-        alarmViewModels.clear();
+		alarmViewModels.clear();
 
-        for(Alarm alarm : alarmsService.getAlarms()){
-            alarmViewModels.add(new AlarmViewModel(alarm.getMessage(), alarm.isError()));
-        }
-    }
+		for (Alarm alarm : alarmsService.getAlarms()) {
+			alarmViewModels.add(new AlarmViewModel(alarm.getMessage(), alarm.isError()));
+		}
+	}
 }

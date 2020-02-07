@@ -4,10 +4,10 @@ import sqelevator.IElevator;
 
 import java.rmi.Naming;
 
-public class RMIElevatorServiceFactory implements IElevatorServiceFactory{
+public class RMIElevatorServiceFactory implements IElevatorServiceFactory {
 
-    @Override
-    public IElevator getElevatorService() throws Exception {
-            return (IElevator) Naming.lookup("rmi://localhost/ElevatorSim");
-    }
+	@Override
+	public IElevator getElevatorService() throws Exception {
+		return (IElevator) Naming.lookup("rmi://localhost/ElevatorSim");
+	}
 }
