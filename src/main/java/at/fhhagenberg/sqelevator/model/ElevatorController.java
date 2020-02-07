@@ -10,113 +10,108 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class ElevatorController implements IElevatorController {
-    private Timer timer;
+	private Timer timer;
 
-    private IElevator elevatorService;
+	private IElevator elevatorService;
 
-    private Building building;
+	private Building building;
 
-    private long updateInterval = 1000;
+	private long updateInterval = 1000;
 
-    private List<IBuildingInitializedObserver> buildingInitializedObservers;
+	private List<IBuildingInitializedObserver> buildingInitializedObservers;
 
-    public ElevatorController(IElevator elevatorService) {
-        this.elevatorService = elevatorService;
+	public ElevatorController(IElevator elevatorService) {
+		this.elevatorService = elevatorService;
 
-        buildingInitializedObservers = new ArrayList<>();
-    }
+		buildingInitializedObservers = new ArrayList<>();
+	}
 
-    public boolean isInitialized() {
-        return building != null;
-    }
+	public boolean isInitialized() {
+		return building != null;
+	}
 
-    public void startPeriodicUpdates() {
-        if (timer != null) {
-            return;
-        }
+	public void startPeriodicUpdates() {
+		if (timer != null) {
+			return;
+		}
 
-        timer = new Timer();
+		timer = new Timer();
 
-        var updateTask = new TimerTask() {
-            @Override
-            public void run() {
-                update();
-            }
-        };
+		var updateTask = new TimerTask() {
+			@Override
+			public void run() {
+				update();
+			}
+		};
 
-        timer.scheduleAtFixedRate(updateTask, 0, updateInterval);
-    }
+		timer.scheduleAtFixedRate(updateTask, 0, updateInterval);
+	}
 
-    public void stopUpdates() {
-        if (timer != null) {
-            timer.cancel();
-            timer = null;
-        }
-    }
+	public void stopUpdates() {
+		if (timer != null) {
+			timer.cancel();
+			timer = null;
+		}
+	}
 
-    private void update() {
-        if(!isInitialized()){
-            return;
-        }
+	private void update() {
+		if (!isInitialized()) {
+			return;
+		}
 
-        try {
-            updateInternal();
-        } catch (RemoteException e) {
-            //e.printStackTrace();
+		try {
+			updateInternal();
+		} catch (RemoteException e) {
+			AlarmsService.getInstance().addWarning(e.getMessage());
+		}
+	}
 
-            AlarmsService.getInstance().addWarning(e.getMessage());
-        }
-    }
+	@Override
+	public void addInitializedObserver(IBuildingInitializedObserver buildingInitializedObserver) {
+		buildingInitializedObservers.add(buildingInitializedObserver);
+	}
 
-    @Override
-    public void addInitializedObserver(IBuildingInitializedObserver buildingInitializedObserver) {
-        buildingInitializedObservers.add(buildingInitializedObserver);
-    }
+	@Override
+	public Building getCurrentState() {
+		return building;
+	}
 
-    @Override
-    public Building getCurrentState() {
-        return building;
-    }
+	public void setUpdateInterval(long updateInterval) {
+		this.updateInterval = updateInterval;
+	}
 
-    public void setUpdateInterval(long updateInterval) {
-        this.updateInterval = updateInterval;
-    }
+	public void initialize() {
+		if (elevatorService == null) {
+			AlarmsService.getInstance().addError("Elevator Service not initialized");
 
-    public void initialize() {
-        if(elevatorService == null){
-            AlarmsService.getInstance().addError("Elevator Service not initialized");
+			return;
+		}
 
-            return;
-        }
+		try {
+			var numElevators = elevatorService.getElevatorNum();
+			var numFloors = elevatorService.getFloorNum();
 
-        try {
-            var numElevators = elevatorService.getElevatorNum();
-            var numFloors = elevatorService.getFloorNum();
+			building = new Building(numElevators, numFloors, elevatorService);
+		} catch (RemoteException e) {
+			AlarmsService.getInstance().addError(e.getMessage());
+		}
 
-            building = new Building(numElevators, numFloors, elevatorService);
-        } catch (RemoteException e) {
-            //e.printStackTrace();
+		notifyBuildingInitialized();
+	}
 
-            AlarmsService.getInstance().addError(e.getMessage());
-        }
+	private void updateInternal() throws RemoteException {
+		for (Elevator elevator : building.getElevators()) {
+			elevator.updateFromService();
+		}
 
-        notifyBuildingInitialized();
-    }
+		for (Floor floor : building.getFloors()) {
+			floor.updateFromService();
+		}
+	}
 
-    private void updateInternal() throws RemoteException {
-        for (Elevator elevator : building.getElevators()) {
-            elevator.updateFromService();
-
-        }
-
-        for (Floor floor : building.getFloors()) {
-            floor.updateFromService();
-        }
-    }
-
-    private void notifyBuildingInitialized() {
-        for (IBuildingInitializedObserver observer : buildingInitializedObservers) {
-            observer.initializationDone();
-        }
-    }
+	private void notifyBuildingInitialized() {
+		for (IBuildingInitializedObserver observer : buildingInitializedObservers) {
+			observer.initializationDone();
+		}
+	}
 }

@@ -1,32 +1,27 @@
 package at.fhhagenberg.sqelevator.tests;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.control.LabeledMatchers.hasText;
 
-import at.fhhagenberg.sqelevator.mock.MockElevator;
-import at.fhhagenberg.sqelevator.MockElevatorServiceFactory;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.util.converter.NumberStringConverter;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
+import at.fhhagenberg.sqelevator.MockElevatorServiceFactory;
 import at.fhhagenberg.sqelevator.gui.ApplicationMain;
+import at.fhhagenberg.sqelevator.mock.MockElevator;
 import at.fhhagenberg.sqelevator.model.AlarmsService;
 import at.fhhagenberg.sqelevator.viewmodel.AlarmViewModel;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-import org.testfx.util.WaitForAsyncUtils;
-import sqelevator.IElevator;
-
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
+import javafx.util.converter.NumberStringConverter;
 
 @ExtendWith(ApplicationExtension.class)
 public class GUIElevatorTests {

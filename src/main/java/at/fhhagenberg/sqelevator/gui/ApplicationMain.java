@@ -15,58 +15,56 @@ import sqelevator.IElevator;
 import java.util.ResourceBundle;
 
 public class ApplicationMain extends Application {
-    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("elevatorCC");
+	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("elevatorCC");
 
-    private boolean disableAutomaticControl = false;
-    private IElevatorServiceFactory elevatorServiceFactory = new RMIElevatorServiceFactory();
-    private IElevator elevatorService = null;
-    public void setDisableAutomaticControl(boolean disableAutomaticControl) {
-        this.disableAutomaticControl = disableAutomaticControl;
-    }
+	private boolean disableAutomaticControl = false;
+	private IElevatorServiceFactory elevatorServiceFactory = new RMIElevatorServiceFactory();
+	private IElevator elevatorService = null;
 
-    public void setElevatorServiceFactory(IElevatorServiceFactory elevatorServiceFactory) {
-        this.elevatorServiceFactory = elevatorServiceFactory;
-    }
+	public void setDisableAutomaticControl(boolean disableAutomaticControl) {
+		this.disableAutomaticControl = disableAutomaticControl;
+	}
 
-    @Override
-    public void start(Stage stage) throws Exception {
+	public void setElevatorServiceFactory(IElevatorServiceFactory elevatorServiceFactory) {
+		this.elevatorServiceFactory = elevatorServiceFactory;
+	}
 
-        try {
-            elevatorService = elevatorServiceFactory.getElevatorService();
-        } catch (Exception e) {
-            //e.printStackTrace();
+	@Override
+	public void start(Stage stage) throws Exception {
 
-            AlarmsService.getInstance().addWarning(e.getMessage());
-        }
+		try {
+			elevatorService = elevatorServiceFactory.getElevatorService();
+		} catch (Exception e) {
+			AlarmsService.getInstance().addError(e.getMessage());
+		}
 
-        var elevatorController = new ElevatorController(elevatorService);
+		var elevatorController = new ElevatorController(elevatorService);
+		var buildingViewModel = new BuildingViewModel(elevatorController);
+		var eccPane = new ElevatorControlCenterPane(buildingViewModel);
 
-        var buildingViewModel = new BuildingViewModel(elevatorController);
+		var scene = new Scene(eccPane, 1200, 800);
+		scene.getStylesheets().add("styles.css");
+		
+		stage.setScene(scene);
+		stage.setResizable(true);
+		stage.setTitle(RESOURCE_BUNDLE.getString("title"));
+		stage.getIcons().add(new Image("icons/ic_ecc.png"));
+		stage.setOnCloseRequest(windowEvent -> elevatorController.stopUpdates());
 
-        var eccPane = new ElevatorControlCenterPane(buildingViewModel);
+		if (!disableAutomaticControl) {
+			var controlAlgorithm = new SimpleControlAlgorithm();
+			controlAlgorithm.setElevatorController(elevatorController);
+			controlAlgorithm.start();
+		}
 
-        var scene = new Scene(eccPane, 1200, 800);
-        scene.getStylesheets().add("styles.css");
-        stage.setScene(scene);
-        stage.setResizable(true);
-        stage.setTitle(RESOURCE_BUNDLE.getString("title"));
-        stage.getIcons().add(new Image("icons/ic_ecc.png"));
-        stage.setOnCloseRequest(windowEvent -> elevatorController.stopUpdates());
+		elevatorController.initialize();
+		elevatorController.setUpdateInterval(250);
+		elevatorController.startPeriodicUpdates();
 
-        if(!disableAutomaticControl){
-            var controlAlgorithm = new SimpleControlAlgorithm();
-            controlAlgorithm.setElevatorController(elevatorController);
-            controlAlgorithm.start();
-        }
+		stage.show();
+	}
 
-        elevatorController.initialize();
-        elevatorController.setUpdateInterval(250);
-        elevatorController.startPeriodicUpdates();
-
-        stage.show();
-    }
-
-    public IElevator getElevatorService() {
-        return elevatorService;
-    }
+	public IElevator getElevatorService() {
+		return elevatorService;
+	}
 }
