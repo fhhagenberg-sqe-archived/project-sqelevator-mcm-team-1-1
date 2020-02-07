@@ -15,56 +15,57 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class ElevatorControlCenterPane extends BorderPane {
-    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("elevatorCC");
+	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("elevatorCC");
 
-    private static final int SPACING = 10;
-    private static final Insets PADDING_NARROW = new Insets(5, 5, 5, 5);
-    private static final Insets PADDING_LARGE = new Insets(10, 10, 10, 10);
+	private static final int SPACING = 10;
+	private static final Insets PADDING_NARROW = new Insets(5, 5, 5, 5);
+	private static final Insets PADDING_LARGE = new Insets(10, 10, 10, 10);
 
-    private BuildingViewModel buildingViewModel;
+	private BuildingViewModel buildingViewModel;
 
-    public ElevatorControlCenterPane(BuildingViewModel buildingViewModel) {
-        this.buildingViewModel = buildingViewModel;
+	public ElevatorControlCenterPane(BuildingViewModel buildingViewModel) {
+		this.buildingViewModel = buildingViewModel;
 
-        setCenter(getElevatorPanel());
-        setRight(getAlarmList());
-        setTop(getControlPanel());
-        setBottom(getStatusBar());
-    }
+		setCenter(getElevatorPanel());
+		setRight(getAlarmList());
+		setTop(getControlPanel());
+		setBottom(getStatusBar());
+	}
 
-    private Node getElevatorPanel() {
-        VBox vBox = new VBox();
-        vBox.setPadding(PADDING_LARGE);
-        Label title = new Label(RESOURCE_BUNDLE.getString("elevators"));
-        title.getStyleClass().add("title");
-        vBox.getChildren().add(title);
+	private Node getElevatorPanel() {
+		VBox vBox = new VBox();
+		vBox.setPadding(PADDING_LARGE);
 
-        vBox.getChildren().add(new ElevatorPanel(buildingViewModel));
+		Label title = new Label(RESOURCE_BUNDLE.getString("elevators"));
+		title.getStyleClass().add("title");
 
+		vBox.getChildren().add(title);
+		vBox.getChildren().add(new ElevatorPanel(buildingViewModel));
 
-        return vBox;
-    }
+		return vBox;
+	}
 
-    private Node getAlarmList() {
+	@SuppressWarnings("unchecked")
+	private Node getAlarmList() {
 
-    	VBox vBox = new VBox();
-    	vBox.setSpacing(5);
-        vBox.setPadding(new Insets(10, 0, 0, 10));
-    	
-        HBox hBox = new HBox();
-        hBox.setPadding(PADDING_LARGE);
-        Label title = new Label(RESOURCE_BUNDLE.getString("alarms"));
-        title.getStyleClass().add("title");
-        hBox.getChildren().add(title);
-        vBox.getChildren().add(hBox);       
-        
-        TableView<AlarmViewModel> tableView = new TableView<>();
-        tableView.setId("alarms-table");
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);       
-        
-        var typeCol = new TableColumn<AlarmViewModel, ImageView>("Type");
-        typeCol.setMinWidth(35);       
-        typeCol.setMaxWidth(35);        
+		VBox vBox = new VBox();
+		vBox.setSpacing(5);
+		vBox.setPadding(new Insets(10, 0, 0, 10));
+
+		HBox hBox = new HBox();
+		hBox.setPadding(PADDING_LARGE);
+		Label title = new Label(RESOURCE_BUNDLE.getString("alarms"));
+		title.getStyleClass().add("title");
+		hBox.getChildren().add(title);
+		vBox.getChildren().add(hBox);
+
+		TableView<AlarmViewModel> tableView = new TableView<>();
+		tableView.setId("alarms-table");
+		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+		var typeCol = new TableColumn<AlarmViewModel, ImageView>(RESOURCE_BUNDLE.getString("column_type"));
+		typeCol.setMinWidth(35);
+		typeCol.setMaxWidth(35);
 		typeCol.setCellValueFactory(cellData -> {
 			var imageView = new ImageView();
 			imageView.imageProperty().bindBidirectional(cellData.getValue().imageProperty());
@@ -74,31 +75,31 @@ public class ElevatorControlCenterPane extends BorderPane {
 			return new SimpleObjectProperty<>(imageView);
 		});
 
-		var messageCol = new TableColumn<AlarmViewModel, String>("Message");
+		var messageCol = new TableColumn<AlarmViewModel, String>(RESOURCE_BUNDLE.getString("column_message"));
 		messageCol.setCellValueFactory(cellData -> cellData.getValue().alarmMessageProperty());
 
 		tableView.itemsProperty().bindBidirectional(buildingViewModel.alarmViewModelsProperty());
 		tableView.getColumns().addAll(typeCol, messageCol);
-        
-        vBox.getChildren().add(tableView);
 
-        return vBox;
-    }
-    
-    private Node getControlPanel() {
-        var hBox = new HBox();
-        hBox.setAlignment(Pos.CENTER_RIGHT);
+		vBox.getChildren().add(tableView);
 
-        var editServicesFloorButton = new ToggleButton("Edit Services Floors");
-        editServicesFloorButton.setId("EditServicesFloors");
-        editServicesFloorButton.selectedProperty().bindBidirectional(buildingViewModel.enableEditModeProperty());
+		return vBox;
+	}
 
-        hBox.getChildren().addAll(editServicesFloorButton);
+	private Node getControlPanel() {
+		var hBox = new HBox();
+		hBox.setAlignment(Pos.CENTER_RIGHT);
 
-        return hBox;
-    }
+		var editServicesFloorButton = new ToggleButton(RESOURCE_BUNDLE.getString("edit_service_floors"));
+		editServicesFloorButton.setId("EditServicesFloors");
+		editServicesFloorButton.selectedProperty().bindBidirectional(buildingViewModel.enableEditModeProperty());
 
-    private Node getStatusBar() {
+		hBox.getChildren().addAll(editServicesFloorButton);
+
+		return hBox;
+	}
+
+	private Node getStatusBar() {
 		HBox hBox = new HBox();
 		hBox.setPadding(PADDING_NARROW);
 		hBox.setSpacing(SPACING);
@@ -111,5 +112,5 @@ public class ElevatorControlCenterPane extends BorderPane {
 
 		hBox.getChildren().addAll(lblCallInfo);
 		return hBox;
-    }
+	}
 }
