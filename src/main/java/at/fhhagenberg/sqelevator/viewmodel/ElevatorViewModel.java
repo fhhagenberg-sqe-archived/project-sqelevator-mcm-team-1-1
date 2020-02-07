@@ -145,13 +145,7 @@ public class ElevatorViewModel implements Observer<Elevator> {
 	}
 
 	public void setTargetAndDirection(int floor) {
-		if (elevatorModel.gotoTarget(floor)) {
-			if (floor < currentFloor.get()) {
-				setDirection(ElevatorViewModel.ELEVATOR_DIRECTION_DOWN);
-			} else {
-				setDirection(ElevatorViewModel.ELEVATOR_DIRECTION_UP);
-			}
-		} else {
+		if (!elevatorModel.gotoTargetAndSendDirection(floor)) {
 			AlarmsService.getInstance().addAlert(RESOURCE_BUNDLE.getString("error_go_to_target"), true);
 		}
 	}

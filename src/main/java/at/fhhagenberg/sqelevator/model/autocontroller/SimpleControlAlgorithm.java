@@ -96,7 +96,7 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
 			for (int i = 0; i < building.getNumFloors(); i++) {
 				if (elevator.isFloorButtonActive(i)) {
 					targetfloor = i;
-					elevator.gotoTarget(targetfloor);
+					elevator.gotoTargetAndSendDirection(targetfloor);
 					isFloorButtonActive = true;
 					break;
 				}
@@ -155,7 +155,7 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
 		}
 
 		if (targetElevator != null) {
-			targetElevator.gotoTarget(floor.getId());
+			targetElevator.gotoTargetAndSendDirection(floor.getId());
 			System.out.println("Sending elevator " + targetElevator.getId() + " to floor " + floor.getId());
 		}
 		// else floor ignored - is handled by a next elevator event that is free
