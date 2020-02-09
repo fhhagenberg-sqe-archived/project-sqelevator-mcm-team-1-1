@@ -18,7 +18,7 @@ public class BuildingViewModel implements IBuildingInitializedObserver, Observer
 	private Map<Integer, ElevatorViewModel> elevatorViewModels = new HashMap<>();
 	private Map<Integer, FloorViewModel> floorViewModels = new HashMap<>();
 
-	private SimpleObjectProperty<Object> buildingConfiguration = new SimpleObjectProperty<Object>();
+	private SimpleObjectProperty<Object> buildingConfiguration = new SimpleObjectProperty<>();
 
 	private SimpleBooleanProperty enableEditMode = new SimpleBooleanProperty(false);
 

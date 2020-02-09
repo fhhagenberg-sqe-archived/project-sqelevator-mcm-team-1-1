@@ -1,5 +1,9 @@
 package at.fhhagenberg.sqelevator.model.autocontroller;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import at.fhhagenberg.sqelevator.model.ControlMode;
 import at.fhhagenberg.sqelevator.model.Elevator;
 import at.fhhagenberg.sqelevator.model.Floor;
@@ -10,6 +14,8 @@ import at.fhhagenberg.sqelevator.model.observers.Observer;
 import sqelevator.IElevator;
 
 public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingInitializedObserver {
+
+	private static final Logger LOGGER = Logger.getLogger(SimpleControlAlgorithm.class.getName());
 
 	private class ElevatorObserver implements Observer<Elevator> {
 
@@ -83,6 +89,12 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
 		building.getElevators().forEach(elevator -> elevator.addObserver(elevatorObserver));
 	}
 
+	/**
+	 * Sets the target floor if elevator is available and someone called an
+	 * elevator.
+	 * 
+	 * @param elevator
+	 */
 	public void updateElevator(Elevator elevator) {
 		if (elevator.getControlMode() == ControlMode.MANUAL) {
 			return; // skip elevators in manual mode
@@ -108,39 +120,25 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
 		}
 	}
 
+	/**
+	 * Sends an elevator to the specified floor, if there is one available.
+	 * 
+	 * @param floor
+	 */
 	public void updateFloor(Floor floor) {
 		var building = elevatorController.getCurrentState();
 		Elevator targetElevator = null;
 
 		// Iterate through all elevators
 		for (Elevator e : building.getElevators()) {
-			System.out.println(e.getServicesFloors(floor.getId()));
+			LOGGER.log(Level.INFO, "Serviced floor: {0}", e.getServicesFloors(floor.getId()));
 
 			// only make use of this elevator when this is a floor that that elevator is
 			// servicing and the mode is automatic and no other elevator is sent to this
 			// floor
-			if (isElevatorAvailable(e, floor)) {
-
-				// send this elevator when floor downbutton is active and this elevator is above
-				// this floor and going down or the elevator has no direction / not going
-				// anywhere
-				if (floor.isDownButtonActive() && ((e.getCurrentFloor() > floor.getId()
-						&& e.getDirection() == IElevator.ELEVATOR_DIRECTION_DOWN)
-						|| (e.getDirection() == IElevator.ELEVATOR_DIRECTION_UNCOMMITTED))) {
-
-					targetElevator = e;
-					break;
-
-					// send this elevator when floor upbutton is active and this elevator is below
-					// this floor and going up or the elevator has no direction / not going anywhere
-				} else if (floor.isUpButtonActive()
-						&& ((e.getCurrentFloor() < floor.getId() && e.getDirection() == IElevator.ELEVATOR_DIRECTION_UP)
-								|| (e.getDirection() == IElevator.ELEVATOR_DIRECTION_UNCOMMITTED))) {
-
-					targetElevator = e;
-					break;
-
-				}
+			if (isElevatorAvailable(e, floor) && (canGoDown(floor, e) || canGoUp(floor, e))) {
+				targetElevator = e;
+				break;
 			}
 		}
 
@@ -156,9 +154,39 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
 
 		if (targetElevator != null) {
 			targetElevator.gotoTargetAndSendDirection(floor.getId());
-			System.out.println("Sending elevator " + targetElevator.getId() + " to floor " + floor.getId());
+			LOGGER.log(Level.INFO, "Sending elevator {0} to floor {1}",
+					new Object[] { targetElevator.getId(), floor.getId() });
 		}
 		// else floor ignored - is handled by a next elevator event that is free
+	}
+
+	/**
+	 * send this elevator when floor downbutton is active and this elevator is above
+	 * this floor and going down or the elevator has no direction / not going
+	 * anywhere
+	 * 
+	 * @param floor
+	 * @param e
+	 * @return
+	 */
+	private boolean canGoDown(Floor floor, Elevator e) {
+		return floor.isDownButtonActive()
+				&& ((e.getCurrentFloor() > floor.getId() && e.getDirection() == IElevator.ELEVATOR_DIRECTION_DOWN)
+						|| (e.getDirection() == IElevator.ELEVATOR_DIRECTION_UNCOMMITTED));
+	}
+
+	/**
+	 * send this elevator when floor upbutton is active and this elevator is below
+	 * this floor and going up or the elevator has no direction / not going anywhere
+	 * 
+	 * @param floor
+	 * @param e
+	 * @return
+	 */
+	private boolean canGoUp(Floor floor, Elevator e) {
+		return floor.isUpButtonActive()
+				&& ((e.getCurrentFloor() < floor.getId() && e.getDirection() == IElevator.ELEVATOR_DIRECTION_UP)
+						|| (e.getDirection() == IElevator.ELEVATOR_DIRECTION_UNCOMMITTED));
 	}
 
 	private boolean isElevatorAvailable(Elevator e, Floor floor) {

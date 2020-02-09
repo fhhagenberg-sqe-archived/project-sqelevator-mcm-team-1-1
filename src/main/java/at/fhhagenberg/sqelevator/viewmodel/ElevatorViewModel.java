@@ -54,9 +54,7 @@ public class ElevatorViewModel implements Observer<Elevator> {
 			this.servicedfloorActive.add(i, new SimpleBooleanProperty(false));
 
 			final var floor = i;
-			this.servicedfloorActive.get(i).addListener((observableValue, oldValue, newValue) -> {
-				this.setServicesFloor(floor, newValue);
-			});
+			this.servicedfloorActive.get(i).addListener((observableValue, oldValue, newValue) -> this.setServicesFloor(floor, newValue));
 		}
 
 		manualModeProperty().addListener((observableValue, oldValue, newValue) -> {
