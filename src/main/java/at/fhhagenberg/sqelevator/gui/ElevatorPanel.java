@@ -1,7 +1,6 @@
 package at.fhhagenberg.sqelevator.gui;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
