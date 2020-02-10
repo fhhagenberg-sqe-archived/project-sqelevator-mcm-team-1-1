@@ -201,15 +201,11 @@ public class Elevator extends ObservableAdapter<Elevator> {
             return false;
         }
 
-        int direction = floor < currentFloor ?
+        int dir = floor < currentFloor ?
                 IElevator.ELEVATOR_DIRECTION_DOWN :
                 IElevator.ELEVATOR_DIRECTION_UP;
 
-        if (!sendCommittedDirection(direction)) {
-            return false;
-        }
-
-        return true;
+        return sendCommittedDirection(dir);
     }
 
     @Override
