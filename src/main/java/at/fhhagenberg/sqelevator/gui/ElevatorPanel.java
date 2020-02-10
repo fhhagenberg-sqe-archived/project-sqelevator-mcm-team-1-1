@@ -27,6 +27,9 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.util.converter.NumberStringConverter;
 
+/**
+ * The Elevator Panel contains visualizations and controls for all the different elevators and their containing data as well as visualizers for the floor buttons of the building
+ */
 public class ElevatorPanel extends HBox {
 
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("elevatorCC");
@@ -36,12 +39,21 @@ public class ElevatorPanel extends HBox {
 	private BuildingViewModel buildingViewModel;
 	private List<Slider> liftSliders;
 
+
+	/**
+	 * Constructor needs a view model of the class BuildingViewModel to adapt to changes inside the building / floors / elevators
+	 * @param buildingViewModel
+	 */
 	public ElevatorPanel(BuildingViewModel buildingViewModel) {
 		this.buildingViewModel = buildingViewModel;
 
 		buildingViewModel.buildingConfigurationProperty().addListener((observableValue, o, t1) -> buildUI());
 	}
 
+	/**
+	 * Adds a table containing lights / sliders and labels to visualize all the controls of the elevators.
+	 * Furthermore buttons to switch to manual mode to take control of the elevators are added here.
+	 */
 	private void buildUI() {
 		this.getChildren().clear();
 
@@ -135,6 +147,14 @@ public class ElevatorPanel extends HBox {
 		this.getChildren().add(gridPane);
 	}
 
+
+	/**
+	 * Adds labels for the payload-, speed-, target- and door statuses
+	 * @param gridPane Grid to add the labels to
+	 * @param elevatorViewModel ElevatorViewModel to bind the labels to
+	 * @param floorNum Number of floors in the building
+	 * @param currentElevator The elevator number of which the labels should be added (Method is called for each elevator)
+	 */
 	private void addLabels(final GridPane gridPane, final ElevatorViewModel elevatorViewModel, final int floorNum,
 			final int currentElevator) {
 		Label payload = buildLabel("p" + currentElevator);
@@ -154,6 +174,14 @@ public class ElevatorPanel extends HBox {
 		gridPane.add(doors, currentElevator + 1, floorNum + 5);
 	}
 
+
+	/**
+	 * Creates Gridpane with floor buttons to visualize where the elevator can go / is called to
+	 * @param elevatorViewModel ElevatorViewModel to obtain the data of the current elevator
+	 * @param floorNum Number of floors to create the correct number of buttons
+	 * @param currentElevator Current Elevator to add the buttons to (Method is called for each elevator)
+	 * @return Gridpane with the floor buttons.
+	 */
 	private GridPane buildFloorButtons(final ElevatorViewModel elevatorViewModel, final int floorNum,
 			final int currentElevator) {
 		GridPane buttons = new GridPane();
@@ -200,6 +228,13 @@ public class ElevatorPanel extends HBox {
 		return buttons;
 	}
 
+
+	/**
+	 * Creates a HorizontalBox with indicators that show where the elevator is currently heading towards and a label for the elevator number.
+	 * @param elevatorViewModel ElevatorViewModel to obtain the data of the current elevator.
+	 * @param currentElevator Current Elevator to add the buttons to (Method is called for each elevator)
+	 * @return The horizontal box with the created indicators and label.
+	 */
 	private HBox buildNameAndDirectionIndicators(final ElevatorViewModel elevatorViewModel, final int currentElevator) {
 		var directionIndicators = new VBox();
 		directionIndicators.setSpacing(SPACING_5);
@@ -225,6 +260,12 @@ public class ElevatorPanel extends HBox {
 		return nameAndDirectionIndicator;
 	}
 
+
+	/**
+	 * Create label with provided string as id
+	 * @param id
+	 * @return Label
+	 */
 	private Label buildLabel(final String id) {
 		Label label = new Label("-");
 		label.setId(id);
@@ -233,6 +274,12 @@ public class ElevatorPanel extends HBox {
 		return label;
 	}
 
+
+	/**
+	 * Creates Vertical Box with buttons that indicate the elevator speed for the current elevator
+	 * @param currentElevator number of current elevator (method is called for each elevator)
+	 * @return Vertical Box with the created buttons
+	 */
 	private VBox buildSignalButtons(final int currentElevator) {
 		VBox buttons = new VBox();
 		buttons.setSpacing(SPACING_5);
@@ -253,6 +300,12 @@ public class ElevatorPanel extends HBox {
 		return buttons;
 	}
 
+
+	/**
+	 * Adds description labels to the provided gridpane
+	 * @param gridPane Grid Pane to add the description to
+	 * @param floorNum Number of floors to add the labels at the correct location
+	 */
 	private void addLabelDescriptions(final GridPane gridPane, final int floorNum) {
 		Label manualModeLabel = new Label(RESOURCE_BUNDLE.getString("manualMode"));
 		gridPane.add(manualModeLabel, 0, floorNum + 1);
@@ -270,6 +323,10 @@ public class ElevatorPanel extends HBox {
 		gridPane.add(doorsLabel, 0, floorNum + 5);
 	}
 
+
+	/**
+	 * Class to handle the events of the manual mode.
+	 */
 	private class TargetFloorSelectionEventHandler implements EventHandler<Event> {
 
 		@Override
@@ -292,12 +349,21 @@ public class ElevatorPanel extends HBox {
 		}
 	}
 
+
+	/**
+	 * Creates a Triangle Polygon for arrow indicators
+	 * @return Polygon arrow
+	 */
 	private Polygon newUpTriangle() {
 		Polygon triangleUp = new Polygon();
 		triangleUp.getPoints().addAll(0.0, 0.0, 5.0, -9.0, 10.0, 0.0);
 		return triangleUp;
 	}
 
+	/**
+	 * Creates a Triangle Polygon for arrow indicators
+	 * @return Polygon arrow
+	 */
 	private Polygon newDownTriangle() {
 		Polygon triangleDown = new Polygon();
 		triangleDown.getPoints().addAll(0.0, 0.0, 5.0, 9.0, 10.0, 0.0);
