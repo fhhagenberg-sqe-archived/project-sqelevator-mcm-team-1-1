@@ -20,6 +20,8 @@ import at.fhhagenberg.sqelevator.model.AlarmsService;
 import at.fhhagenberg.sqelevator.viewmodel.AlarmViewModel;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 
@@ -37,21 +39,20 @@ public class GUIElevatorTests {
 		app.start(stage);
 	}
 
-
 	@Test
-	public void testInitialStateStatusBar (FxRobot robot) {
+	public void testInitialStateStatusBar(FxRobot robot) {
 		Label label = robot.lookup("#statusbar").query();
 		assertNull(label.getText());
 	}
 
 	@Test
-	public void testInitialStatePayload (FxRobot robot) {
+	public void testInitialStatePayload(FxRobot robot) {
 		Label payload = robot.lookup("#p0").query();
 		assertEquals(nsc.toString(MockElevator.ELEVATOR_WEIGHT_MOCK_VALUE), payload.getText());
 	}
 
 	@Test
-	public void testInitialStateSpeed (FxRobot robot) {
+	public void testInitialStateSpeed(FxRobot robot) {
 		Label speed = robot.lookup("#s0").query();
 		assertEquals(nsc.toString(MockElevator.ELEVATOR_SPEED_MOCK_VALUE), speed.getText());
 	}
@@ -74,16 +75,6 @@ public class GUIElevatorTests {
 		robot.clickOn("#M0");
 		robot.clickOn("#0,3");
 		verifyThat("#statusbar", hasText("Next target floor for elevator <1> is 4"));
-	}
-
-	@Test
-	public void testPayload(FxRobot robot) {
-		// TODO
-	}
-
-	@Test
-	public void testSpeed(FxRobot robot) {
-		// TODO
 	}
 
 	@Test
@@ -130,7 +121,7 @@ public class GUIElevatorTests {
 
 		TableView<AlarmViewModel> tableView = robot.lookup("#alarms-table").query();
 
-		assertEquals (3, tableView.getItems().size());
+		assertEquals(3, tableView.getItems().size());
 		assertEquals(message1, tableView.getItems().get(0).getAlarmMessage());
 		assertEquals(message2, tableView.getItems().get(1).getAlarmMessage());
 		assertEquals(message3, tableView.getItems().get(2).getAlarmMessage());
@@ -139,16 +130,47 @@ public class GUIElevatorTests {
 	@Test
 	public void testCallInfoLight(FxRobot robot) {
 		var elevatorService = (MockElevator) app.getElevatorService();
-		var floor0 = elevatorService.getFloors().get(0);
-		floor0.setDownButtonActive(true);
+		elevatorService.getFloors().get(6).setDownButtonActive(true);
+
+		robot.clickOn("#M0");
+		robot.clickOn("#0,6");
+
+		Polygon buttonUp6 = robot.lookup("#fbu,6").query();
+		Polygon buttonDown6 = robot.lookup("#fbd,6").query();
 
 		waitForUpdate(robot);
-		//TODO
+
+		assertEquals(Color.DODGERBLUE, buttonDown6.fillProperty().get());
+		assertEquals(Color.LIGHTBLUE, buttonUp6.fillProperty().get());
+
+		elevatorService.getFloors().get(0).setUpButtonActive(true);
+		robot.clickOn("#0,0");
+
+		Polygon buttonUp0 = robot.lookup("#fbu,0").query();
+		Polygon buttonDown0 = robot.lookup("#fbd,0").query();
+
+		assertEquals(Color.LIGHTBLUE, buttonDown0.fillProperty().get());
+		assertEquals(Color.DODGERBLUE, buttonUp0.fillProperty().get());
 	}
 
 	@Test
 	public void testDirectionLight(FxRobot robot) {
-		// TODO
+		robot.clickOn("#M0");
+		robot.clickOn("#0,6");
+
+		Polygon buttonUp = robot.lookup("#ebu,0").query();
+		Polygon buttonDown = robot.lookup("#ebd,0").query();
+
+		waitForUpdate(robot);
+
+		assertEquals(Color.GREEN, buttonUp.fillProperty().get());
+		assertEquals(Color.LIGHTGRAY, buttonDown.fillProperty().get());
+
+		robot.clickOn("#0,0");
+		waitForUpdate(robot);
+
+		assertEquals(Color.LIGHTGRAY, buttonUp.fillProperty().get());
+		assertEquals(Color.GREEN, buttonDown.fillProperty().get());
 	}
 
 	@Test
@@ -156,7 +178,7 @@ public class GUIElevatorTests {
 		var elevatorService = (MockElevator) app.getElevatorService();
 		var elevator0 = elevatorService.getElevators().get(0);
 
-		try{
+		try {
 			elevator0.setDoorStatus(MockElevator.ELEVATOR_DOORS_OPENING);
 			waitForUpdate(robot);
 			verifyThat("#d0", hasText("Opening"));
@@ -173,19 +195,18 @@ public class GUIElevatorTests {
 			waitForUpdate(robot);
 			verifyThat("#d0", hasText("Closed"));
 
-		}
-		catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			assertTrue(false);
 		}
 	}
 
 	@Test
-	public void testChangeServicesFloors(FxRobot robot){
+	public void testChangeServicesFloors(FxRobot robot) {
 		var elevatorService = (MockElevator) app.getElevatorService();
 		var elevator0 = elevatorService.getElevators().get(0);
 
-		try{
+		try {
 			assertTrue(elevator0.getServicesFloors(0));
 
 			robot.clickOn("#EditServicesFloors");
@@ -194,14 +215,13 @@ public class GUIElevatorTests {
 			waitForUpdate(robot);
 
 			assertFalse(elevator0.getServicesFloors(0));
-		}
-		catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			assertTrue(false);
 		}
 	}
 
-	private void waitForUpdate(FxRobot robot){
-		robot.sleep(250);	//need to wait for model to run update()
+	private void waitForUpdate(FxRobot robot) {
+		robot.sleep(250); // need to wait for model to run update()
 	}
 }

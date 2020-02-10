@@ -1,7 +1,6 @@
 package at.fhhagenberg.sqelevator.gui;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import at.fhhagenberg.sqelevator.viewmodel.BuildingViewModel;
@@ -37,7 +36,6 @@ public class ElevatorPanel extends HBox {
 	private static final int SPACING_15 = 15;
 
 	private BuildingViewModel buildingViewModel;
-	private List<Slider> liftSliders;
 
 
 	/**
@@ -81,7 +79,7 @@ public class ElevatorPanel extends HBox {
 			gridPane.getRowConstraints().add(rowConstraint);
 		}
 
-		liftSliders = new ArrayList<>();
+		ArrayList<Slider> liftSliders = new ArrayList<>();
 
 		for (int i = 0; i < elevatorNum; i++) {
 			var elevatorViewModel = buildingViewModel.getElevatorViewModels().get(i);
@@ -98,7 +96,7 @@ public class ElevatorPanel extends HBox {
 
 			var slider = new Slider(0.0, floorNum - 1.0, 0.0);
 			slider.setShowTickMarks(true);
-			slider.setMax(floorNum - 1);
+			slider.setMax((double) floorNum - 1);
 			slider.setMin(0);
 			slider.setDisable(true); // slider only use for visualization, not for controlling the elevator
 			slider.valueProperty().bind(elevatorViewModel.currentFloorProperty());
@@ -130,7 +128,7 @@ public class ElevatorPanel extends HBox {
 		GridPane.setColumnSpan(floorsHeading, 2);
 
 		for (int j = 0; j < floorNum; j++) {
-			gridPane.add(buildSignalButtons(j), elevatorNum + 2, j + 1);
+			gridPane.add(buildFloorButtons(j), elevatorNum + 2, j + 1);
 
 			Label floorNumLabel = new Label((floorNum - j) + "");
 			floorNumLabel.setOnMouseReleased(new TargetFloorSelectionEventHandler());
@@ -241,12 +239,14 @@ public class ElevatorPanel extends HBox {
 
 		var directionProperty = elevatorViewModel.currentDirectionProperty();
 		var directionTriangleUp = newUpTriangle();
+		directionTriangleUp.setId("ebu,"+currentElevator);
 		directionTriangleUp.fillProperty()
 				.bind(Bindings.when(directionProperty.isEqualTo(ElevatorViewModel.ELEVATOR_DIRECTION_UP))
 						.then(Color.GREEN).otherwise(Color.LIGHTGRAY));
 		directionIndicators.getChildren().add(directionTriangleUp);
 
 		var directionTriangleDown = newDownTriangle();
+		directionTriangleDown.setId("ebd," +currentElevator);
 		directionTriangleDown.fillProperty()
 				.bind(Bindings.when(directionProperty.isEqualTo(ElevatorViewModel.ELEVATOR_DIRECTION_DOWN))
 						.then(Color.GREEN).otherwise(Color.LIGHTGRAY));
@@ -274,27 +274,28 @@ public class ElevatorPanel extends HBox {
 		return label;
 	}
 
-
 	/**
 	 * Creates Vertical Box with buttons that indicate the elevator speed for the current elevator
 	 * @param currentElevator number of current elevator (method is called for each elevator)
 	 * @return Vertical Box with the created buttons
 	 */
-	private VBox buildSignalButtons(final int currentElevator) {
+	private VBox buildFloorButtons(final int currentFloor) {
 		VBox buttons = new VBox();
 		buttons.setSpacing(SPACING_5);
 
 		Polygon triangleUp = newUpTriangle();
+		triangleUp.setId("fbu," + currentFloor);
 		triangleUp.fillProperty()
 				.bind(Bindings
-						.when(buildingViewModel.getFloorViewModels().get(currentElevator).upButtonActiveProperty())
+						.when(buildingViewModel.getFloorViewModels().get(currentFloor).upButtonActiveProperty())
 						.then(Color.DODGERBLUE).otherwise(Color.LIGHTBLUE));
 		buttons.getChildren().add(triangleUp);
 
 		Polygon triangleDown = newDownTriangle();
+		triangleDown.setId("fbd,"+ currentFloor);
 		triangleDown.fillProperty()
 				.bind(Bindings
-						.when(buildingViewModel.getFloorViewModels().get(currentElevator).downButtonActiveProperty())
+						.when(buildingViewModel.getFloorViewModels().get(currentFloor).downButtonActiveProperty())
 						.then(Color.DODGERBLUE).otherwise(Color.LIGHTBLUE));
 		buttons.getChildren().add(triangleDown);
 		return buttons;
