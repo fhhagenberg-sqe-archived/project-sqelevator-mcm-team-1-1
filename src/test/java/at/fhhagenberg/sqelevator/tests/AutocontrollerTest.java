@@ -65,7 +65,7 @@ public class AutocontrollerTest {
 	@ParameterizedTest
 	@MethodSource("paramsElevatorTests")
 	public void testUpdateElevatorAutomatic(int elevator, int targetFloor) throws RemoteException {
-		updateElevator(elevator, targetFloor, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.AUTOMATIC);
+		updateElevator(elevator, targetFloor, ControlMode.AUTOMATIC);
 		assertEquals(targetFloor, elevatorService.getElevators().get(elevator).getCurrentFloor());
 	}
 
@@ -80,7 +80,7 @@ public class AutocontrollerTest {
 	@ParameterizedTest
 	@MethodSource("paramsElevatorTests")
 	public void testUpdateElevatorManual(int elevator, int targetFloor) throws RemoteException {
-		updateElevator(elevator, targetFloor, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.MANUAL);
+		updateElevator(elevator, targetFloor, ControlMode.MANUAL);
 		assertEquals(FLOOR_0, elevatorService.getElevators().get(elevator).getCurrentFloor());
 	}
 
@@ -97,10 +97,10 @@ public class AutocontrollerTest {
 	@ParameterizedTest
 	@MethodSource("paramsFloorTests")
 	public void testUpdateFloorAutomatic(int elevator, int targetFloorUp, int targetFloorDown) throws RemoteException {
-		updateFloor(elevator, targetFloorUp, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.AUTOMATIC); // up
+		updateFloor(elevator, targetFloorUp, ControlMode.AUTOMATIC); // up
 		assertEquals(targetFloorUp, elevatorService.getElevators().get(elevator).getCurrentFloor());
 
-		updateFloor(elevator, targetFloorDown, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.AUTOMATIC); // down
+		updateFloor(elevator, targetFloorDown, ControlMode.AUTOMATIC); // down
 		assertEquals(targetFloorDown, elevatorService.getElevators().get(elevator).getCurrentFloor());
 	}
 
@@ -116,7 +116,7 @@ public class AutocontrollerTest {
 	@MethodSource("paramsFloorTests")
 	public void testUpdateFloorManual(int elevator, int targetFloor) throws RemoteException {
 		// should not update because of manual mode
-		updateFloor(elevator, targetFloor, IElevator.ELEVATOR_DOORS_OPEN, ControlMode.MANUAL);
+		updateFloor(elevator, targetFloor, ControlMode.MANUAL);
 		assertEquals(FLOOR_0, elevatorService.getElevators().get(elevator).getCurrentFloor());
 	}
 
@@ -137,20 +137,20 @@ public class AutocontrollerTest {
 				Arguments.of(ELEVATOR_0, FLOOR_2, FLOOR_2));
 	}
 
-	private void updateElevator(int elevator, int targetFloor, int doorStatus, ControlMode mode)
+	private void updateElevator(int elevator, int targetFloor, ControlMode mode)
 			throws RemoteException {
 		MockElevatorState elevatorState = elevatorService.getElevators().get(elevator);
 		elevatorState.setFloorButtonActive(targetFloor, true);
-		elevatorState.setDoorStatus(doorStatus);
+		elevatorState.setDoorStatus(IElevator.ELEVATOR_DOORS_OPEN);
 
 		Elevator e = elevatorController.getCurrentState().getElevator(elevator);
 		e.setControlMode(mode);
 		e.updateFromService();
 	}
 
-	private void updateFloor(int elevator, int targetFloor, int doorStatus, ControlMode mode) throws RemoteException {
+	private void updateFloor(int elevator, int targetFloor, ControlMode mode) throws RemoteException {
 		MockElevatorState elevatorState = elevatorService.getElevators().get(elevator);
-		elevatorState.setDoorStatus(doorStatus);
+		elevatorState.setDoorStatus(IElevator.ELEVATOR_DOORS_OPEN);
 
 		if (elevatorState.getCurrentFloor() < targetFloor) {
 			elevatorService.getFloors().get(targetFloor).setUpButtonActive(true);
