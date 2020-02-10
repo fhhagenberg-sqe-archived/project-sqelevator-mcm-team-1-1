@@ -9,8 +9,16 @@ import at.fhhagenberg.sqelevator.model.observers.Observable;
 import at.fhhagenberg.sqelevator.model.observers.Observer;
 import sqelevator.IElevator;
 
+
+/**
+ * Algorithm that observes the floor and elevator buttons nad controls the elevators to handle those events
+ */
 public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingInitializedObserver {
 
+
+	/**
+	 * Anonymous Class that observes changes and events in Elevators (Primarily for Elevator Button Presses) and forwards the request to the SimpleControlAlgorithm
+	 */
 	private class ElevatorObserver implements Observer<Elevator> {
 
 		private SimpleControlAlgorithm sca;
@@ -28,6 +36,9 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
 		}
 	}
 
+	/**
+	 * Anonymous Class that observes changes and events in Floors (Primarily for Floor Button Presses) and forwards the request to the SimpleControlAlgorithm
+	 */
 	private class FloorObserver implements Observer<Floor> {
 
 		private SimpleControlAlgorithm sca;
@@ -54,12 +65,16 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
 	public void setElevatorController(IElevatorController elevatorController) {
 		this.elevatorController = elevatorController;
 	}
-
+	
 	@Override
 	public void start() {
 		this.elevatorController.addInitializedObserver(this);
 	}
 
+
+	/**
+	 * Removes the observers of the elevators and floors
+	 */
 	@Override
 	public void stop() {
 		var building = elevatorController.getCurrentState();
@@ -72,6 +87,9 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
 		}
 	}
 
+	/**
+	 * Adds observers to the floors and elevators - has to be called after initialization when the viewmodel is ready.
+	 */
 	@Override
 	public void initializationDone() {
 		var building = elevatorController.getCurrentState();
@@ -83,6 +101,10 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
 		building.getElevators().forEach(elevator -> elevator.addObserver(elevatorObserver));
 	}
 
+	/**
+	 * Is called when an elevator button is pressed or when the elevator arrives at the destination. If there are no more button presses inside the elevator - the floor buttons will be checked so this elevator can be sent there.
+	 * @param elevator current elevator
+	 */
 	public void updateElevator(Elevator elevator) {
 		if (elevator.getControlMode() == ControlMode.MANUAL) {
 			return; // skip elevators in manual mode
@@ -108,6 +130,10 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
 		}
 	}
 
+	/**
+	 * Is called when a floor button is pressed
+	 * @param floor current floor (But method checks all floors so no event is missed)
+	 */
 	public void updateFloor(Floor floor) {
 		var building = elevatorController.getCurrentState();
 		Elevator targetElevator = null;
@@ -161,6 +187,13 @@ public class SimpleControlAlgorithm implements IControlAlgorithm, IBuildingIniti
 		// else floor ignored - is handled by a next elevator event that is free
 	}
 
+
+	/**
+	 * checks if an elevator is available by checking if it is in automatic mode, if the floor can actually be handled by this elevator and if the door is currently open
+	 * @param e Elevator
+	 * @param floor Floor
+	 * @return Boolean that indicates if the elevator is available
+	 */
 	private boolean isElevatorAvailable(Elevator e, Floor floor) {
 		return e.getControlMode() == ControlMode.AUTOMATIC && e.getServicesFloors(floor.getId())
 				&& e.getDoorStatus() == IElevator.ELEVATOR_DOORS_OPEN;
